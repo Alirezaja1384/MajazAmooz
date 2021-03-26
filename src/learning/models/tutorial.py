@@ -3,7 +3,7 @@ from django.db import models
 
 from authentication.models import User
 
-from .category import Category
+from . import Category
 
 
 class Tutorial(models.Model):
@@ -50,7 +50,22 @@ class Tutorial(models.Model):
 
     # Relations
     author = models.ForeignKey(
-        User, related_name='tutorials', verbose_name='نویسنده')
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='tutorials', verbose_name='نویسنده')
 
     categories = models.ManyToManyField(
         Category, related_name='tutorials', verbose_name='دسته بندی ها')
+
+    tutorial_views = models.ManyToManyField(
+        User, through='TutorialView', related_name='tutorial_views', verbose_name='بازدید ها')
+
+    tutorial_likes = models.ManyToManyField(
+        User, through='TutorialLike', related_name='tutorial_likes', verbose_name='لایک ها')
+
+    tutorial_up_votes = models.ManyToManyField(
+        User, through='TutorialUpVote',
+        related_name='tutorial_up_votes', verbose_name='امتیاز های مثبت')
+
+    tutorial_down_votes = models.ManyToManyField(
+        User, through='TutorialDownVote',
+        related_name='tutorial_down_votes', verbose_name='امتیاز های منفی')
