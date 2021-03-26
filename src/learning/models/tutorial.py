@@ -69,3 +69,7 @@ class Tutorial(models.Model):
     down_votes = models.ManyToManyField(
         User, through='TutorialDownVote',
         related_name='tutorial_down_votes', verbose_name='امتیاز های منفی')
+
+    comments = models.ManyToManyField(
+        User, through='TutorialComment',
+        related_name='tutorial_comments', verbose_name='نظرات')
