@@ -25,7 +25,8 @@ class Tutorial(models.Model):
     body = models.TextField(verbose_name='بدنه')
 
     total_views_count = models.PositiveIntegerField(verbose_name='بازدید کل')
-    user_views_count = models.PositiveIntegerField(verbose_name='بازدید کاربران')
+    user_views_count = models.PositiveIntegerField(
+        verbose_name='بازدید کاربران')
 
     up_votes_count = models.PositiveIntegerField(verbose_name='امتیاز مثبت')
     down_votes_count = models.PositiveIntegerField(verbose_name='امتیاز منفی')
@@ -73,3 +74,11 @@ class Tutorial(models.Model):
     comments = models.ManyToManyField(
         User, through='TutorialComment',
         related_name='tutorial_comments', verbose_name='نظرات')
+
+
+class TutorialTag(models.Model):
+    """ TutorialTag model """
+    title = models.CharField(max_length=20, verbose_name='عنوان')
+
+    tutorial = models.ForeignKey(
+        Tutorial, on_delete=models.CASCADE, related_name='slugs', verbose_name='آموزش')
