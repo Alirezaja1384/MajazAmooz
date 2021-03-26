@@ -24,13 +24,13 @@ class Tutorial(models.Model):
 
     body = models.TextField(verbose_name='بدنه')
 
-    total_views = models.PositiveIntegerField(verbose_name='بازدید کل')
-    user_views = models.PositiveIntegerField(verbose_name='بازدید کاربران')
+    total_views_count = models.PositiveIntegerField(verbose_name='بازدید کل')
+    user_views_count = models.PositiveIntegerField(verbose_name='بازدید کاربران')
 
-    up_votes = models.PositiveIntegerField(verbose_name='امتیاز مثبت')
-    down_votes = models.PositiveIntegerField(verbose_name='امتیاز منفی')
+    up_votes_count = models.PositiveIntegerField(verbose_name='امتیاز مثبت')
+    down_votes_count = models.PositiveIntegerField(verbose_name='امتیاز منفی')
 
-    likes = models.PositiveIntegerField(verbose_name='لایک ها')
+    likes_count = models.PositiveIntegerField(verbose_name='لایک ها')
 
     image = models.ImageField(
         upload_to="images/tutorial_thumbnails", blank=True, verbose_name='تصویر')
@@ -56,16 +56,16 @@ class Tutorial(models.Model):
     categories = models.ManyToManyField(
         Category, related_name='tutorials', verbose_name='دسته بندی ها')
 
-    tutorial_views = models.ManyToManyField(
+    views = models.ManyToManyField(
         User, through='TutorialView', related_name='tutorial_views', verbose_name='بازدید ها')
 
-    tutorial_likes = models.ManyToManyField(
+    likes = models.ManyToManyField(
         User, through='TutorialLike', related_name='tutorial_likes', verbose_name='لایک ها')
 
-    tutorial_up_votes = models.ManyToManyField(
+    up_votes = models.ManyToManyField(
         User, through='TutorialUpVote',
         related_name='tutorial_up_votes', verbose_name='امتیاز های مثبت')
 
-    tutorial_down_votes = models.ManyToManyField(
+    down_votes = models.ManyToManyField(
         User, through='TutorialDownVote',
         related_name='tutorial_down_votes', verbose_name='امتیاز های منفی')
