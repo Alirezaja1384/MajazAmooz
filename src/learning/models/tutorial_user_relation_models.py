@@ -104,3 +104,10 @@ class TutorialComment(models.Model):
     parent_comment = models.ForeignKey(
         'self', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='child_comments', verbose_name='پاسخ به')
+
+    class Meta:
+        verbose_name = 'دیدگاه آموزش'
+        verbose_name = 'دیدگاه آموزش ها'
+
+    def __str__(self):
+        return self.title

@@ -14,3 +14,10 @@ class Category(models.Model):
     slug = models.SlugField('اسلاگ', max_length=50, allow_unicode=True)
 
     is_active = models.BooleanField('فعال', default=True)
+
+    class Meta:
+        verbose_name = 'دسته بندی'
+        verbose_name = 'دسته بندی ها'
+
+    def __str__(self):
+        return self.title

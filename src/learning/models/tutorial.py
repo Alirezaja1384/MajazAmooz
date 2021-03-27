@@ -74,6 +74,15 @@ class Tutorial(models.Model):
     comments = models.ManyToManyField(
         User, through='TutorialComment',
         related_name='tutorial_comments', verbose_name='نظرات')
+    
+
+    class Meta:
+        verbose_name = 'آموزش'
+        verbose_name = 'آموزش ها'
+
+    def __str__(self):
+        return self.title
+    
 
 
 class TutorialTag(models.Model):
