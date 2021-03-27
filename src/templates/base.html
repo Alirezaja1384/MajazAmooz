@@ -363,7 +363,40 @@
                         <img src="{% static 'img/icons/user.png' %}" id="header-user-icon" alt="کاربر">
                     </a>
 
-                    <partial name="_UserDetailsDropDown"/>
+
+                    <!-- Dropdown -->
+                    <section class="dropleft left-0">
+                        <ul class="dropdown-menu text-center left-0">
+                            <li class="dropdown-header">{{ user.get_full_name }}</li>
+
+                            <section class="dropdown-divider"></section>
+
+                            <li class="dropdown-item">
+                                <a href="#">
+                                    پنل کاربری
+                                </a>
+                            </li>
+
+                            
+                            {% if user.is_staff %}
+                                <li class="dropdown-item">
+                                    <a href="admin">
+                                        پنل ادمین
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            <section class="dropdown-divider"></section>
+
+                            <li class="dropdown-item">
+                                <a href="#">
+                                    <i class="fa fa-sign-out" aria-hidden="true"></i>
+                                    خروج از حساب کاربری
+                                </a>
+                            </li>
+                        </ul>
+                    </section>
+                    <!-- End Dropdown -->
                 {% else %}
                     <a href="#" class="nav-link text-truncate">ورود</a>
                 {% endif %}
