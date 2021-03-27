@@ -78,7 +78,7 @@ class Tutorial(models.Model):
 
     class Meta:
         verbose_name = 'آموزش'
-        verbose_name = 'آموزش ها'
+        verbose_name_plural = 'آموزش ها'
 
     def __str__(self):
         return self.title

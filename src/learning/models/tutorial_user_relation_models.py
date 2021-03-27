@@ -107,7 +107,7 @@ class TutorialComment(models.Model):
 
     class Meta:
         verbose_name = 'دیدگاه آموزش'
-        verbose_name = 'دیدگاه آموزش ها'
+        verbose_name_plural = 'دیدگاه آموزش ها'
 
     def __str__(self):
         return self.title
