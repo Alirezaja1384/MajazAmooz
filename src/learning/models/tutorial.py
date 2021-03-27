@@ -19,22 +19,27 @@ class Tutorial(models.Model):
     slug = models.SlugField(
         max_length=50, allow_unicode=True, verbose_name='اسلاگ')
 
-    short_description = models.CharField(
+    short_description = models.TextField(
         max_length=250, verbose_name='توضیح کوتاه')
 
     body = models.TextField(verbose_name='بدنه')
 
-    total_views_count = models.PositiveIntegerField(verbose_name='بازدید کل')
+    total_views_count = models.PositiveIntegerField(
+        verbose_name='بازدید کل', default=0)
     user_views_count = models.PositiveIntegerField(
-        verbose_name='بازدید کاربران')
+        verbose_name='بازدید کاربران', default=0)
 
-    up_votes_count = models.PositiveIntegerField(verbose_name='امتیاز مثبت')
-    down_votes_count = models.PositiveIntegerField(verbose_name='امتیاز منفی')
+    up_votes_count = models.PositiveIntegerField(
+        verbose_name='امتیاز مثبت', default=0)
+    down_votes_count = models.PositiveIntegerField(
+        verbose_name='امتیاز منفی', default=0)
 
-    likes_count = models.PositiveIntegerField(verbose_name='لایک ها')
+    likes_count = models.PositiveIntegerField(
+        verbose_name='لایک ها', default=0)
 
     image = models.ImageField(
-        upload_to="images/tutorial_thumbnails", blank=True, verbose_name='تصویر')
+        upload_to="images/tutorial_thumbnails",
+        blank=True, verbose_name='تصویر')
 
     create_date = models.DateTimeField(
         auto_now_add=True, verbose_name='زمان انتشار')
@@ -56,7 +61,7 @@ class Tutorial(models.Model):
         related_name='tutorials', verbose_name='نویسنده')
 
     categories = models.ManyToManyField(
-        Category, related_name='tutorials', verbose_name='دسته بندی ها')
+        Category, related_name='tutorials', blank=True, verbose_name='دسته بندی ها')
 
     views = models.ManyToManyField(
         User, through='TutorialView', related_name='tutorial_views', verbose_name='بازدید ها')
