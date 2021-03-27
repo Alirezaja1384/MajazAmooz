@@ -2,7 +2,9 @@
 from django.contrib import admin
 from django.contrib.admin.decorators import register
 
-from .models import Tutorial
+from .models import (
+    Tutorial, Category
+)
 
 
 @register(Tutorial)
@@ -19,6 +21,19 @@ class TutorialAdmin(admin.ModelAdmin):
     search_fields = ('title', 'short_description')
 
     fields = ('title', 'slug', 'short_description', 'body',
-                 'image', 'confirm_status', 'is_active', 'categories',)
+              'image', 'confirm_status', 'is_active', 'categories',)
 
     prepopulated_fields = {"slug": ("title", )}
+
+
+@register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    """ Category admin settings """
+
+    list_display = ('parent_grade', 'name', 'slug', 'is_active', )
+
+    list_filter = ('is_active', )
+
+    search_fields = ('name', 'slug', )
+
+    prepopulated_fields = {"slug": ("name", )}
