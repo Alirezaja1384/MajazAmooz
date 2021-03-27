@@ -20,4 +20,4 @@ class Category(models.Model):
         verbose_name_plural = 'دسته بندی ها'
 
     def __str__(self):
-        return self.title
+        return self.name
