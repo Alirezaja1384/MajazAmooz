@@ -9,8 +9,8 @@ from . import Category
 class Tutorial(models.Model):
     """ Tutorial model """
     CONFIRM_STATUS_CHOICES = [
-        (-1, 'عدم تایید'),
         (0, 'در انتظار تایید'),
+        (-1, 'عدم تایید'),
         (1, 'تایید شده'),
     ]
 
@@ -43,7 +43,8 @@ class Tutorial(models.Model):
         auto_now=True, verbose_name='زمان آخرین ویرایش')
 
     confirm_status = models.IntegerField(
-        choices=CONFIRM_STATUS_CHOICES, verbose_name='وضعیت تایید')
+        choices=CONFIRM_STATUS_CHOICES, default=0,
+        null=False, blank=False, verbose_name='وضعیت تایید')
 
     is_edited = models.BooleanField(default=True, verbose_name='ویرایش شده')
 
@@ -74,7 +75,6 @@ class Tutorial(models.Model):
     comments = models.ManyToManyField(
         User, through='TutorialComment',
         related_name='tutorial_comments', verbose_name='نظرات')
-    
 
     class Meta:
         verbose_name = 'آموزش'
@@ -82,7 +82,6 @@ class Tutorial(models.Model):
 
     def __str__(self):
         return self.title
-    
 
 
 class TutorialTag(models.Model):
