@@ -8,10 +8,11 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     " Customized user model "
 
-    avatar = models.ImageField("تصویر پروفایل", upload_to="images/avatars")
+    avatar = models.ImageField(
+        "تصویر پروفایل", upload_to="images/avatars", blank=True)
 
-    scores = models.PositiveIntegerField("امتیاز")
+    scores = models.PositiveIntegerField("امتیاز", null=True, blank=True)
 
-    coins = models.PositiveIntegerField("سکه ها")
+    coins = models.PositiveIntegerField("سکه ها", null=True, blank=True)
 
-    diamonds = models.PositiveIntegerField("الماس ها")
+    diamonds = models.PositiveIntegerField("الماس ها", null=True, blank=True)
