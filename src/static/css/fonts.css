@@ -1,0 +1,9 @@
+@font-face{
+    font-family: 'Yekan';
+    src: url('../fonts/Yekan.eot')format('eot') ,url('../fonts/Yekan.ttf')format('truetype');
+}
+
+@font-face{
+    font-family: 'Koodak';
+    src: url('../fonts/KoodakBold.eot')format('eot') ,url('../fonts/KoodakBold.ttf')format('truetype');
+}
