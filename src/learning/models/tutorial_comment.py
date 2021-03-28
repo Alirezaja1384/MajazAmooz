@@ -18,10 +18,10 @@ class TutorialComment(models.Model):
 
     body = models.TextField(max_length=500, verbose_name='بدنه')
 
-    up_votes = models.PositiveIntegerField(verbose_name='امتیاز مثبت')
-    down_votes = models.PositiveIntegerField(verbose_name='امتیاز منفی')
+    up_votes_count = models.PositiveIntegerField(verbose_name='امتیاز مثبت')
+    down_votes_count = models.PositiveIntegerField(verbose_name='امتیاز منفی')
 
-    likes = models.PositiveIntegerField(verbose_name='لایک ها')
+    likes_count = models.PositiveIntegerField(verbose_name='لایک ها')
 
     create_date = models.DateTimeField(
         auto_now_add=True, verbose_name='زمان انتشار')
