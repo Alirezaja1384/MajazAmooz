@@ -96,5 +96,9 @@ class TutorialTag(models.Model):
     tutorial = models.ForeignKey(
         Tutorial, on_delete=models.CASCADE, related_name='tags', verbose_name='آموزش')
 
+    class Meta:
+        verbose_name = 'کلیدواژه'
+        verbose_name_plural = 'کلیدواژه ها'
+
     def __str__(self):
         return self.title
