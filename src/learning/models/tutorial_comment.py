@@ -35,7 +35,7 @@ class TutorialComment(models.Model):
     confirm_status = models.IntegerField(
         choices=CONFIRM_STATUS_CHOICES, null=False, blank=False, default=0, verbose_name='وضعیت تایید')
 
-    is_edited = models.BooleanField(default=True, verbose_name='ویرایش شده')
+    is_edited = models.BooleanField(default=False, verbose_name='ویرایش شده')
 
     allow_reply = models.BooleanField(default=True, verbose_name='امکان پاسخ')
     notify_replies = models.BooleanField(
