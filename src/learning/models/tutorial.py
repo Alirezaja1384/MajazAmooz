@@ -95,3 +95,6 @@ class TutorialTag(models.Model):
 
     tutorial = models.ForeignKey(
         Tutorial, on_delete=models.CASCADE, related_name='slugs', verbose_name='آموزش')
+
+    def __str__(self):
+        return self.title
