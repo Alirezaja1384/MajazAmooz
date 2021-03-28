@@ -9,8 +9,8 @@ from . import Tutorial
 class TutorialComment(models.Model):
     """ TutorialComment model """
     CONFIRM_STATUS_CHOICES = [
-        (-1, 'عدم تایید'),
         (0, 'در انتظار تایید'),
+        (-1, 'عدم تایید'),
         (1, 'تایید شده'),
     ]
 
@@ -18,10 +18,13 @@ class TutorialComment(models.Model):
 
     body = models.TextField(max_length=500, verbose_name='بدنه')
 
-    up_votes_count = models.PositiveIntegerField(verbose_name='امتیاز مثبت')
-    down_votes_count = models.PositiveIntegerField(verbose_name='امتیاز منفی')
+    up_votes_count = models.PositiveIntegerField(
+        default=0, verbose_name='امتیاز مثبت')
+    down_votes_count = models.PositiveIntegerField(
+        default=0, verbose_name='امتیاز منفی')
 
-    likes_count = models.PositiveIntegerField(verbose_name='لایک ها')
+    likes_count = models.PositiveIntegerField(
+        default=0, verbose_name='لایک ها')
 
     create_date = models.DateTimeField(
         auto_now_add=True, verbose_name='زمان انتشار')
@@ -30,7 +33,7 @@ class TutorialComment(models.Model):
         auto_now=True, verbose_name='زمان آخرین ویرایش')
 
     confirm_status = models.IntegerField(
-        choices=CONFIRM_STATUS_CHOICES, verbose_name='وضعیت تایید')
+        choices=CONFIRM_STATUS_CHOICES, null=False, blank=False, default=0, verbose_name='وضعیت تایید')
 
     is_edited = models.BooleanField(default=True, verbose_name='ویرایش شده')
 
