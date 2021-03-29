@@ -1,0 +1,61 @@
+{% load static %}
+
+{% if gray_background %}
+    <section class="jumbotron rounded-0 mb-0 py-0 px-0">
+{% endif %}
+        <!-- Tutorials -->
+        <section class="container py-5">
+            <!-- Header -->
+            <section class="text-center">
+                <h2 class="heading">{{ title }}</h2>
+                <section class="underline"></section>
+            </section>
+            <!-- End Header -->
+
+            <!-- Tutorials carousel -->
+            <section class="owl-carousel owl-theme">
+                {% for tutorial in tutorials %}
+                    <!-- Carousel item -->
+                    <section>
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
+                            </section>
+
+                            <section class="card-body px-3 pb-3">
+                                <h5>
+                                    <a href="#">
+                                        {{ tutorial.title }}
+                                    </a>
+                                </h5>
+                                <p class="text-muted"> {{ tutorial.short_description|truncatewords:5 }} </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i> {{ tutorial.comments.count }}
+                                </section>
+                                <section class="float-right">
+                                    {{ tutorial.likes_count }} <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Carousel item -->
+                {% endfor %}
+
+            </section>
+            <!-- End tutorials carousel -->
+
+
+            <!-- Show more tutorials button -->
+            <section class="text-center mt-4">
+                <a href="#" class="btn btn-success rounded-0 px-4 pt-2">نمایش همه آموزش ها</a>
+            </section>
+            <!-- End Show more tutorials button -->
+
+        </section>
+        <!-- End tutorials -->
+{% if gray_background %}
+    </section>
+{% endif %}
