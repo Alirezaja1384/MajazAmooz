@@ -12,7 +12,7 @@ from .models import (
 class CategoryAdmin(admin.ModelAdmin):
     """ Category admin settings """
 
-    list_display = ('parent_grade', 'name', 'slug', 'is_active', )
+    list_display = ('parent_category', 'name', 'slug', 'is_active', )
 
     list_filter = ('is_active', )
 

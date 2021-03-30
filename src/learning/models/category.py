@@ -5,9 +5,9 @@ from django.db import models
 class Category(models.Model):
     """ Grade model """
 
-    parent_grade = models.ForeignKey(
+    parent_category = models.ForeignKey(
         'self', on_delete=models.SET_NULL, null=True, blank=True,
-        related_name='child_grades', verbose_name='پایه والد')
+        related_name='child_category', verbose_name='پایه والد')
 
     name = models.CharField('نام', max_length=30)
 
