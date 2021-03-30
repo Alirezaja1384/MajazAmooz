@@ -1,0 +1,32 @@
+
+{% regroup categories by parent_category as category_group %}
+
+<li class="nav-item">
+    <a href="#tutorials-main" class="nav-link text-truncate dropdown-toggle"
+        data-toggle="dropdown">آموزش ها</a>
+
+    {% for category_list in category_group %}
+        <section id="tutorials-{% if category_list.list.0.parent_category %}children-{{category_list.list.0.parent_category.pk}}{% else %}main{% endif %}" class="dropdown">
+            <ul class="dropdown-menu bg-lightblue">
+                
+                
+                {% for category in category_list.list %}
+                    <li class="dropdown-item">
+                        <a href="{% if category.child_categories.all %}#tutorials-children-{{category.pk}}{% else %}#{% endif %}"
+                            data-toggle="dropdown" {% if category.child_categories.all %}class="dropdown-toggle{% endif %}">
+                            {{category.name}}
+                        </a>
+                    </li>
+                {% endfor %}
+
+                {% if category_list.list|length > 1 %}
+                    <li class="dropdown-item">
+                        <a href="#">تمامی {% if category_list.list.0.parent_category %}زیر{% endif %}دسته ها</a>
+                    </li>
+                {% endif %}
+
+            </ul>
+        </section>
+    {% endfor %}
+
+</li>

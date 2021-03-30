@@ -1,4 +1,6 @@
 {% load static %}
+{% load base_tmplatetags %}
+
 <!DOCTYPE HTML>
 <html lang="fa">
 
@@ -72,129 +74,7 @@
 
 
 
-
-                   
-                    <li class="nav-item">
-                        <a href="#tutorials-dropdown" class="nav-link text-truncate dropdown-toggle"
-                            data-toggle="dropdown">آموزش ها</a>
-
-
-                        <!-- School types dropdown -->
-                        <section id="tutorials-dropdown" class="dropdown">
-                            <ul class="dropdown-menu bg-lightblue">
-
-                                <li class="dropdown-item">
-                                    <a href="#tutorials-school" data-toggle="dropdown" class="dropdown-toggle">دبستان</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#tutorials-middle-school" data-toggle="dropdown" class="dropdown-toggle">متوسطه
-                                        اول</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#tutorials-high-school" data-toggle="dropdown" class="dropdown-toggle">متوسطه
-                                        دوم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">تمامی پایه ها</a>
-                                </li>
-
-                            </ul>
-                        </section>
-                        <!-- End School types dropdown -->
-
-
-                        <!-- School grades -->
-                        <section id="tutorials-school" class="dropdown">
-                            <ul class="dropdown-menu bg-lightblue">
-
-                                <li class="dropdown-item">
-                                    <a href="#">اول</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">دوم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">سوم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">چهارم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">پنجم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">ششم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">تمامی پایه های دبستان</a>
-                                </li>
-
-                            </ul>
-                        </section>
-                        <!-- End School grades -->
-
-                        <!-- Middle school grades -->
-                        <section id="tutorials-middle-school" class="dropdown">
-                            <ul class="dropdown-menu bg-lightblue">
-
-                                <li class="dropdown-item">
-                                    <a href="#">هفتم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">هشتم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">نهم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#">تمامی پایه های متوسطه اول</a>
-                                </li>
-
-                            </ul>
-                        </section>
-                        <!-- End Middle school grades -->
-
-                        <!-- High school grades -->
-                        <section id="tutorials-high-school" class="dropdown">
-                            <ul class="dropdown-menu bg-lightblue">
-
-                                <li class="dropdown-item">
-                                    <a href="#" class="dropdown-item">دهم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#" class="dropdown-item">یازدهم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#" class="dropdown-item">دوازدهم</a>
-                                </li>
-
-                                <li class="dropdown-item">
-                                    <a href="#" class="dropdown-item">تمامی پایه های متوسطه دوم</a>
-                                </li>
-
-                            </ul>
-                        </section>
-                        <!-- End High school grades -->
-
-                    </li>
-
-
-
-
+                   {% navbar_tutorial_categories %}
 
 
 
