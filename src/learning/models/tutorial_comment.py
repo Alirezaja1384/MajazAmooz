@@ -33,7 +33,8 @@ class TutorialComment(models.Model):
         auto_now=True, verbose_name='زمان آخرین ویرایش')
 
     confirm_status = models.IntegerField(
-        choices=CONFIRM_STATUS_CHOICES, null=False, blank=False, default=0, verbose_name='وضعیت تایید')
+        choices=CONFIRM_STATUS_CHOICES, null=False, blank=False, default=0,
+        verbose_name='وضعیت تایید')
 
     is_edited = models.BooleanField(default=False, verbose_name='ویرایش شده')
 
@@ -45,10 +46,12 @@ class TutorialComment(models.Model):
 
     # Relations
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, verbose_name='کاربر')
+        User, on_delete=models.SET_NULL, null=True,
+        related_name='tutorial_comments', verbose_name='کاربر')
 
     tutorial = models.ForeignKey(
-        Tutorial, on_delete=models.SET_NULL, null=True, verbose_name='آموزش')
+        Tutorial, on_delete=models.SET_NULL, null=True,
+        related_name='comments', verbose_name='آموزش')
 
     parent_comment = models.ForeignKey(
         'self', on_delete=models.SET_NULL, null=True, blank=True,
