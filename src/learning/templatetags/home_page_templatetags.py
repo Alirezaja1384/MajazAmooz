@@ -16,7 +16,8 @@ def get_tutorials(ordering: tuple, count: int):
         [TutorialQuerySet]: tutorials ordered by given ordering and
         sliced by given count
     """
-    tutorials = Tutorial.objects.confirmed_tutorials().order_by(*ordering).values(
+    tutorials = Tutorial.objects.confirmed_tutorials().filter(
+        is_active=True).order_by(*ordering).values(
         'title', 'slug', 'short_description', 'likes_count')[:count].annotate(
         comments_count=Count('comments', filter=Q(comments__confirm_status=1)))
 
