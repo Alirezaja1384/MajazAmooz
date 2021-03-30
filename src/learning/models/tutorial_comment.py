@@ -1,10 +1,10 @@
-
+""" TutorialComment model """
 from django.db import models
 
 from authentication.models import User
 
 from . import Tutorial
-
+from ..querysets import TutorialCommentQueryset
 
 class TutorialComment(models.Model):
     """ TutorialComment model """
@@ -72,3 +72,6 @@ class TutorialComment(models.Model):
 
     def __str__(self):
         return self.title
+
+    # Custom manager
+    objects = TutorialCommentQueryset.as_manager()

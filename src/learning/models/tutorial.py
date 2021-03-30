@@ -4,6 +4,7 @@ from django.db import models
 from authentication.models import User
 
 from . import Category
+from ..querysets import TutorialQuerySet
 
 
 class Tutorial(models.Model):
@@ -87,6 +88,9 @@ class Tutorial(models.Model):
 
     def __str__(self):
         return self.title
+
+    # Custom manager
+    objects = TutorialQuerySet.as_manager()
 
 
 class TutorialTag(models.Model):
