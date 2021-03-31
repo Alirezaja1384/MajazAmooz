@@ -1,4 +1,4 @@
-""" Tuturial view """
+""" Tutorial view """
 from django.views.generic import DetailView
 
 from ..models import Tutorial
@@ -6,7 +6,7 @@ from ..models import Tutorial
 
 # TODO: implement recommended_tutorials, liked_by_current_user
 class TutorialDetailView(DetailView):
-    """ Tuturial view """
+    """ Tutorial view """
     template_name = 'learning/tutorial.html'
 
     context_object_name = 'tutorial'

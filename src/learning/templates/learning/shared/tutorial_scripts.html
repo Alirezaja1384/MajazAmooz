@@ -127,7 +127,7 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(@(Model.TutorialVM.Id))
+                body: JSON.stringify({{ tutorial.pk }})
             }).then(response=>response.json())
             .then(content=>{
                 if(content["status"] == 0)
@@ -167,7 +167,7 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(@(Model.TutorialVM.Id))
+                body: JSON.stringify({{ tutorial.pk }})
             }).then(response=>response.json())
             .then(content=>{
                 if(content["status"] == 0)

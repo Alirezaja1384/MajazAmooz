@@ -297,7 +297,7 @@
 
                                                     {% if comment.allow_reply %}
                                                         <!-- Reply button -->
-                                                        <a class="btn btn-sm btn-outline-info" onclick="ReplyTo({{ comment.pk }},"{{ comment.title }}")">
+                                                        <a class="btn btn-sm btn-outline-info" onclick="ReplyTo({{comment.pk}},'{{comment.title}}')">
                                                             <i class="fa fa-reply"></i> پاسخ
                                                         </a>
                                                         <!-- End Reply button -->
