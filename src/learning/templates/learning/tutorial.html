@@ -1,0 +1,666 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %} {{ tutorial.title }} {% endblock title %}
+
+{% block content %}
+    <section class="container py-6">
+
+    <section class="row">
+
+
+        <!-- Right side (Tutorial content,comments and ...) -->
+        <section class="col-lg-8 col-12">
+
+
+
+
+            <!-- Tutorial content -->
+            <section id="tutorial" class="card card-rounded mt-6">
+
+                <!-- Tutorial heading -->
+                <section class="tutorial-heading card-header card-rounded-header bg-lightblue pt-0 px-2 border-bottom row mx-0">
+
+                    <!-- Like and dislike -->
+                    <section class="w-20 text-center mt-3 mx-0">
+
+                        <!-- UpVotes -->
+                        <a id="UpVoteTutorial" class="btn btn-success p-1 m-2">
+                            <i class="fa fa-thumbs-o-up"></i>
+                            <span id="TutorialUpVotesCount">{{ tutorial.up_votes_count }}</span>
+                        </a>
+                        <!-- End UpVotes -->
+
+                        <!-- DownVotes -->
+                        <a id="DownVoteTutorial" class="btn btn-danger p-1 m-2">
+                            <i class="fa fa fa-thumbs-o-down"></i>
+                            <span id="TutorialDownVotesCount">{{ tutorial.down_votes_count }}</span>
+                        </a>
+                        <!-- End DownVotes -->
+
+                    </section>
+                    <!-- End Like and dislike -->
+
+
+
+                    <!-- Teacher details -->
+                    <section class="teacher-image mx-auto text-center h-auto">
+
+                        <!-- Teacher image -->
+                        <img src="{% static 'user/default_profile.png' %}" alt="{{ tutorial.author_full_name }}">
+                        <!-- End Teacher image -->
+
+                        <!-- Teacher name -->
+                        <a href="#">
+                            <h3>{{ tutorial.author.get_full_name }}</h3>
+                        </a>
+                        <!-- End Teacher name -->
+
+                    </section>
+                    <!-- End Teacher details -->
+
+
+
+                    <!-- Likes section -->
+                    <section class="w-20 text-center mt-3 mx-0">
+                        <!-- Likes -->
+                        <a id="LikeTutorial" class="btn {% if liked_by_current_user %}btn-danger{% else %}btn-outline-danger{% endif %} p-1 m-2">
+                            <i class="fa fa fa-heart"></i> 
+                            <span id="TutorialLikesCount">{{ tutorial.likes_count }}</span>
+                        </a>
+                        <!-- End Likes -->
+                    </section>
+                    <!-- End section -->
+
+                </section>
+                <!-- Tutorial heading -->
+
+
+
+                <!-- Tutorial content -->
+                <section class=" card-body card-rounded-content bg-white py-5 ">
+
+
+                    <!-- Tutorial image -->
+                    <section class="tutorial-image card-rounded-content overflow-hidden">
+                        {% if tutorial.image %}
+                            <img src="{{ tutorial.image.url }}" class="w-100" alt="تصویر">
+                        {% else %}
+                            <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر">
+                        {% endif %}
+                    </section>
+                    <!-- End Tutorial image -->
+
+
+
+                    <!-- Tutorial title -->
+                    <section class=" text-center mt-5">
+                        <h1>{{ tutorial.title }}</h1>
+                    </section>
+                    <!-- End Tutorial title -->
+                    <hr>
+
+                    <!-- Tutorial text -->
+                    <section>
+                        <section class="jumbotron">
+                            <h4>
+                                {{ tutorial.short_description }}
+                            </h4>
+                        </section>
+                        <p>
+                            {{ tutorial.body }}
+                        </p>
+                    </section>
+                    <!-- End Tutorial text -->
+
+
+                </section>
+                <!-- End Tutorial content -->
+
+
+
+
+            </section>
+            <!-- End Tutorial content -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!-- Recommended tutorials -->
+            <section class="card card-rounded mt-5">
+                <!-- Recommended tutorials heading -->
+                <section class="card-header card-rounded-header bg-lightblue text-center">
+                    <h3>آموزش های پیشنهادی</h3>
+                </section>
+                <!-- End Recommended tutorials heading -->
+
+
+                <!-- Recommended tutorials body -->
+                <section class="card-body card-rounded-content bg-white">
+
+
+
+
+                    <!-- Recommended tutorials carousel -->
+                    <section class="owl-carousel owl-theme ">
+                        
+                        
+                        {% for recommended_tutorial in recommended_tutorial %}
+                            
+                            <!-- Recommended tutorials carousel item -->
+                            <section>
+                                <section class="card card-rounded m-1">
+
+                                    <!-- Carousel image -->
+                                    <section class="card-header p-0">
+                                        {% if recommended_tutorial.image %}
+                                            <img src="{{ recommended_tutorial.image.url }}" class="w-100" alt="{{ recommended_tutorial.title }}">
+                                        {% else %}
+                                            <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر">
+                                        {% endif %}
+                                    </section>
+                                    <!-- End Carousel image -->
+
+
+                                    <!-- Carousel content -->
+                                    <section class="card-body p-2">
+
+                                        <!-- Carousel content header -->
+                                        <h5>
+                                            <a href="#">{{ recommended_tutorial.title }}</a>
+                                        </h5>
+                                        <!-- End Carousel content title -->
+
+
+                                        <!-- Carousel content description -->
+                                        <p class="text-muted mb-0">
+                                            {{ recommended_tutorial.short_description }}
+                                        </p>
+                                        <!-- End Carousel content description -->
+
+                                    </section>
+                                    <!-- End Carousel content -->
+
+                                </section>
+                            </section>
+                            <!-- End Recommended tutorials carousel item -->
+
+                        {% empty %}
+                            <p class="text-center">هیچ پیشنهادی یافت نشد</p>
+                        {% endfor %}
+
+
+
+                    </section>
+                    <!-- End Recommended tutorials carousel -->
+
+
+                </section>
+                <!-- End Recommended tutorials body -->
+
+            </section>
+            <!-- End Recommended tutorials -->
+
+
+
+
+
+
+
+
+
+
+            <!-- Comments -->
+            <section class="card card-rounded mt-5 text-center">
+
+                <!-- Heading -->
+                <section class="card-header card-rounded-header bg-lightblue">
+                    <h3>نظرات کاربران</h3>
+                </section>
+                <!-- End Heading -->
+
+
+
+                <!-- Comments body -->
+                <section class="card-body card-rounded-content bg-white text-left px-1 px-sm-2 px-md-3">
+
+
+                        {% for comment in tutorial.comments.confirmed_comments %}
+                            <!-- Single comment -->
+                            <section class="row m-1 m-sm-3">
+
+                                <!-- Single comment user details -->
+                                <section class="col-lg-2 col-3 text-center px-0">
+                                    <section class="w-100">
+                                        <!-- User image -->
+                                        <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'user/default_profile.png' %}{% endif %}" alt="{{ comment.user.get_full_name }}" class="w-100">
+                                        <!-- End User image -->
+
+                                        <!-- User name -->
+                                        <h5>
+                                            <a href="#">
+                                                {{ comment.user.get_full_name }}
+                                            </a>
+                                        </h5>
+                                        <!-- End User name -->
+                                    </section>
+                                </section>
+                                <!-- End Single comment user details -->
+
+
+                                <!-- Single comment title,vote and comment body -->
+                                <section class="col-lg-10 col-9">
+                                    <section class="card">
+                                        <section class="card-body">
+
+
+                                            <!-- Single comment title and vote -->
+                                            <section>
+
+
+
+                                                <!-- Single comment vote -->
+                                                <section class="d-flex justify-content-around pb-3">
+                                                    <!-- UpVote -->
+                                                    <a id="comment-upvote-btn-{{ comment.pk }}" class="btn btn-sm btn-success" onclick="UpVoteTutorialComment({{ comment.pk }})">
+                                                        <i class="fa fa-thumbs-o-up"></i>
+                                                        <span id="TutorialCommentUpVotesCount-{{ comment.pk }}">{{ comment.up_votes_count }}</span>
+                                                    </a>
+                                                    <!-- End UpVote -->
+
+                                                    <!-- DownVote -->
+                                                    <a id="comment-downvote-btn-{{ comment.pk }}" class="btn btn-sm btn-danger" onclick="DownVoteTutorialComment({{ comment.pk }})">
+                                                        <i class="fa fa-thumbs-o-down"></i>
+                                                        <span id="TutorialCommentDownVotesCount-{{ comment.pk }}">{{ comment.down_votes_count }}</span>
+                                                    </a>
+                                                    <!-- End DownVote -->
+
+                                                    <!-- Like -->
+                                                    <a id="comment-like-btn-{{ comment.pk }}" class="btn btn-sm btn-outline-danger" onclick="LikeTutorialComment({{ comment.pk }})">
+                                                        <i class="fa fa-heart"></i>
+                                                        <span id="TutorialCommentLikesCount-{{ comment.pk }}">{{ comment.likes_count }}</span>
+                                                    </a>
+                                                    <!-- End Like -->
+
+                                                    {% if comment.allow_reply %}
+                                                        <!-- Reply button -->
+                                                        <a class="btn btn-sm btn-outline-info" onclick="ReplyTo({{ comment.pk }},"{{ comment.title }}")">
+                                                            <i class="fa fa-reply"></i> پاسخ
+                                                        </a>
+                                                        <!-- End Reply button -->
+                                                    {% endif %}
+                                                </section>
+                                                <!-- End Single comment vote -->
+
+
+
+                                                <!-- Single comment title -->
+                                                <section>
+                                                    <h5>{{ comment.title }}</h5>
+                                                </section>
+                                                <!-- End Single comment title -->
+
+
+
+                                                <section class="clearfix"></section>
+                                            </section>
+                                            <!-- End Single comment title and vote -->
+
+
+                                            <!-- Comment text -->
+                                            <section class="mt-3">
+                                                <p>
+                                                    {{ comment.body }}
+                                                </p>
+                                            </section>
+                                            <!-- End Comment text -->
+
+                                        </section>
+                                    </section>
+
+
+
+
+
+
+                                </section>
+                                <!-- End Single comment title,vote and comment body -->
+
+
+                                            
+                                {% comment %}
+                                    <!-- Single replied comment -->
+                                    <section class="row my-2">
+
+                                        <!-- Single comment user details -->
+                                        <section class="col-lg-2 col-3 text-center px-0">
+                                            <section class="w-100">
+                                                <!-- User image -->
+                                                <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'user/default_profile.png' %}{% endif %}" alt="{{ comment.user.get_full_name }}" alt="{{ comment.user.get_full_name }}" class="w-100">
+                                                <!-- End User image -->
+
+                                                <!-- User name -->
+                                                <h5>
+                                                    <a href="#">
+                                                        {{ comment.user.get_full_name }}
+                                                    </a>
+                                                </h5>
+                                                <!-- End User name -->
+                                            </section>
+                                        </section>
+                                        <!-- End Single comment user details -->
+
+
+                                        <!-- Single comment title,vote and comment body -->
+                                        <section class="col-lg-10 col-9">
+                                            <section class="card">
+                                                <section class="card-body">
+
+
+                                                    <!-- Single comment title and vote -->
+                                                    <section>
+
+
+
+                                                        <!-- Single comment vote -->
+                                                        <section class="d-flex justify-content-around pb-3">
+                                                            <!-- UpVote -->
+                                                            <a id="comment-upvote-btn-{{ comment.pk }}" class="btn btn-sm btn-success" onclick="UpVoteTutorialComment({{ comment.pk }})">
+                                                                <i class="fa fa-thumbs-o-up"></i>
+                                                                <span id="TutorialCommentUpVotesCount-{{ comment.pk }}">{{ comment.up_votes_count }}</span>
+                                                            </a>
+                                                            <!-- End UpVote -->
+
+                                                            <!-- DownVote -->
+                                                            <a id="comment-downvote-btn-{{ comment.pk }}" class="btn btn-sm btn-danger" onclick="DownVoteTutorialComment({{ comment.pk }})">
+                                                                <i class="fa fa-thumbs-o-down"></i>
+                                                                <span id="TutorialCommentDownVotesCount-{{ comment.pk }}">{{ comment.down_votes_count }}</span>
+                                                            </a>
+                                                            <!-- End DownVote -->
+
+                                                            <!-- Like -->
+                                                            <a id="comment-like-btn-{{ comment.pk }}" class="btn btn-sm btn-outline-danger" onclick="LikeTutorialComment({{ comment.pk }})">
+                                                                <i class="fa fa-heart"></i>
+                                                                <span id="TutorialCommentLikesCount-{{ comment.pk }}">{{ comment.likes_count }}</span>
+                                                            </a>
+                                                            <!-- End Like -->
+
+                                                            {% if comment.allow_reply %}
+                                                                <!-- Reply button -->
+                                                                <a class="btn btn-sm btn-outline-info" onclick="ReplyTo({{ comment.pk }},"{{ comment.title }}")">
+                                                                    <i class="fa fa-reply"></i> پاسخ
+                                                                </a>
+                                                                <!-- End Reply button -->
+                                                            {% endif %}
+                                                        </section>
+                                                        <!-- End Single comment vote -->
+
+
+
+                                                        <!-- Single comment title -->
+                                                        <section>
+                                                            <h5>{{ comment.title }}</h5>
+                                                        </section>
+                                                        <!-- End Single comment title -->
+
+
+
+                                                        <section class="clearfix"></section>
+                                                    </section>
+                                                    <!-- End Single comment title and vote -->
+
+
+                                                    <!-- Comment text -->
+                                                    <section class="mt-3">
+                                                        <p>
+                                                            {{ comment.body }}
+                                                        </p>
+                                                    </section>
+                                                    <!-- End Comment text -->
+
+                                                </section>
+                                            </section>
+
+
+
+                                        </section>
+                                        <!-- End Single comment title,vote and comment body -->
+
+
+                                    </section>
+                                    <!-- End Single replied comment -->
+                                {% endcomment %}
+                                                
+
+                            </section>
+                            <!-- End Single comment -->
+                        {% empty %}
+                            <p class="text-center">هیچ نظری تاکنون درج نشده</p>
+                        {% endfor %}
+
+
+
+                </section>
+                <!-- End Comments body -->
+
+            </section>
+            <!-- End Comments -->
+
+
+
+
+
+
+
+
+            <!-- Submit comment -->
+            <section class="card card-rounded mt-5 text-center">
+
+                <!-- Submit comment heading -->
+                <section class="card-header card-rounded-header bg-lightblue">
+                    <h3>ثبت نظر</h3>
+                </section>
+                <!-- End Submit comment heading -->
+
+
+                <!-- Submit comment body -->
+                <section class="card-body card-rounded-content bg-white text-left">
+                    
+                    {% if user.is_authenticated %}
+                            <form id="TutorialSubmitCommentForm" method="post" action="#">
+
+
+                                <input type="hidden" id="TutorialId" name="TutorialId" value="{{ tutorial.pk }}">
+                                <input type="hidden" id="Comment_Reply_To" name="Comment_Reply_To">
+
+
+                                <section class="form-group">
+
+                                    <!--Reply alert-->
+                                    <section id="ReplyTo-Alert" class="alert alert-success collapse">
+                                        <span>در حال پاسخ به نظر 
+                                            "<span id="ReplyTo-Alert-CommentTitle"></span>"
+                                        </span>
+                                        <section class="close" id="Close-ReplyTo-Alert">&times;</section>
+                                    </section>
+                                    <!--End Reply alert-->
+
+
+                                    <section class="row">
+
+                                        <!-- Submit comment Email Title,Allow replies,Notify replies -->
+                                        <section class="col-md-5">
+
+                                            <!-- Submit comment Title -->
+                                            <label for="CommentTitle">عنوان نظر :</label>
+                                            <input type="text" id="CommentTitle" name="CommentTitle"
+                                                class="form-control" placeholder="عنوان"
+                                                oninvalid="this.setCustomValidity('عنوان نظر را وارد کنید')"
+                                                onkeydown="this.setCustomValidity('')" required>
+                                            <!-- End Submit comment Title -->
+
+
+                                            <!-- Submit comment Allow replies -->
+                                            <label for="AllowReplies" class="mt-3 form-check">
+                                                <input type="checkbox" name="AllowReplies" id="AllowReplies" checked>
+                                                امکان پاسخ
+                                            </label>
+                                            <!-- End Submit comment Allow replies -->
+
+
+                                            <!-- Submit comment Notify replies -->
+                                            <label for="NotifyReplies" class="mt-3 form-check">
+                                                <input type="checkbox" name="NotifyReplies"
+                                                    id="NotifyReplies" checked> اطلاع پاسخ ها با ایمیل
+                                            </label>
+                                            <!-- End Submit comment Notify replies -->
+
+
+                                        </section>
+                                        <!-- End Submit comment Email Title,Allow replies,Notify replies -->
+
+
+
+
+                                        <!-- Submit comment Text -->
+                                        <section class="col-md-7">
+                                            <label for="CommentText">متن نظر :</label>
+                                            <textarea name="CommentText" id="CommentText" class="form-control tinymce"
+                                                placeholder="متن نظر" cols="30" rows="5" maxlength="300"
+                                                oninvalid="this.setCustomValidity('متن نظر را وارد کنید')"
+                                                onkeydown="this.setCustomValidity('')" required></textarea>
+                                        </section>
+                                        <!-- End Submit comment Text -->
+
+
+                                        <!-- Submit comment submit button -->
+                                        <button type="submit" class="btn btn-success col-11 mt-3 mx-auto">ثبت</button>
+                                        <!-- End Submit comment submit button -->
+
+
+                                    </section>
+                                </section>
+                            </form>
+                        
+
+                    {% else %}
+                        <p class="text-center">لطفا برای ثبت نظر ابتدا <a href="#">وارد</a> شوید</p>
+                    {% endif %}
+
+
+                </section>
+                <!-- End Submit comment body -->
+
+
+            </section>
+            <!-- End Submit comment -->
+
+
+
+
+
+
+
+
+
+        </section>
+        <!-- End Right side (Tutorial content,comments and ...) -->
+
+
+
+
+
+
+
+
+
+
+
+        <!-- Left side ( Latest tutorial,Most popular tutorials,Keywords) -->
+        <section class="col-lg-4 col-12 my-6">
+
+
+
+
+
+
+
+
+
+
+
+            <section class="card card-rounded mt-4">
+                <section class="card-header card-rounded-header bg-lightblue text-center">
+                    <h4>کلمات کلیدی</h4>
+                </section>
+
+                <section class="card-body card-rounded-content bg-white ح-0">
+                    {% for tag in tutorial.tags.all %}
+                        
+                        <a href="#" class="rounded bg-light px-2 pt-1 m-1 d-inline-block">{{ tag.title }}</a>
+
+                    {% empty %}
+                        <p>هیچ کلمه کلیدی یافت نشد</p>
+                    {% endfor %}
+
+                </section>
+            </section>
+
+
+
+
+
+
+
+
+        </section>
+        <!-- End Left side ( Latest tutorial,Most popular tutorials,Keywords) -->
+
+
+
+    </section>
+
+</section>
+
+{% endblock content %}
+
+
+
+{% block extra_scripts %}
+    
+    <script src="{% static 'js/sweetalert2.js' %}"></script>
+
+    {% if user.is_authenticated %}
+        {% include 'learning/shared/tutorial_scripts.html' %}
+        {% include 'shared/tinymce_partial.html' %}
+    {% else %}
+        <script>
+            document.getElementById('UpVoteTutorial').addEventListener('click',() =>AccessDenied());
+            document.getElementById('DownVoteTutorial').addEventListener('click',() => AccessDenied());
+            document.getElementById('LikeTutorial').addEventListener('click',() => AccessDenied());
+
+            function AccessDenied()
+            {
+                Swal.fire({
+                    title:'لطفا برای انجام این عملیات ابتدا وارد شوید',
+                    icon : 'error',
+                    confirmButtonText: 'تایید',
+                    timer:3000
+                });
+            }
+        </script>
+    {% endif %}
+{% endblock extra_scripts %}

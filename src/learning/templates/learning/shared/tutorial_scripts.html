@@ -1,0 +1,332 @@
+<script>
+
+    let AllowReplies=document.getElementById("AllowReplies");
+    let NotifyReplies=document.getElementById("NotifyReplies");
+
+
+    AllowReplies.addEventListener('click',() => NotifyReplies.disabled = !(NotifyReplies.checked = AllowReplies.checked));
+
+
+
+    function ReplyTo(commentId,commentTitle)
+    {
+        document.getElementById('Comment_Reply_To').value = commentId;
+        document.getElementById('ReplyTo-Alert-CommentTitle').innerHTML = commentTitle;
+        $("#ReplyTo-Alert").show();
+        $("#CommentTitle").focus();
+    }
+
+
+    document.getElementById('Close-ReplyTo-Alert').addEventListener('click',()=>{
+        let commentReplyTo = document.getElementById('Comment_Reply_To');
+        commentReplyTo.value="";
+        $("#ReplyTo-Alert").hide();
+    });
+
+
+
+    document.getElementById('TutorialSubmitCommentForm').addEventListener('submit',function(e){
+
+            e.preventDefault();
+
+            let replyTo=parseInt(document.getElementById('Comment_Reply_To').value);
+
+            let data={
+                    "TutorialId" : parseInt(document.getElementById('TutorialId').value),
+                    "CommentTitle" : document.getElementById('CommentTitle').value,
+                    "CommentText" : document.getElementById('CommentText').value,
+                    "AllowReplies" : document.getElementById('AllowReplies').checked,
+                    "NotifyReplies" : document.getElementById('NotifyReplies').checked,
+                    "Comment_Reply_To" : replyTo != 0 ? replyTo : null
+            }
+            fetch('/API/TutorialComment/InsertTutorialComment', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(response=>response.json())
+            .then(content=>{
+                if(content["status"])
+                    Swal.fire({
+                        title:'نظر شما با موفقیت ثبت شد',
+                        text: 'نظر شما پس از تایید قابل مشاهده خواهد بود',
+                        icon : 'success',
+                        confirmButtonText: 'تایید',
+                        timer:5000
+                    });
+                else
+                    Swal.fire({
+                        title:'خطا',
+                        text: content["error"],
+                        icon : 'error',
+                        confirmButtonText: 'تایید'
+                    });
+            }).catch(()=>{
+                Swal.fire({
+                    title:'خطا',
+                    text: 'ارتباط با سرور برقرار نشد',
+                    icon : 'error',
+                    confirmButtonText: 'تایید'
+                });
+            });
+        }
+    );
+
+
+
+
+    let upVoteTutorialBTN = document.getElementById('UpVoteTutorial');
+    upVoteTutorialBTN.addEventListener('click',() => {
+        
+        upVoteTutorialBTN.classList.add("disabled");
+
+        fetch('/API/Tutorial/InsertOrRemoveTutorialUpVote', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({{ tutorial.pk }})
+            }).then(response=>response.json())
+            .then(content=>{
+                if(content["status"] == 0)
+                    Swal.fire({
+                        title:'خطا',
+                        text: 'خطایی سمت سرور اتفاق افتاد',
+                        icon : 'error',
+                        confirmButtonText: 'تایید'
+                    });
+                else
+                {
+                    let upvotes = document.getElementById("TutorialUpVotesCount");
+                    let nextUpvoteCount = parseInt(upvotes.innerHTML) + parseInt(content["status"]);
+                    upvotes.innerHTML = nextUpvoteCount;
+
+                    upVoteTutorialBTN.classList.remove("disabled");
+                }
+            }).catch(()=>{
+                Swal.fire({
+                    title:'خطا',
+                    text: 'ارتباط با سرور برقرار نشد',
+                    icon : 'error',
+                    confirmButtonText: 'تایید'
+                });
+            });
+    });
+
+    let downVoteTutorial = document.getElementById('DownVoteTutorial')
+    downVoteTutorial.addEventListener('click',() => {
+
+        downVoteTutorial.classList.add("disabled");
+
+        fetch('/API/Tutorial/InsertOrRemoveTutorialDownVote', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(@(Model.TutorialVM.Id))
+            }).then(response=>response.json())
+            .then(content=>{
+                if(content["status"] == 0)
+                    Swal.fire({
+                        title:'خطا',
+                        text: 'خطایی سمت سرور اتفاق افتاد',
+                        icon : 'error',
+                        confirmButtonText: 'تایید'
+                    });
+                else
+                {
+                    let downvotes = document.getElementById("TutorialDownVotesCount");
+                    let nextDownvoteCount = parseInt(downvotes.innerHTML) + parseInt(content["status"]);
+                    downvotes.innerHTML = nextDownvoteCount;
+
+                    downVoteTutorial.classList.remove("disabled");
+                }
+            }).catch(()=>{
+                Swal.fire({
+                    title:'خطا',
+                    text: 'ارتباط با سرور برقرار نشد',
+                    icon : 'error',
+                    confirmButtonText: 'تایید'
+                });
+            });
+    });
+
+
+
+    let LikeBTN=document.getElementById('LikeTutorial');
+    LikeBTN.addEventListener('click',() => {
+        LikeBTN.classList.add("disabled");
+
+        fetch('/API/Tutorial/InsertOrRemoveTutorialLike', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(@(Model.TutorialVM.Id))
+            }).then(response=>response.json())
+            .then(content=>{
+                if(content["status"] == 0)
+                    Swal.fire({
+                        title:'خطا',
+                        text: 'خطایی سمت سرور اتفاق افتاد',
+                        icon : 'error',
+                        confirmButtonText: 'تایید'
+                    });
+                else
+                {
+                    switch(content["status"])
+                    {
+                        case(1):
+                            LikeBTN.classList.remove("btn-outline-danger");
+                            LikeBTN.classList.add("btn-danger");
+                            break;
+                        case(-1):
+                            LikeBTN.classList.remove("btn-danger");
+                            LikeBTN.classList.add("btn-outline-danger");
+                            break;
+                    }
+                    let likes = document.getElementById("TutorialLikesCount");
+                    let nextLikesCount = parseInt(likes.innerHTML) + parseInt(content["status"]);
+                    likes.innerHTML = nextLikesCount;
+
+                    LikeBTN.classList.remove("disabled");
+                }
+            }).catch(()=>{
+                Swal.fire({
+                    title:'خطا',
+                    text: 'ارتباط با سرور برقرار نشد',
+                    icon : 'error',
+                    confirmButtonText: 'تایید'
+                });
+            });
+    });
+
+
+
+
+
+
+    function UpVoteTutorialComment(tutorialCommentId){
+        let commentUpVoteBTN = document.getElementById("comment-upvote-btn-"+tutorialCommentId);
+        commentUpVoteBTN.classList.add("disabled");
+
+        fetch('/API/TutorialComment/InsertOrRemoveTutorialCommentUpVote', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tutorialCommentId)
+            }).then(response=>response.json())
+            .then(content=>{
+                if(content["status"] == 0)
+                    Swal.fire({
+                        title:'خطا',
+                        text: 'خطایی سمت سرور اتفاق افتاد',
+                        icon : 'error',
+                        confirmButtonText: 'تایید'
+                    });
+                else
+                {
+                    let upvotes = document.getElementById("TutorialCommentUpVotesCount-" + tutorialCommentId);
+                    let nextUpvoteCount = parseInt(upvotes.innerHTML) + parseInt(content["status"]);
+                    upvotes.innerHTML = nextUpvoteCount;
+
+                    commentUpVoteBTN.classList.remove("disabled");
+                }
+            }).catch(()=>{
+                Swal.fire({
+                    title:'خطا',
+                    text: 'ارتباط با سرور برقرار نشد',
+                    icon : 'error',
+                    confirmButtonText: 'تایید'
+                });
+            });
+    }
+    
+
+
+    function DownVoteTutorialComment(tutorialCommentId){
+        let commentDownVoteBTN = document.getElementById("comment-downvote-btn-"+tutorialCommentId);
+        commentDownVoteBTN.classList.add("disabled");
+
+        fetch('/API/TutorialComment/InsertOrRemoveTutorialCommentDownVote', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tutorialCommentId)
+            }).then(response=>response.json())
+            .then(content=>{
+                if(content["status"] == 0)
+                    Swal.fire({
+                        title:'خطا',
+                        text: 'خطایی سمت سرور اتفاق افتاد',
+                        icon : 'error',
+                        confirmButtonText: 'تایید'
+                    });
+                else
+                {
+                    let downvotes = document.getElementById("TutorialCommentDownVotesCount-" + tutorialCommentId);
+                    let nextDownvoteCount = parseInt(downvotes.innerHTML) + parseInt(content["status"]);
+                    downvotes.innerHTML = nextDownvoteCount;
+
+                    commentDownVoteBTN.classList.remove("disabled");
+                }
+            }).catch(()=>{
+                Swal.fire({
+                    title:'خطا',
+                    text: 'ارتباط با سرور برقرار نشد',
+                    icon : 'error',
+                    confirmButtonText: 'تایید'
+                });
+            });
+    }
+
+
+    function LikeTutorialComment(tutorialCommentId){
+        let commentLikeBTN = document.getElementById("comment-like-btn-"+tutorialCommentId);
+        commentLikeBTN.classList.add("disabled");
+
+        fetch('/API/TutorialComment/InsertOrRemoveTutorialCommentLike', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tutorialCommentId)
+            }).then(response=>response.json())
+            .then(content=>{
+                if(content["status"] == 0)
+                    Swal.fire({
+                        title:'خطا',
+                        text: 'خطایی سمت سرور اتفاق افتاد',
+                        icon : 'error',
+                        confirmButtonText: 'تایید'
+                    });
+                else
+                {
+                    let likes = document.getElementById("TutorialCommentLikesCount-" + tutorialCommentId);
+                    let nextLikeCount = parseInt(likes.innerHTML) + parseInt(content["status"]);
+                    likes.innerHTML = nextLikeCount;
+
+                    commentLikeBTN.classList.remove("disabled");
+                }
+            }).catch(()=>{
+                Swal.fire({
+                    title:'خطا',
+                    text: 'ارتباط با سرور برقرار نشد',
+                    icon : 'error',
+                    confirmButtonText: 'تایید'
+                });
+            });
+    }
+    
+
+</script>
