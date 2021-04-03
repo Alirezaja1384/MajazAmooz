@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load authentication_filters %}
 
 {% block title %} {{ tutorial.title }} {% endblock title %}
 
@@ -53,7 +53,7 @@
 
                         <!-- Teacher name -->
                         <a href="#">
-                            <h3>{{ tutorial.author.get_full_name }}</h3>
+                            <h3>{{ tutorial.author|full_name }}</h3>
                         </a>
                         <!-- End Teacher name -->
 
@@ -246,13 +246,13 @@
                                 <section class="col-lg-2 col-3 text-center px-0">
                                     <section class="w-100">
                                         <!-- User image -->
-                                        <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'img/user/profile.png' %}{% endif %}" alt="{{ comment.user.get_full_name }}" class="w-100">
+                                        <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'img/user/profile.png' %}{% endif %}" alt="{{ comment.user|full_name }}" class="w-100">
                                         <!-- End User image -->
 
                                         <!-- User name -->
                                         <h5>
                                             <a href="#">
-                                                {{ comment.user.get_full_name }}
+                                                {{ comment.user|full_name }}
                                             </a>
                                         </h5>
                                         <!-- End User name -->
@@ -349,13 +349,13 @@
                                         <section class="col-lg-2 col-3 text-center px-0">
                                             <section class="w-100">
                                                 <!-- User image -->
-                                                <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'img/user/profile.png' %}{% endif %}" alt="{{ comment.user.get_full_name }}" alt="{{ comment.user.get_full_name }}" class="w-100">
+                                                <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'img/user/profile.png' %}{% endif %}" alt="{{ comment.user|full_name }}" alt="{{ comment.user|full_name }}" class="w-100">
                                                 <!-- End User image -->
 
                                                 <!-- User name -->
                                                 <h5>
                                                     <a href="#">
-                                                        {{ comment.user.get_full_name }}
+                                                        {{ comment.user|full_name }}
                                                     </a>
                                                 </h5>
                                                 <!-- End User name -->
