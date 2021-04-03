@@ -48,7 +48,7 @@
                     <section class="teacher-image mx-auto text-center h-auto">
 
                         <!-- Teacher image -->
-                        <img src="{% static 'user/default_profile.png' %}" alt="{{ tutorial.author_full_name }}">
+                        <img src="{% static 'img/user/profile.png' %}" alt="{{ tutorial.author_full_name }}">
                         <!-- End Teacher image -->
 
                         <!-- Teacher name -->
@@ -246,7 +246,7 @@
                                 <section class="col-lg-2 col-3 text-center px-0">
                                     <section class="w-100">
                                         <!-- User image -->
-                                        <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'user/default_profile.png' %}{% endif %}" alt="{{ comment.user.get_full_name }}" class="w-100">
+                                        <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'img/user/profile.png' %}{% endif %}" alt="{{ comment.user.get_full_name }}" class="w-100">
                                         <!-- End User image -->
 
                                         <!-- User name -->
@@ -349,7 +349,7 @@
                                         <section class="col-lg-2 col-3 text-center px-0">
                                             <section class="w-100">
                                                 <!-- User image -->
-                                                <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'user/default_profile.png' %}{% endif %}" alt="{{ comment.user.get_full_name }}" alt="{{ comment.user.get_full_name }}" class="w-100">
+                                                <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'img/user/profile.png' %}{% endif %}" alt="{{ comment.user.get_full_name }}" alt="{{ comment.user.get_full_name }}" class="w-100">
                                                 <!-- End User image -->
 
                                                 <!-- User name -->
