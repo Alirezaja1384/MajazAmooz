@@ -9,7 +9,7 @@ register = template.Library()
 
 
 @register.filter
-def url(image: ImageField) -> str:
+def image_url(image: ImageField) -> str:
     """
     Returns ImageField's url if exist
     else returns not-found image
