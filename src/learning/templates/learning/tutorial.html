@@ -49,7 +49,7 @@
                     <section class="teacher-image mx-auto text-center h-auto">
 
                         <!-- Teacher image -->
-                        <img src="{{ tutorial.author.avatar|image_url }}" alt="{{ tutorial.author|full_name }}">
+                        <img src="{{ tutorial.author.avatar|image_url }}" class="d-block" alt="{{ tutorial.author|full_name }}">
                         <!-- End Teacher image -->
 
                         <!-- Teacher name -->
@@ -628,32 +628,39 @@
 
 </section>
 
+
+
+<input type="hidden" id="TutorialId" value="{{ tutorial.pk }}">
+
+
+
 {% endblock content %}
 
 
 
 {% block extra_scripts %}
-    
-    <script src="{% static 'js/sweetalert2.js' %}"></script>
 
-    {% if user.is_authenticated %}
-        {% include 'learning/shared/tutorial_scripts.html' %}
-        {% include 'shared/tinymce_partial.html' %}
-    {% else %}
-        <script>
-            document.getElementById('UpVoteTutorial').addEventListener('click',() =>AccessDenied());
-            document.getElementById('DownVoteTutorial').addEventListener('click',() => AccessDenied());
-            document.getElementById('LikeTutorial').addEventListener('click',() => AccessDenied());
+<script src="{% static 'js/sweetalert2.js' %}"></script>
 
-            function AccessDenied()
-            {
-                Swal.fire({
-                    title:'لطفا برای انجام این عملیات ابتدا وارد شوید',
-                    icon : 'error',
-                    confirmButtonText: 'تایید',
-                    timer:3000
-                });
-            }
-        </script>
-    {% endif %}
+{% if user.is_authenticated %}
+    <script src="{% static 'learning/js/tutorial.js' %}"></script>
+    {% include 'shared/tinymce_partial.html' %}
+{% else %}
+    <script>
+        document.getElementById('UpVoteTutorial').addEventListener('click',() =>AccessDenied());
+        document.getElementById('DownVoteTutorial').addEventListener('click',() => AccessDenied());
+        document.getElementById('LikeTutorial').addEventListener('click',() => AccessDenied());
+
+        function AccessDenied()
+        {
+            Swal.fire({
+                title:'لطفا برای انجام این عملیات ابتدا وارد شوید',
+                icon : 'error',
+                confirmButtonText: 'تایید',
+                timer:3000
+            });
+        }
+    </script>
+{% endif %}
+
 {% endblock extra_scripts %}
