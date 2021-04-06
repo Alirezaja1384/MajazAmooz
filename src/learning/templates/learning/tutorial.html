@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load authentication_filters %}
+{% load imge_utils %}
 
 {% block title %} {{ tutorial.title }} {% endblock title %}
 
@@ -48,7 +49,7 @@
                     <section class="teacher-image mx-auto text-center h-auto">
 
                         <!-- Teacher image -->
-                        <img src="{% static 'img/user/profile.png' %}" alt="{{ tutorial.author_full_name }}">
+                        <img src="{{ tutorial.author.avatar|image_url }}" alt="{{ tutorial.author|full_name }}">
                         <!-- End Teacher image -->
 
                         <!-- Teacher name -->
@@ -84,11 +85,7 @@
 
                     <!-- Tutorial image -->
                     <section class="tutorial-image card-rounded-content overflow-hidden">
-                        {% if tutorial.image %}
-                            <img src="{{ tutorial.image.url }}" class="w-100" alt="تصویر">
-                        {% else %}
-                            <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر">
-                        {% endif %}
+                        <img src="{{ tutorial.image|image_url }}" class="w-100" alt="تصویر">
                     </section>
                     <!-- End Tutorial image -->
 
@@ -166,11 +163,7 @@
 
                                     <!-- Carousel image -->
                                     <section class="card-header p-0">
-                                        {% if recommended_tutorial.image %}
-                                            <img src="{{ recommended_tutorial.image.url }}" class="w-100" alt="{{ recommended_tutorial.title }}">
-                                        {% else %}
-                                            <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر">
-                                        {% endif %}
+                                        <img src="{{ recommended_tutorial.image|image_url }}" class="w-100" alt="{{ recommended_tutorial.title }}">
                                     </section>
                                     <!-- End Carousel image -->
 
@@ -246,7 +239,7 @@
                                 <section class="col-lg-2 col-3 text-center px-0">
                                     <section class="w-100">
                                         <!-- User image -->
-                                        <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'img/user/profile.png' %}{% endif %}" alt="{{ comment.user|full_name }}" class="w-100">
+                                        <img src="{{ comment.user.avatar|image_url }}" alt="{{ comment.user|full_name }}" class="w-100">
                                         <!-- End User image -->
 
                                         <!-- User name -->
@@ -349,7 +342,7 @@
                                         <section class="col-lg-2 col-3 text-center px-0">
                                             <section class="w-100">
                                                 <!-- User image -->
-                                                <img src="{% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'img/user/profile.png' %}{% endif %}" alt="{{ comment.user|full_name }}" alt="{{ comment.user|full_name }}" class="w-100">
+                                                <img src="{{ comment.user.avatar|image_url }}" alt="{{ comment.user|full_name }}" alt="{{ comment.user|full_name }}" class="w-100">
                                                 <!-- End User image -->
 
                                                 <!-- User name -->
