@@ -9,7 +9,8 @@ class User(AbstractUser):
     " Customized user model "
 
     avatar = models.ImageField(
-        "تصویر پروفایل", upload_to="images/avatars", blank=True)
+        "تصویر پروفایل", upload_to="images/avatars",
+        default="default/authentication/user-avatar.png")
 
     scores = models.PositiveIntegerField("امتیاز", default=0)
 

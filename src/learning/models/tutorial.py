@@ -40,7 +40,8 @@ class Tutorial(models.Model):
 
     image = models.ImageField(
         upload_to="images/tutorial_thumbnails",
-        blank=True, verbose_name='تصویر')
+        default='default/learning/tutorial-image.png',
+        verbose_name='تصویر')
 
     create_date = models.DateTimeField(
         auto_now_add=True, verbose_name='زمان انتشار')
