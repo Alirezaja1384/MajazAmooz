@@ -19,5 +19,5 @@ def image_url(image: ImageField) -> str:
     """
     try:
         return image.url
-    except ValueError:
+    except (ValueError, AttributeError):
         return static('img/not-found.png')
