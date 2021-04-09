@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load authentication_filters %}
-{% load imge_utils %}
+{% load image_utils %}
 
 {% block title %} {{ tutorial.title }} {% endblock title %}
 
@@ -85,7 +85,7 @@
 
                     <!-- Tutorial image -->
                     <section class="tutorial-image card-rounded-content overflow-hidden">
-                        <img src="{{ tutorial.image|image_url }}" class="w-100" alt="تصویر">
+                        <img src="{{ tutorial.image|image_url }}" class="w-100" alt="{{ tutorial.title }}">
                     </section>
                     <!-- End Tutorial image -->
 
