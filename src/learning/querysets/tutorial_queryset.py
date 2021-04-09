@@ -5,7 +5,7 @@ from django.db.models import QuerySet
 class TutorialQuerySet(QuerySet):
     """ Tutorial queryset """
 
-    def confirmed_tutorials(self):
+    def confirmed_tutorials(self) -> QuerySet:
         """
         Returns:
             [QuerySet]: Confirmed tutorials

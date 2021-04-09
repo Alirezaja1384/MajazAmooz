@@ -5,7 +5,7 @@ from django.db.models import QuerySet
 class TutorialCommentQueryset(QuerySet):
     """ TutorialComment queryset """
 
-    def confirmed_comments(self):
+    def confirmed_comments(self) -> QuerySet:
         """
         Returns:
             [QuerySet]: Confirmed tutorial comments
