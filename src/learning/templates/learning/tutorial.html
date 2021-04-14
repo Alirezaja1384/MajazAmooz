@@ -155,7 +155,7 @@
                     <section class="owl-carousel owl-theme ">
                         
                         
-                        {% for recommended_tutorial in recommended_tutorial %}
+                        {% for related_tutorial in related_tutorials %}
                             
                             <!-- Recommended tutorials carousel item -->
                             <section>
@@ -163,7 +163,7 @@
 
                                     <!-- Carousel image -->
                                     <section class="card-header p-0">
-                                        <img src="{{ recommended_tutorial.image|image_url }}" class="w-100" alt="{{ recommended_tutorial.title }}">
+                                        <img src="{{ related_tutorial.image|image_url }}" alt="{{ related_tutorial.title }}" class="mx-auto" style="max-height: 120px;max-width: 100%;width: auto">
                                     </section>
                                     <!-- End Carousel image -->
 
@@ -173,14 +173,14 @@
 
                                         <!-- Carousel content header -->
                                         <h5>
-                                            <a href="#">{{ recommended_tutorial.title }}</a>
+                                            <a href="{% url 'learning:tutorial' related_tutorial.slug %}">{{ related_tutorial.title }}</a>
                                         </h5>
                                         <!-- End Carousel content title -->
 
 
                                         <!-- Carousel content description -->
                                         <p class="text-muted mb-0">
-                                            {{ recommended_tutorial.short_description }}
+                                            {{ related_tutorial.short_description|truncatewords:5 }}
                                         </p>
                                         <!-- End Carousel content description -->
 
@@ -231,7 +231,7 @@
                 <section class="card-body card-rounded-content bg-white text-left px-1 px-sm-2 px-md-3">
 
 
-                        {% for comment in tutorial.comments.confirmed_comments %}
+                        {% for comment in comments %}
                             <!-- Single comment -->
                             <section class="row m-1 m-sm-3">
 

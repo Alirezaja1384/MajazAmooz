@@ -6,6 +6,7 @@ from authentication.models import User
 from . import Tutorial
 from ..querysets import TutorialCommentQueryset
 
+
 class TutorialComment(models.Model):
     """ TutorialComment model """
     CONFIRM_STATUS_CHOICES = [
@@ -72,6 +73,7 @@ class TutorialComment(models.Model):
     class Meta:
         verbose_name = 'دیدگاه آموزش'
         verbose_name_plural = 'دیدگاه آموزش ها'
+        ordering = ('-create_date', )
 
     def __str__(self):
         return self.title

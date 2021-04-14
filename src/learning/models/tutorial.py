@@ -82,6 +82,7 @@ class Tutorial(models.Model):
     class Meta:
         verbose_name = 'آموزش'
         verbose_name_plural = 'آموزش ها'
+        ordering = ('-create_date', )
 
     def __str__(self):
         return self.title
