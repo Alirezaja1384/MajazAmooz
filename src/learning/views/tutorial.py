@@ -3,7 +3,6 @@ from django.http import HttpRequest
 from django.shortcuts import (
     render, get_object_or_404
 )
-from django.views.decorators.cache import cache_page
 
 from ..models import Tutorial, Category
 
@@ -65,7 +64,6 @@ def get_related_tutorials(tutorial: Tutorial, fields: tuple, tutorial_count: int
     return related_tutorials
 
 
-@cache_page(timeout=60 * 5)
 def tutorial_details_view(request: HttpRequest, slug: str):
     """ Tutorial details view """
     tutorial = get_object_or_404(Tutorial.objects.filter(
