@@ -65,7 +65,7 @@ def get_related_tutorials(tutorial: Tutorial, fields: tuple, tutorial_count: int
     return related_tutorials
 
 
-@cache_page(timeout=60 * 15)
+@cache_page(timeout=60 * 5)
 def tutorial_details_view(request: HttpRequest, slug: str):
     """ Tutorial details view """
     tutorial = get_object_or_404(Tutorial.objects.filter(
@@ -75,8 +75,12 @@ def tutorial_details_view(request: HttpRequest, slug: str):
 
     related_tutorials = get_related_tutorials(tutorial, ('id', 'title', 'short_description', 'image'), 5)
 
+    # if user logged in and liked this tutorial
+    liked_by_current_user = request.user.is_authenticated and tutorial.likes.filter(pk=request.user.id).exists()
+
     context = {
         "tutorial": tutorial,
+        "liked_by_current_user": liked_by_current_user,
         "comments": comments,
         "related_tutorials": related_tutorials
     }
