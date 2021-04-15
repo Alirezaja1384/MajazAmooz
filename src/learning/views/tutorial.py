@@ -17,7 +17,7 @@ def get_tutorial_by_categories(categories: list[Category], fields: tuple,
     @return: list of tutor tutorials
     """
     return Tutorial.objects.filter(is_active=True, confirm_status=1, categories__in=categories
-                                   ).only(*fields).exclude(id=tutorial_id)[:tutorial_count]
+                                   ).only(*fields).exclude(id=tutorial_id).order_by('-create_date')[:tutorial_count]
 
 
 def get_related_tutorials(tutorial: Tutorial, fields: tuple, tutorial_count: int = 5) -> list[Tutorial]:
@@ -76,11 +76,18 @@ def tutorial_details_view(request: HttpRequest, slug: str):
     # if user logged in and liked this tutorial
     liked_by_current_user = request.user.is_authenticated and tutorial.likes.filter(pk=request.user.id).exists()
 
+    all_tutorials = Tutorial.objects.filter(is_active=True, confirm_status=1)
+
+    latest_tutorials = all_tutorials.order_by('-create_date')[:4]
+    most_popular_tutorials = all_tutorials.order_by('-likes_count')[:4]
+
     context = {
         "tutorial": tutorial,
         "liked_by_current_user": liked_by_current_user,
         "comments": comments,
-        "related_tutorials": related_tutorials
+        "related_tutorials": related_tutorials,
+        'latest_tutorials': latest_tutorials,
+        'most_popular_tutorials': most_popular_tutorials
     }
 
     return render(request, 'learning/tutorial.html', context)

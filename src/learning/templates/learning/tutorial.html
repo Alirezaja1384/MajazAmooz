@@ -591,6 +591,76 @@
 
 
 
+            <section class="card card-rounded">
+                <section class="card-header card-rounded-header bg-lightblue text-center">
+                    <h4>جدید ترین آموزش ها</h4>
+                </section>
+
+                <section class="card-body card-rounded-content bg-white p-0">
+
+
+                    {% for tutorial_item in latest_tutorials %}
+
+                        <section class="row mx-0 my-2">
+
+                            <section
+                                class="col-4 p-0 px-1 border-right border-left-0  d-flex flex-column justify-content-center">
+                                <img src="{{ tutorial_item.image|image_url }}" alt="{{ tutorial_item.title }}" style="max-width: 100%;max-height: 100%;width: 100%;height: auto;">
+                            </section>
+    
+                            <section class="col-8 my-2">
+                                <h5>
+                                    <a href="{% url 'learning:tutorial' tutorial_item.slug %}">{{ tutorial_item.title }}</a>
+                                </h5>
+                                <p class="mb-1">
+                                    {{ tutorial_item.short_description|truncatewords:5 }}
+                                </p>
+                            </section>
+                        </section>
+
+                    {% endfor %}
+                    
+
+
+                </section>
+            </section>
+
+
+
+
+
+
+            <section class="card card-rounded mt-4">
+                <section class="card-header card-rounded-header bg-lightblue text-center">
+                    <h4>محبوب ترین آموزش ها</h4>
+                </section>
+
+                <section class="card-body card-rounded-content bg-white p-0">
+
+                    {% for tutorial_item in most_popular_tutorials %}
+
+                        <section class="row mx-0 my-2">
+
+                            <section
+                                class="col-4 p-0 px-1 border-right border-left-0  d-flex flex-column justify-content-center">
+                                <img src="{{ tutorial_item.image|image_url }}" alt="{{ tutorial_item.title }}" style="max-width: 100%;max-height: 100%;width: 100%;height: auto;">
+                            </section>
+    
+                            <section class="col-8 my-2">
+                                <h5>
+                                    <a href="{% url 'learning:tutorial' tutorial_item.slug %}">{{ tutorial_item.title }}</a>
+                                </h5>
+                                <p class="mb-1">
+                                    {{ tutorial_item.short_description|truncatewords:5 }}
+                                </p>
+                            </section>
+                        </section>
+
+                    {% endfor %}
+                    
+
+                </section>
+            </section>
 
 
 
@@ -612,10 +682,6 @@
 
                 </section>
             </section>
-
-
-
-
 
 
 
