@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_bleach',
     'authentication.apps.AuthenticationConfig',
     'learning.apps.LearningConfig',
     'utilities'
@@ -127,7 +128,33 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+# Media files
 MEDIA_ROOT = BASE_DIR / 'media/'
 MEDIA_URL = '/media/'
 
+# Custom uSer model
 AUTH_USER_MODEL = 'authentication.User'
+
+# django-bleach settings
+# https://django-bleach.readthedocs.io/en/latest/settings.html
+
+BLEACH_ALLOWED_TAGS = [
+    'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'img',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span',
+    'sup', 'sub', 'code'
+]
+
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src']
+
+BLEACH_ALLOWED_STYLES = [
+    'font-family', 'font-weight', 'text-decoration', 'font-variant',
+    'color', 'background-color', 'direction', 'text-align'
+]
+
+BLEACH_ALLOWED_PROTOCOLS = ['http', 'https']
+
+# Strip unknown tags if True, replace with HTML escaped characters if False
+BLEACH_STRIP_TAGS = True
+
+# Strip HTML comments, or leave them in.
+BLEACH_STRIP_COMMENTS = False
