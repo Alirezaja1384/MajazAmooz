@@ -1,5 +1,7 @@
 """ TutorialComment model """
 from django.db import models
+from django.utils import timezone
+from django_lifecycle import hook, BEFORE_UPDATE, LifecycleModel
 
 from authentication.models import User
 
@@ -7,7 +9,7 @@ from . import Tutorial
 from ..querysets import TutorialCommentQueryset
 
 
-class TutorialComment(models.Model):
+class TutorialComment(LifecycleModel):
     """ TutorialComment model """
     CONFIRM_STATUS_CHOICES = [
         (0, 'در انتظار تایید'),
@@ -30,8 +32,8 @@ class TutorialComment(models.Model):
     create_date = models.DateTimeField(
         auto_now_add=True, verbose_name='زمان انتشار')
 
-    last_edit_date = models.DateField(
-        auto_now=True, verbose_name='زمان آخرین ویرایش')
+    last_edit_date = models.DateField(blank=True, null=True,
+                                      verbose_name='زمان آخرین ویرایش')
 
     confirm_status = models.IntegerField(
         choices=CONFIRM_STATUS_CHOICES, null=False, blank=False, default=0,
@@ -77,6 +79,11 @@ class TutorialComment(models.Model):
 
     def __str__(self):
         return self.title
+
+    @hook(BEFORE_UPDATE, when_any=['title', 'body'], has_changed=True)
+    def on_edit(self):
+        self.is_edited = True
+        self.last_edit_date = timezone.now()
 
     # Custom manager
     objects = TutorialCommentQueryset.as_manager()

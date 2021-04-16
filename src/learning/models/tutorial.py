@@ -1,13 +1,17 @@
 """ Tutorial model """
 from django.db import models
+from django.utils import timezone
+from django.utils.text import slugify
 
 from authentication.models import User
+
+from django_lifecycle import LifecycleModel, hook, BEFORE_UPDATE, BEFORE_SAVE
 
 from . import Category
 from ..querysets import TutorialQuerySet
 
 
-class Tutorial(models.Model):
+class Tutorial(LifecycleModel):
     """ Tutorial model """
     CONFIRM_STATUS_CHOICES = [
         (0, 'در انتظار تایید'),
@@ -15,10 +19,10 @@ class Tutorial(models.Model):
         (1, 'تایید شده'),
     ]
 
-    title = models.CharField(max_length=30, verbose_name='عنوان')
+    title = models.CharField(max_length=30, unique=True, verbose_name='عنوان')
 
-    slug = models.SlugField(
-        max_length=50, allow_unicode=True, verbose_name='اسلاگ')
+    slug = models.SlugField(max_length=50, allow_unicode=True,
+                            unique=True, blank=True, verbose_name='اسلاگ')
 
     short_description = models.TextField(
         max_length=250, verbose_name='توضیح کوتاه')
@@ -47,13 +51,13 @@ class Tutorial(models.Model):
         auto_now_add=True, verbose_name='زمان انتشار')
 
     last_edit_date = models.DateField(
-        auto_now=True, verbose_name='زمان آخرین ویرایش')
+        blank=True, null=True, verbose_name='زمان آخرین ویرایش')
 
     confirm_status = models.IntegerField(
         choices=CONFIRM_STATUS_CHOICES, default=0,
         null=False, blank=False, verbose_name='وضعیت تایید')
 
-    is_edited = models.BooleanField(default=True, verbose_name='ویرایش شده')
+    is_edited = models.BooleanField(default=False, verbose_name='ویرایش شده')
 
     is_active = models.BooleanField(default=True, verbose_name='فعال')
 
@@ -86,6 +90,15 @@ class Tutorial(models.Model):
 
     def __str__(self):
         return self.title
+
+    @hook(BEFORE_UPDATE, when_any=['title', 'slug', 'short_description', 'body', 'image'], has_changed=True)
+    def on_edit(self):
+        self.is_edited = True
+        self.last_edit_date = timezone.now()
+
+    @hook(BEFORE_SAVE)
+    def on_save(self):
+        self.slug = slugify(self.title, allow_unicode=True)
 
     # Custom manager
     objects = TutorialQuerySet.as_manager()
