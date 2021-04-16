@@ -5,9 +5,9 @@ from django.db.models import QuerySet
 class TutorialQuerySet(QuerySet):
     """ Tutorial queryset """
 
-    def confirmed_tutorials(self) -> QuerySet:
+    def active_and_confirmed_tutorials(self) -> QuerySet:
         """
         Returns:
             [QuerySet]: Confirmed tutorials
         """
-        return self.filter(confirm_status=1)
+        return self.filter(is_active=True, confirm_status=1)

@@ -30,17 +30,17 @@ def get_related_tutorials(tutorial: Tutorial, fields: tuple, tutorial_count: int
 
     # if tutorial doesn't have any active category return latest tutorials
     if not tutorial.categories.filter(is_active=True).count():
-        return Tutorial.objects.filter(is_active=True, confirm_status=1)[tutorial_count]
+        return Tutorial.objects.active_and_confirmed_tutorials().order_by('-create_date')[:tutorial_count]
 
     categories = []
     related_tutorials = []
 
     # while tutorials count are not enough and
     # there isn't any category in list
-    # or all of categories are not None
+    # or there is at least a not None category
     # (when all categories are none search will end)
-    while len(related_tutorials) < tutorial_count and (not categories or
-                                                       all(map(lambda cat: cat is not None, categories))):
+    while len(related_tutorials) < tutorial_count and (len(categories) == 0 or
+                                                       any(map(lambda cat: cat is not None, categories))):
         # when categories has at least one item
         if len(categories) > 0:
             # replace categories by their parent categories
@@ -69,14 +69,14 @@ def tutorial_details_view(request: HttpRequest, slug: str):
     tutorial = get_object_or_404(Tutorial.objects.filter(
         is_active=True, confirm_status=1).select_related('author'), slug=slug)
 
-    comments = tutorial.comments.filter(is_active=True, confirm_status=1)
+    comments = tutorial.comments.active_and_confirmed_comments()
 
     related_tutorials = get_related_tutorials(tutorial, ('id', 'title', 'short_description', 'image'), 5)
 
     # if user logged in and liked this tutorial
     liked_by_current_user = request.user.is_authenticated and tutorial.likes.filter(pk=request.user.id).exists()
 
-    all_tutorials = Tutorial.objects.filter(is_active=True, confirm_status=1)
+    all_tutorials = Tutorial.objects.active_and_confirmed_tutorials()
 
     latest_tutorials = all_tutorials.order_by('-create_date')[:4]
     most_popular_tutorials = all_tutorials.order_by('-likes_count')[:4]

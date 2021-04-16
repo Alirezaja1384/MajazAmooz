@@ -5,9 +5,9 @@ from django.db.models import QuerySet
 class TutorialCommentQueryset(QuerySet):
     """ TutorialComment queryset """
 
-    def confirmed_comments(self) -> QuerySet:
+    def active_and_confirmed_comments(self) -> QuerySet:
         """
         Returns:
-            [QuerySet]: Confirmed tutorial comments
+            [QuerySet]: Confirmed tutorials comments
         """
-        return self.filter(confirm_status=1)
+        return self.filter(is_active=True, confirm_status=1)
