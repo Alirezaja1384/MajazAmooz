@@ -1,6 +1,7 @@
 """ Home page template tag """
 from django import template
 from django.db.models import Count, Q
+
 from learning.models import Tutorial
 
 register = template.Library()
@@ -16,8 +17,7 @@ def get_tutorials(ordering: tuple, count: int):
         [TutorialQuerySet]: tutorials ordered by given ordering and
         sliced by given count
     """
-    tutorials = Tutorial.objects.confirmed_tutorials().filter(
-        is_active=True).order_by(*ordering).only(
+    tutorials = Tutorial.objects.active_and_confirmed_tutorials().order_by(*ordering).only(
         'title', 'slug', 'short_description', 'likes_count', 'image')[:count].annotate(
         comments_count=Count('comments', filter=Q(comments__confirm_status=1)))
 
