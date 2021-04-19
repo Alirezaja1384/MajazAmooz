@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load home_page_templatetags %}
-
+{% load image_utils %}
 
 {% block title %}صفحه اصلی{% endblock title %}
 
@@ -21,10 +20,10 @@
                 <!-- End Landing title -->
 
 
-                <!-- Landing feautures -->
+                <!-- Landing features -->
                 <section class="row mt-5">
 
-                    <!-- Landing feautures item  -->
+                    <!-- Landing features item  -->
                     <section class="col-md-4 col-sm-6 mx-sm-auto mt-4 mt-md-0 d-flex flex-column">
                         <section class="card px-0 landing-feature flex-sm-grow-1">
                             <section class="card-body">
@@ -40,11 +39,11 @@
                             </section>
                         </section>
                     </section>
-                    <!-- End Landing feautures item -->
+                    <!-- End Landing features item -->
 
 
 
-                    <!-- Landing feautures item  -->
+                    <!-- Landing features item  -->
                     <section class="col-md-4 col-sm-6 mx-sm-auto mt-4 mt-md-0 d-flex flex-column">
                         <section class="card px-0 landing-feature flex-sm-grow-1">
                             <section class="card-body">
@@ -61,11 +60,11 @@
                             </section>
                         </section>
                     </section>
-                    <!-- End Landing feautures item -->
+                    <!-- End Landing features item -->
 
 
 
-                    <!-- Landing feautures item  -->
+                    <!-- Landing features item  -->
                     <section class="col-md-4 col-sm-6 mx-sm-auto mt-4 mt-md-0 d-flex flex-column">
                         <section class="card px-0 landing-feature flex-md-grow-1">
                             <section class="card-body">
@@ -81,13 +80,13 @@
                             </section>
                         </section>
                     </section>
-                    <!-- End Landing feautures item -->
+                    <!-- End Landing features item -->
 
 
 
 
                 </section>
-                <!-- End Landing feautures -->
+                <!-- End Landing features -->
 
             </section>
 
@@ -97,10 +96,124 @@
     <!-- End Landing -->
 
 
-    {% latest_tutorials %}
+
+    
+    <!-- Tutorials -->
+        <section class="container py-5">
+            <!-- Header -->
+            <section class="text-center">
+                <h2 class="heading">آخرین آموزش ها</h2>
+                <section class="underline"></section>
+            </section>
+            <!-- End Header -->
+
+            <!-- Tutorials carousel -->
+            <section class="owl-carousel owl-theme">
+
+                {% for tutorial_item in latest_published_tutorials %}
+                    <!-- Carousel item -->
+                    <section>
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{{ tutorial_item.image|image_url }}" alt="{{ tutorial_item.title }}" class="mx-auto" style="max-height: 150px;max-width: 100%;width: auto">
+                            </section>
+
+                            <section class="card-body px-3 pb-3">
+                                <h5>
+                                    <a href="{% url 'learning:tutorial' tutorial_item.slug %}">
+                                        {{ tutorial_item.title }}
+                                    </a>
+                                </h5>
+                                <p class="text-muted"> {{ tutorial_item.short_description|truncatewords:5 }} </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i> {{ tutorial_item.comments_count }}
+                                </section>
+                                <section class="float-right">
+                                    {{ tutorial_item.likes_count }} <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Carousel item -->
+                {% endfor %}
+
+            </section>
+            <!-- End tutorials carousel -->
 
 
-    {% most_liked_tutorials %}
+            <!-- Show more tutorials button -->
+            <section class="text-center mt-4">
+                <a href="#" class="btn btn-success rounded-0 px-4 pt-2">نمایش همه آموزش ها</a>
+            </section>
+            <!-- End Show more tutorials button -->
+
+        </section>
+        <!-- End tutorials -->
+    
+    
+
+
+
+        <section class="jumbotron rounded-0 mb-0 py-0 px-0">
+            <!-- Tutorials -->
+            <section class="container py-5">
+                <!-- Header -->
+                <section class="text-center">
+                    <h2 class="heading">محبوب ترین آموزش ها</h2>
+                    <section class="underline"></section>
+                </section>
+                <!-- End Header -->
+
+                <!-- Tutorials carousel -->
+                <section class="owl-carousel owl-theme">
+
+                    {% for tutorial_item in most_liked_tutorials %}
+                        <!-- Carousel item -->
+                        <section>
+                            <section class="card bg-whiteblue">
+                                <section class="card-header">
+                                    <img src="{{ tutorial_item.image|image_url }}" alt="{{ tutorial_item.title }}" class="mx-auto" style="max-height: 150px;max-width: 100%;width: auto">
+                                </section>
+
+                                <section class="card-body px-3 pb-3">
+                                    <h5>
+                                        <a href="{% url 'learning:tutorial' tutorial_item.slug %}">
+                                            {{ tutorial_item.title }}
+                                        </a>
+                                    </h5>
+                                    <p class="text-muted"> {{ tutorial_item.short_description|truncatewords:5 }} </p>
+                                </section>
+
+                                <section class="card-footer bg-whiteblue text-left">
+                                    <section class="float-left">
+                                        <i class="fa fa-comments-o"></i> {{ tutorial_item.comments_count }}
+                                    </section>
+                                    <section class="float-right">
+                                        {{ tutorial_item.likes_count }} <i class="fa fa-heart-o"></i>
+                                    </section>
+                                </section>
+                            </section>
+                        </section>
+                        <!-- End Carousel item -->
+                    {% endfor %}
+
+                </section>
+                <!-- End tutorials carousel -->
+
+
+                <!-- Show more tutorials button -->
+                <section class="text-center mt-4">
+                    <a href="#" class="btn btn-success rounded-0 px-4 pt-2">نمایش همه آموزش ها</a>
+                </section>
+                <!-- End Show more tutorials button -->
+
+            </section>
+            <!-- End tutorials -->
+        </section>
+
 
 
 
