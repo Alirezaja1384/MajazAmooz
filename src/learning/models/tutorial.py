@@ -3,9 +3,10 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 
-from authentication.models import User
-
 from django_lifecycle import LifecycleModel, hook, BEFORE_UPDATE, BEFORE_SAVE
+
+from authentication.models import User
+from utilities.model_utils import ConfirmStatusChoices
 
 from . import Category
 from ..querysets import TutorialQuerySet
@@ -13,11 +14,6 @@ from ..querysets import TutorialQuerySet
 
 class Tutorial(LifecycleModel):
     """ Tutorial model """
-    CONFIRM_STATUS_CHOICES = [
-        (0, 'در انتظار تایید'),
-        (-1, 'عدم تایید'),
-        (1, 'تایید شده'),
-    ]
 
     title = models.CharField(max_length=30, unique=True, verbose_name='عنوان')
 
@@ -54,8 +50,8 @@ class Tutorial(LifecycleModel):
         blank=True, null=True, verbose_name='زمان آخرین ویرایش')
 
     confirm_status = models.IntegerField(
-        choices=CONFIRM_STATUS_CHOICES, default=0,
-        null=False, blank=False, verbose_name='وضعیت تایید')
+        choices=ConfirmStatusChoices.choices, null=False, blank=False,
+        default=ConfirmStatusChoices.WAITING_FOR_CONFIRM, verbose_name='وضعیت تایید')
 
     is_edited = models.BooleanField(default=False, verbose_name='ویرایش شده')
 
@@ -91,10 +87,12 @@ class Tutorial(LifecycleModel):
     def __str__(self):
         return self.title
 
-    @hook(BEFORE_UPDATE, when_any=['title', 'slug', 'short_description', 'body', 'image'], has_changed=True)
+    @hook(BEFORE_UPDATE, when_any=['title', 'slug', 'short_description', 'body', 'image'],
+          has_changed=True)
     def on_edit(self):
         self.is_edited = True
         self.last_edit_date = timezone.now()
+        self.confirm_status = ConfirmStatusChoices.WAITING_FOR_CONFIRM
 
     @hook(BEFORE_SAVE)
     def on_save(self):
