@@ -1,6 +1,8 @@
 """ QuerySet for tutorial model """
 from django.db.models import QuerySet
 
+from utilities.model_utils import ConfirmStatusChoices
+
 
 class TutorialQuerySet(QuerySet):
     """ Tutorial queryset """
@@ -10,4 +12,4 @@ class TutorialQuerySet(QuerySet):
         Returns:
             [QuerySet]: Confirmed tutorials
         """
-        return self.filter(is_active=True, confirm_status=1)
+        return self.filter(is_active=True, confirm_status=ConfirmStatusChoices.CONFIRMED)
