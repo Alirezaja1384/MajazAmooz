@@ -59,7 +59,7 @@ class Tutorial(LifecycleModel):
 
     # Relations
     author = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True,
+        User, on_delete=models.CASCADE, null=True, blank=False,
         related_name='tutorials', verbose_name='نویسنده')
 
     categories = models.ManyToManyField(
