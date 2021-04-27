@@ -45,11 +45,11 @@ class TutorialComment(LifecycleModel):
 
     # Relations
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True,
+        User, on_delete=models.CASCADE, null=True, blank=False,
         related_name='tutorial_comments', verbose_name='کاربر')
 
     tutorial = models.ForeignKey(
-        Tutorial, on_delete=models.SET_NULL, null=True,
+        Tutorial, on_delete=models.CASCADE, null=True, blank=False,
         related_name='comments', verbose_name='آموزش')
 
     parent_comment = models.ForeignKey(
