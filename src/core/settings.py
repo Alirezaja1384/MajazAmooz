@@ -80,8 +80,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': config('DEFAULT_DATABASE_ENGINE',
+                         default='django.db.backends.postgresql_psycopg2'),
+
+        'NAME': config('DEFAULT_DATABASE_NAME', default='MajazAmooz'),
+        'USER': config('DEFAULT_DATABASE_USER', default='postgres'),
+        'PASSWORD': config('DEFAULT_DATABASE_PASSWORD', default='postgres'),
+        'HOST': config('DEFAULT_DATABASE_HOST', default='127.0.0.1'),
+        'PORT': config('DEFAULT_DATABASE_PORT', default=5432),
     }
 }
 
