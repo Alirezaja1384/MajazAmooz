@@ -91,3 +91,6 @@ db.sqlite3-journal
 
 
 # End of https://www.toptal.com/developers/gitignore/api/python,django,vscode,pycharm
+
+# Env files
+*/.env
