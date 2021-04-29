@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_bleach',
     'authentication.apps.AuthenticationConfig',
     'learning.apps.LearningConfig',
+    'ajax.apps.AjaxConfig',
     'utilities'
 ]
 
