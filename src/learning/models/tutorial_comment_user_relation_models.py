@@ -42,6 +42,6 @@ class TutorialCommentDownVote(models.Model):
     TutorialComment = models.ForeignKey(
         TutorialComment, on_delete=models.CASCADE, verbose_name='نظر آموزش')
 
-    score = models.PositiveIntegerField(verbose_name='امتیاز')
+    score = models.IntegerField(verbose_name='امتیاز')
 
-    coin = models.PositiveIntegerField(verbose_name='سکه')
+    coin = models.IntegerField(verbose_name='سکه')

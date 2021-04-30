@@ -55,6 +55,6 @@ class TutorialDownVote(models.Model):
     tutorial = models.ForeignKey(
         Tutorial, on_delete=models.CASCADE, verbose_name='آموزش')
 
-    score = models.PositiveIntegerField(verbose_name='امتیاز')
+    score = models.IntegerField(verbose_name='امتیاز')
 
-    coin = models.PositiveIntegerField(verbose_name='سکه')
+    coin = models.IntegerField(verbose_name='سکه')
