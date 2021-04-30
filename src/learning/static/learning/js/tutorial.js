@@ -40,7 +40,7 @@ document.getElementById('TutorialSubmitCommentForm').addEventListener('submit',f
         "notify_replies": document.getElementById('NotifyReplies').checked,
         "reply_to": replyTo !== 0 ? replyTo : null
     }
-    fetch('/ajax/insert_tutorial_comment', {
+    fetch('/ajax/create_tutorial_comment', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -84,7 +84,7 @@ UpVoteTutorialBTN.addEventListener('click', () => {
 
     UpVoteTutorialBTN.classList.add("disabled");
 
-    fetch('/ajax/insert_or_remove_tutorial_upvote', {
+    fetch('/ajax/tutorial_upvote', {
         method: 'POST',
         mode: 'same-origin',
         headers: {
@@ -125,7 +125,7 @@ downVoteTutorial.addEventListener('click', () => {
 
     downVoteTutorial.classList.add("disabled");
 
-    fetch('/ajax/insert_or_remove_tutorial_downvote', {
+    fetch('/ajax/tutorial_downvote', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -133,7 +133,7 @@ downVoteTutorial.addEventListener('click', () => {
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRFToken': csrftoken
         },
-        body: JSON.stringify(TutorialId)
+        body: JSON.stringify({"tutorial_id": TutorialId})
     }).then(response => response.json())
         .then(content => {
             if (parseInt(content["status"]) === 0)
@@ -166,7 +166,7 @@ LikeBTN.addEventListener('click', () => {
     
     LikeBTN.classList.add("disabled");
 
-    fetch('/ajax/insert_or_remove_tutorial_like', {
+    fetch('/ajax/tutorial_like', {
         method: 'POST',
         mode: 'same-origin',
         headers: {
@@ -175,7 +175,7 @@ LikeBTN.addEventListener('click', () => {
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRFToken': csrftoken
         },
-        body: JSON.stringify({'tutorial': TutorialId})
+        body: JSON.stringify({'tutorial_id': TutorialId})
     }).then(response => response.json())
         .then(content => {
             if (parseInt(content["status"]) === 0)
@@ -217,7 +217,7 @@ function UpVoteTutorialComment(tutorialCommentId) {
     let commentUpVoteBTN = document.getElementById("comment-upvote-btn-" + tutorialCommentId);
     commentUpVoteBTN.classList.add("disabled");
 
-    fetch('/ajax/insert_or_remove_tutorial_comment_upvote', {
+    fetch('/ajax/tutorial_comment_upvote', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -257,7 +257,7 @@ function DownVoteTutorialComment(tutorialCommentId) {
     let commentDownVoteBTN = document.getElementById("comment-downvote-btn-" + tutorialCommentId);
     commentDownVoteBTN.classList.add("disabled");
 
-    fetch('/ajax/insert_or_remove_tutorial_comment_downvote', {
+    fetch('/ajax/tutorial_comment_downvote', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -297,7 +297,7 @@ function LikeTutorialComment(tutorialCommentId) {
     let commentLikeBTN = document.getElementById("comment-like-btn-" + tutorialCommentId);
     commentLikeBTN.classList.add("disabled");
 
-    fetch('/ajax/insert_or_remove_tutorial_comment_like', {
+    fetch('/ajax/tutorial_comment_like', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',

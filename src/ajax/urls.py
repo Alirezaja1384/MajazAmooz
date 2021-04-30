@@ -5,5 +5,7 @@ from . import views
 app_name = 'ajax'
 
 urlpatterns = [
-    path('insert_or_remove_tutorial_like', views.insert_or_delete_tutorial_like)
+    path('tutorial_like', views.tutorial_like_view),
+    path('tutorial_upvote', views.tutorial_upvote_view),
+    path('tutorial_downvote', views.tutorial_downvote_view),
 ]
