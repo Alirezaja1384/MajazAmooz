@@ -12,8 +12,8 @@ class User(AbstractUser):
         "تصویر پروفایل", upload_to="images/avatars",
         default="default/authentication/user-avatar.png")
 
-    scores = models.PositiveIntegerField("امتیاز", default=0)
+    scores = models.IntegerField("امتیاز", default=0)
 
-    coins = models.PositiveIntegerField("سکه ها", default=0)
+    coins = models.IntegerField("سکه ها", default=0)
 
     diamonds = models.PositiveIntegerField("الماس ها", default=0)

@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', include('learning.urls')),
     path('admin/', admin.site.urls),
-    path('', include('learning.urls'))
+    path('ajax/', include('ajax.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

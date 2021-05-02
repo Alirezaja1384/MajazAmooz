@@ -13,7 +13,7 @@ class TutorialCommentLike(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name='کاربر')
 
-    TutorialComment = models.ForeignKey(
+    comment = models.ForeignKey(
         TutorialComment, on_delete=models.CASCADE, verbose_name='نظر آموزش')
 
     score = models.PositiveIntegerField(verbose_name='امتیاز')
@@ -26,7 +26,7 @@ class TutorialCommentUpVote(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name='کاربر')
 
-    TutorialComment = models.ForeignKey(
+    comment = models.ForeignKey(
         TutorialComment, on_delete=models.CASCADE, verbose_name='نظر آموزش')
 
     score = models.PositiveIntegerField(verbose_name='امتیاز')
@@ -39,9 +39,9 @@ class TutorialCommentDownVote(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name='کاربر')
 
-    TutorialComment = models.ForeignKey(
+    comment = models.ForeignKey(
         TutorialComment, on_delete=models.CASCADE, verbose_name='نظر آموزش')
 
-    score = models.PositiveIntegerField(verbose_name='امتیاز')
+    score = models.IntegerField(verbose_name='امتیاز')
 
-    coin = models.PositiveIntegerField(verbose_name='سکه')
+    coin = models.IntegerField(verbose_name='سکه')
