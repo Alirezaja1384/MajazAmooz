@@ -33,14 +33,14 @@ def tutorial_comment_create(request: HttpRequest):
                 return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                      'error': form.errors})
 
-
             return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
 
         except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'خطایی در ثبت اطلاعات رخ داد'})
-        except:
-            return JsonResponse({'status': InsertOrDeleteStatus.ERROR})
+
+        except Exception as ex:
+            return JsonResponse({'status': InsertOrDeleteStatus.ERROR, 'error': ex.args})
 
     return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                          'error': 'درخواست تنها از طریق POST و به صورت Ajax قابل قبول است'})
