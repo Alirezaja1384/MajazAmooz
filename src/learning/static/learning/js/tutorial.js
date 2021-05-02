@@ -12,7 +12,7 @@ AllowReplies.addEventListener('click',() => NotifyReplies.disabled = !(NotifyRep
 function ReplyTo(commentId,comment_title)
 {
     document.getElementById('Comment_Reply_To').value = commentId;
-    document.getElementById('ReplyTo-Alert-comment_title').innerHTML = comment_title;
+    document.getElementById('ReplyTo-Alert-CommentTitle').innerHTML = 'در حال پاسخ به ' + comment_title;
     $("#ReplyTo-Alert").show();
     $("#comment_title").focus();
 }
@@ -35,12 +35,12 @@ document.getElementById('TutorialSubmitCommentForm').addEventListener('submit',f
     let data = {
         "tutorial": parseInt(document.getElementById('TutorialId').value),
         "title": document.getElementById('CommentTitle').value,
-        "text": document.getElementById('CommentText').value,
+        "body": document.getElementById('CommentText').value,
         "allow_reply": document.getElementById('AllowReplies').checked,
         "notify_replies": document.getElementById('NotifyReplies').checked,
-        "reply_to": replyTo !== 0 ? replyTo : null
+        "parent_comment": replyTo !== 0 ? replyTo : null
     }
-    fetch('/ajax/create_tutorial_comment', {
+    fetch('/ajax/tutorial_comment/create', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -62,21 +62,19 @@ document.getElementById('TutorialSubmitCommentForm').addEventListener('submit',f
                 else
                     Swal.fire({
                         title: 'خطا',
-                        text: content["error"],
+                        text: content["error"] ? content["error"] : 'خطایی سمت سرور اتفاق افتاد',
                         icon: 'error',
                         confirmButtonText: 'تایید'
                     });
-                Swal.fire({
-                    title: 'خطا',
-                }).catch(() => {
-                    Swal.fire({
-                        text: 'ارتباط با سرور برقرار نشد',
-                        icon: 'error',
-                        confirmButtonText: 'تایید'
-                    });
-                });
+                
             }
-        );
+        ).catch(() => {
+            Swal.fire({
+                text: 'ارتباط با سرور برقرار نشد',
+                icon: 'error',
+                confirmButtonText: 'تایید'
+            });
+        });
 })
 
 let UpVoteTutorialBTN = document.getElementById('UpVoteTutorial');
@@ -84,7 +82,7 @@ UpVoteTutorialBTN.addEventListener('click', () => {
 
     UpVoteTutorialBTN.classList.add("disabled");
 
-    fetch('/ajax/tutorial_upvote', {
+    fetch('/ajax/tutorial/upvote', {
         method: 'POST',
         mode: 'same-origin',
         headers: {
@@ -125,7 +123,7 @@ downVoteTutorial.addEventListener('click', () => {
 
     downVoteTutorial.classList.add("disabled");
 
-    fetch('/ajax/tutorial_downvote', {
+    fetch('/ajax/tutorial/downvote', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -166,7 +164,7 @@ LikeBTN.addEventListener('click', () => {
     
     LikeBTN.classList.add("disabled");
 
-    fetch('/ajax/tutorial_like', {
+    fetch('/ajax/tutorial/like', {
         method: 'POST',
         mode: 'same-origin',
         headers: {
@@ -217,7 +215,7 @@ function UpVoteTutorialComment(tutorialCommentId) {
     let commentUpVoteBTN = document.getElementById("comment-upvote-btn-" + tutorialCommentId);
     commentUpVoteBTN.classList.add("disabled");
 
-    fetch('/ajax/tutorial_comment_upvote', {
+    fetch('/ajax/tutorial_comment/upvote', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -257,7 +255,7 @@ function DownVoteTutorialComment(tutorialCommentId) {
     let commentDownVoteBTN = document.getElementById("comment-downvote-btn-" + tutorialCommentId);
     commentDownVoteBTN.classList.add("disabled");
 
-    fetch('/ajax/tutorial_comment_downvote', {
+    fetch('/ajax/tutorial_comment/downvote', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -297,7 +295,7 @@ function LikeTutorialComment(tutorialCommentId) {
     let commentLikeBTN = document.getElementById("comment-like-btn-" + tutorialCommentId);
     commentLikeBTN.classList.add("disabled");
 
-    fetch('/ajax/tutorial_comment_like', {
+    fetch('/ajax/tutorial_comment/like', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
