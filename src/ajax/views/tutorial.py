@@ -27,16 +27,17 @@ def tutorial_like_view(request: HttpRequest):
     tutorial_like_coin = 5
 
     # If request is ajax and tutorial_id sent by client
-    if request.method=='POST' and request.is_ajax():
+    if request.method == 'POST' and request.is_ajax():
         try:
 
             tutorial_id = int(json.loads(request.body).get('tutorial_id'))
             tutorial = Tutorial.objects.active_and_confirmed_tutorials(
-                                        ).prefetch_related('author').get(id=tutorial_id)
+            ).prefetch_related('author').get(id=tutorial_id)
 
             tutorial_author = tutorial.author
 
-            tutorial_likes = TutorialLike.objects.filter(user=request.user, tutorial=tutorial)
+            tutorial_likes = TutorialLike.objects.filter(
+                user=request.user, tutorial=tutorial)
 
             # If tutorial upvote already exist delete it,
             # decrease tutorial upvote and
@@ -54,7 +55,7 @@ def tutorial_like_view(request: HttpRequest):
                 tutorial_author.coins -= tutorial_like.coin
                 tutorial_author.save()
 
-                #delete tutorial upvote
+                # delete tutorial upvote
                 tutorial_like.delete()
 
                 return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
@@ -81,32 +82,36 @@ def tutorial_like_view(request: HttpRequest):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'اطلاعات ارسالی صحیح نمی باشد'})
 
-        except (DatabaseError ,IntegrityError, DataError, ObjectDoesNotExist):
+        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'خطایی در ثبت اطلاعات رخ داد'})
 
-    return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
-                         'error': 'درخواست تنها از طریق POST و به صورت Ajax قابل قبول است'})
+        except Exception as ex:
+            return JsonResponse({'status': InsertOrDeleteStatus.ERROR, 'error': ex.args})
 
+    else:
+        return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
+                             'error': 'درخواست تنها از طریق POST و به صورت Ajax قابل قبول است'})
 
 
 @login_required
 def tutorial_upvote_view(request: HttpRequest):
 
-    tutorial_upvote_score = 2
-    tutorial_upvote_coin = 2
+    tutorial_upvote_score = 0
+    tutorial_upvote_coin = 0
 
     # If request is ajax and tutorial_id sent by client
-    if request.method=='POST' and request.is_ajax():
+    if request.method == 'POST' and request.is_ajax():
         try:
 
             tutorial_id = int(json.loads(request.body).get('tutorial_id'))
             tutorial = Tutorial.objects.active_and_confirmed_tutorials(
-                                        ).prefetch_related('author').get(id=tutorial_id)
+            ).prefetch_related('author').get(id=tutorial_id)
 
             tutorial_author = tutorial.author
 
-            tutorial_upvotes = TutorialUpVote.objects.filter(user=request.user, tutorial=tutorial)
+            tutorial_upvotes = TutorialUpVote.objects.filter(
+                user=request.user, tutorial=tutorial)
 
             # If tutorial upvote already exist delete it,
             # decrease tutorial upvote and
@@ -124,7 +129,7 @@ def tutorial_upvote_view(request: HttpRequest):
                 tutorial_author.coins -= tutorial_upvote.coin
                 tutorial_author.save()
 
-                #delete tutorial upvote
+                # delete tutorial upvote
                 tutorial_upvote.delete()
 
                 return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
@@ -135,7 +140,8 @@ def tutorial_upvote_view(request: HttpRequest):
             else:
 
                 TutorialUpVote.objects.create(user=request.user, tutorial=tutorial,
-                                            score=tutorial_upvote_score, coin=tutorial_upvote_coin)
+                                              score=tutorial_upvote_score,
+                                              coin=tutorial_upvote_coin)
                 # increase tutorial upvote
                 tutorial.up_votes_count += 1
                 tutorial.save()
@@ -147,30 +153,35 @@ def tutorial_upvote_view(request: HttpRequest):
 
                 return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
 
+        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
+            return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
+                                 'error': 'خطایی در ثبت اطلاعات رخ داد'})
+
         except TypeError:
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'اطلاعات ارسالی صحیح نمی باشد'})
 
-        except (DatabaseError ,IntegrityError, DataError, ObjectDoesNotExist):
-            return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
-                                 'error': 'خطایی در ثبت اطلاعات رخ داد'})
+        except Exception as ex:
+            return JsonResponse({'status': InsertOrDeleteStatus.ERROR, 'error': ex.args})
 
-    return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
-                         'error': 'درخواست تنها از طریق POST و به صورت Ajax قابل قبول است'})
+    else:
+        return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
+                             'error': 'درخواست تنها از طریق POST و به صورت Ajax قابل قبول است'})
+
 
 @login_required
 def tutorial_downvote_view(request: HttpRequest):
 
-    tutorial_downvote_score = -2
-    tutorial_downvote_coin = -2
+    tutorial_downvote_score = 0
+    tutorial_downvote_coin = 0
 
     # If request is ajax and tutorial_id sent by client
-    if request.method=='POST' and request.is_ajax():
+    if request.method == 'POST' and request.is_ajax():
         try:
 
             tutorial_id = int(json.loads(request.body).get('tutorial_id'))
             tutorial = Tutorial.objects.active_and_confirmed_tutorials(
-                                        ).prefetch_related('author').get(id=tutorial_id)
+            ).prefetch_related('author').get(id=tutorial_id)
 
             tutorial_author = tutorial.author
 
@@ -193,7 +204,7 @@ def tutorial_downvote_view(request: HttpRequest):
                 tutorial_author.coins -= tutorial_downvote.coin
                 tutorial_author.save()
 
-                #delete tutorial downvote
+                # delete tutorial downvote
                 tutorial_downvote.delete()
 
                 return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
@@ -221,10 +232,13 @@ def tutorial_downvote_view(request: HttpRequest):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'اطلاعات ارسالی صحیح نمی باشد'})
 
-        except (DatabaseError ,IntegrityError, DataError, ObjectDoesNotExist):
+        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'خطایی در ثبت اطلاعات رخ داد'})
 
+        except Exception as ex:
+            return JsonResponse({'status': InsertOrDeleteStatus.ERROR, 'error': ex.args})
 
-    return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
-                         'error': 'درخواست تنها از طریق POST و به صورت Ajax قابل قبول است'})
+    else:
+        return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
+                             'error': 'درخواست تنها از طریق POST و به صورت Ajax قابل قبول است'})
