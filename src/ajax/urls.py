@@ -8,5 +8,7 @@ urlpatterns = [
     path('tutorial/like', views.tutorial_like_view),
     path('tutorial/upvote', views.tutorial_upvote_view),
     path('tutorial/downvote', views.tutorial_downvote_view),
-    path('tutorial_comment/create', views.tutorial_comment_create)
+
+    path('tutorial_comment/create', views.tutorial_comment_create_view),
+    path('tutorial_comment/upvote', views.tutorial_comment_upvote_view),
 ]
