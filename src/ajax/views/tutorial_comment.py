@@ -11,7 +11,7 @@ from django.db import (
 from ajax.forms import TutorialCommentForm
 from learning.models import (
     TutorialComment, TutorialCommentUpVote,
-    TutorialCommentDownVote
+    TutorialCommentDownVote, TutorialCommentLike
 )
 
 
@@ -48,6 +48,84 @@ def tutorial_comment_create_view(request: HttpRequest):
 
     return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                          'error': 'درخواست تنها از طریق POST و به صورت Ajax قابل قبول است'})
+
+
+@login_required
+def tutorial_comment_like_view(request: HttpRequest):
+
+    tutorial_comment_like_score = 3
+    tutorial_comment_like_coin = 3
+
+    # If request is ajax and tutorial_comment_id sent by client
+    if request.method == 'POST' and request.is_ajax():
+        try:
+
+            tutorial_comment_id = int(json.loads(request.body).get('comment_id'))
+            tutorial_comment = TutorialComment.objects.active_and_confirmed_comments(
+                                                       ).prefetch_related('user'
+                                                       ).get(id=tutorial_comment_id)
+
+            tutorial_comment_user = tutorial_comment.user
+
+            tutorial_comment_likes = TutorialCommentLike.objects.filter(
+                user=request.user, comment=tutorial_comment)
+
+            # If tutorial_comment like already exist delete it,
+            # decrease tutorial_comment like and
+            # decrease user's coins and score
+            if tutorial_comment_likes.exists():
+
+                tutorial_comment_like = tutorial_comment_likes.first()
+
+                # decrease tutorial_comment like
+                tutorial_comment.likes_count -= 1
+                tutorial_comment.save()
+
+                # decrease user's scores and coins
+                tutorial_comment_user.scores -= tutorial_comment_like.score
+                tutorial_comment_user.coins -= tutorial_comment_like.coin
+                tutorial_comment_user.save()
+
+                # delete tutorial_comment like
+                tutorial_comment_like.delete()
+
+                return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
+
+            # Else insert tutorial_comment like,
+            # increase tutorial_comment like and
+            # increase user's coins and score
+            else:
+
+                TutorialCommentLike.objects.create(user=request.user,
+                                                       comment=tutorial_comment,
+                                                       score=tutorial_comment_like_score,
+                                                       coin=tutorial_comment_like_coin)
+
+                # increase tutorial_comment like
+                tutorial_comment.likes_count += 1
+                tutorial_comment.save()
+
+                # increase user's scores and coins
+                tutorial_comment_user.scores += tutorial_comment_like_score
+                tutorial_comment_user.coins += tutorial_comment_like_coin
+                tutorial_comment_user.save()
+
+                return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
+
+        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
+            return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
+                                 'error': 'خطایی در ثبت اطلاعات رخ داد'})
+
+        except TypeError:
+            return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
+                                 'error': 'اطلاعات ارسالی صحیح نمی باشد'})
+
+        except Exception as ex:
+            return JsonResponse({'status': InsertOrDeleteStatus.ERROR, 'error': ex.args})
+
+    else:
+        return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
+                             'error': 'درخواست تنها از طریق POST و به صورت Ajax قابل قبول است'})
 
 
 @login_required

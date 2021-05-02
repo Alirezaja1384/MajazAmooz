@@ -6,5 +6,6 @@ from .tutorial import (
 from .tutorial_comment import (
     tutorial_comment_create_view,
     tutorial_comment_upvote_view,
-    tutorial_comment_downvote_view
+    tutorial_comment_downvote_view,
+    tutorial_comment_like_view
 )
