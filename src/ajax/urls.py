@@ -11,4 +11,5 @@ urlpatterns = [
 
     path('tutorial_comment/create', views.tutorial_comment_create_view),
     path('tutorial_comment/upvote', views.tutorial_comment_upvote_view),
+    path('tutorial_comment/downvote', views.tutorial_comment_downvote_view),
 ]
