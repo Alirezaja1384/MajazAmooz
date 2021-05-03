@@ -29,16 +29,24 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS',
                         default='127.0.0.1, localhost').replace(' ','').split(',')
 
-# Application definition
+INTERNAL_IPS = config('INTERNAL_IPS',
+                      default='127.0.0.1, localhost').replace(' ','').split(',')
 
+# Application definition
 INSTALLED_APPS = [
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third-party apps
     'django_bleach',
+    'debug_toolbar',
+
+    # Project apps
     'authentication.apps.AuthenticationConfig',
     'learning.apps.LearningConfig',
     'ajax.apps.AjaxConfig',
@@ -46,6 +54,12 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+
+    # Include the Debug Toolbar middleware as early as possible
+    # in the list. However, it must come after any other middleware
+    # that encodes the response’s content, such as GZipMiddleware.
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

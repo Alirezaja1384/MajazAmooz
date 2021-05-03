@@ -3,6 +3,7 @@ astroid==2.5.6
 bleach==3.3.0
 Django==3.1.7
 django-bleach==0.6.1
+django-debug-toolbar==3.2.1
 django-lifecycle==0.9.1
 isort==5.8.0
 lazy-object-proxy==1.6.0
