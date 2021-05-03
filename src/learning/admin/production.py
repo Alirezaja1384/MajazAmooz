@@ -8,6 +8,10 @@ from learning.models import (
     Category, Tutorial,
     TutorialTag, TutorialComment
 )
+from learning.admin import (
+    confirm_action,
+    disprove_action
+)
 
 
 @register(Category)
@@ -53,6 +57,8 @@ class TutorialAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'is_edited', 'author', 'title', 'slug',
                        'short_description', 'body', 'image',)
 
+    actions = (confirm_action, disprove_action,)
+
     def has_add_permission(self, request):
         return False
 
@@ -86,6 +92,8 @@ class TutorialCommentAdmin(admin.ModelAdmin):
 
     readonly_fields = ('user', 'tutorial', 'parent_comment',
                        'title', 'body',)
+
+    actions = (confirm_action, disprove_action,)
 
     def has_add_permission(self, request):
         return False
