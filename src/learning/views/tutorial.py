@@ -1,5 +1,6 @@
 """ Tutorial view """
 from django.http import HttpRequest
+from django.views.decorators.csrf import requires_csrf_token
 from django.shortcuts import (
     render, get_object_or_404
 )
@@ -72,6 +73,7 @@ def get_related_tutorials(tutorial: Tutorial, fields: tuple,
     return related_tutorials
 
 
+@requires_csrf_token
 def tutorial_details_view(request: HttpRequest, slug: str):
     """ Tutorial details view """
     tutorial = get_object_or_404(
