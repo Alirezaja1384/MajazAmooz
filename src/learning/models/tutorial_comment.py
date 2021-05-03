@@ -56,17 +56,20 @@ class TutorialComment(LifecycleModel):
         'self', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='child_comments', verbose_name='پاسخ به')
 
-    likes = models.ManyToManyField(
-        User, through='TutorialCommentLike', related_name='tutorial_comment_likes',
+    likers = models.ManyToManyField(
+        User, through='TutorialCommentLike',
+        related_name='liked_tutorial_comments',
         verbose_name='لایک دیدگاه ها')
 
-    up_votes = models.ManyToManyField(
+    up_voters = models.ManyToManyField(
         User, through='TutorialCommentUpVote',
-        related_name='tutorial_comment_up_votes', verbose_name='امتیاز مثبت دیدگاه ها')
+        related_name='up_voted_tutorial_comments',
+        verbose_name='امتیاز مثبت دیدگاه ها')
 
-    down_votes = models.ManyToManyField(
+    down_voters = models.ManyToManyField(
         User, through='TutorialCommentDownVote',
-        related_name='tutorial_comment_down_votes', verbose_name='امتیاز منفی دیدگاه ها')
+        related_name='down_voted_tutorial_commens',
+        verbose_name='امتیاز منفی دیدگاه ها')
 
     class Meta:
         verbose_name = 'دیدگاه آموزش'
