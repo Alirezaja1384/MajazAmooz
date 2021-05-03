@@ -39,18 +39,18 @@ class TutorialAdmin(admin.ModelAdmin):
 
     list_display = ('title', 'slug', 'author', 'user_views_count',
                     'likes_count', 'create_date', 'last_edit_date',
-                    'confirm_status', 'is_active', 'is_edited', 'get_categories')
+                    'confirm_status', 'is_active', 'is_edited', 'get_categories',)
 
     list_filter = ('create_date', 'last_edit_date',
                    'confirm_status', 'is_active',)
 
-    search_fields = ('title', 'short_description')
+    search_fields = ('title', 'short_description',)
 
     fields = ('author', 'title', 'slug', 'short_description',
               'body', 'image', 'confirm_status', 'categories',
               'is_active', 'is_edited',)
 
-    readonly_fields = ['slug', 'is_edited']
+    readonly_fields = ('slug', 'is_edited',)
 
 
 @register(TutorialTag)
@@ -62,16 +62,14 @@ class TutorialTagAdmin(admin.ModelAdmin):
 @register(TutorialComment)
 class TutorialCommentAdmin(admin.ModelAdmin):
     """ TutorialComment admin settings """
-    list_display = ('title', 'parent_comment', 'create_date', 'last_edit_date', 'confirm_status',
-                    'is_edited', 'allow_reply', 'notify_replies', 'is_active')
+    list_display = ('title', 'parent_comment', 'tutorial', 'create_date', 'last_edit_date',
+                    'confirm_status', 'is_edited', 'allow_reply', 'notify_replies', 'is_active',)
 
-    fields = ['user', 'tutorial', 'parent_comment',
+    fields = ('user', 'tutorial', 'parent_comment',
               'title', 'body', 'confirm_status', 'allow_reply',
-              'notify_replies', 'is_active']
+              'notify_replies', 'is_active',)
 
     list_filter = ('create_date', 'last_edit_date', 'confirm_status',
                    'is_edited', 'allow_reply', 'notify_replies', 'is_active',)
 
     search_fields = ('title', 'body',)
-
-    readonly_fields = []
