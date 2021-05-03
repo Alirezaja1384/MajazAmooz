@@ -8,6 +8,9 @@ from learning.models import (
     Category, Tutorial,
     TutorialTag, TutorialComment
 )
+from learning.admin import (
+    confirm_action, disprove_action
+)
 
 
 @register(Category)
@@ -52,6 +55,8 @@ class TutorialAdmin(admin.ModelAdmin):
 
     readonly_fields = ('slug', 'is_edited',)
 
+    actions = (confirm_action, disprove_action,)
+
 
 @register(TutorialTag)
 class TutorialTagAdmin(admin.ModelAdmin):
@@ -73,3 +78,5 @@ class TutorialCommentAdmin(admin.ModelAdmin):
                    'is_edited', 'allow_reply', 'notify_replies', 'is_active',)
 
     search_fields = ('title', 'body',)
+
+    actions = (confirm_action, disprove_action,)
