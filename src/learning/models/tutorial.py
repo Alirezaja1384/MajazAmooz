@@ -25,8 +25,6 @@ class Tutorial(LifecycleModel):
 
     body = models.TextField(verbose_name='بدنه')
 
-    total_views_count = models.PositiveIntegerField(
-        verbose_name='بازدید کل', default=0)
     user_views_count = models.PositiveIntegerField(
         verbose_name='بازدید کاربران', default=0)
 

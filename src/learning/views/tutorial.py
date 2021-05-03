@@ -6,8 +6,11 @@ from django.shortcuts import (
 )
 
 from utilities.model_utils import ConfirmStatusChoices
-
-from ..models import Tutorial, Category
+from authentication.models import User
+from learning.models import (
+    Tutorial, Category,
+    TutorialView
+)
 
 
 def get_tutorial_by_categories(categories: list[Category], fields: tuple,
@@ -73,6 +76,26 @@ def get_related_tutorials(tutorial: Tutorial, fields: tuple,
     return related_tutorials
 
 
+def record_tutorial_view(tutorial: Tutorial, user: User):
+    """ Records tutorial's view
+
+    Args:
+        tutorial (Tutorial): visited tutorial
+        user (User): user that visited the tutorial
+    """
+    tutorial_view_score = 1
+    tutorial_view_coin = 1
+
+    if user.is_authenticated and not tutorial.views.filter(user=user).exists():
+
+        TutorialView.objects.create(user=user, tutorial=tutorial,
+                                    score=tutorial_view_score,
+                                    coin=tutorial_view_coin)
+
+        tutorial.user_views_count += 1
+        tutorial.save(update_fields=['user_views_count'])
+
+
 @requires_csrf_token
 def tutorial_details_view(request: HttpRequest, slug: str):
     """ Tutorial details view """
@@ -92,6 +115,8 @@ def tutorial_details_view(request: HttpRequest, slug: str):
 
     latest_tutorials = all_tutorials.order_by('-create_date')[:4]
     most_popular_tutorials = all_tutorials.order_by('-likes_count')[:4]
+
+    record_tutorial_view(tutorial, request.user)
 
     context = {
         "tutorial": tutorial,
