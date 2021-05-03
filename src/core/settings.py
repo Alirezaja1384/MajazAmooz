@@ -155,6 +155,8 @@ MEDIA_URL = '/media/'
 
 # Custom uSer model
 AUTH_USER_MODEL = 'authentication.User'
+# Default auto-created primary keys type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
