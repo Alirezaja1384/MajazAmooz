@@ -65,19 +65,21 @@ class Tutorial(LifecycleModel):
     categories = models.ManyToManyField(
         Category, related_name='tutorials', blank=True, verbose_name='دسته بندی ها')
 
-    views = models.ManyToManyField(
-        User, through='TutorialView', related_name='tutorial_views', verbose_name='بازدید ها')
+    viewers = models.ManyToManyField(
+        User, through='TutorialView', related_name='viewed_tutorials',
+        verbose_name='بازدید ها')
 
-    likes = models.ManyToManyField(
-        User, through='TutorialLike', related_name='tutorial_likes', verbose_name='لایک ها')
+    likers = models.ManyToManyField(
+        User, through='TutorialLike', related_name='liked_tutorials',
+        verbose_name='لایک ها')
 
-    up_votes = models.ManyToManyField(
-        User, through='TutorialUpVote',
-        related_name='tutorial_up_votes', verbose_name='امتیاز های مثبت')
+    up_voters = models.ManyToManyField(
+        User, through='TutorialUpVote', related_name='up_voted_tutorials',
+        verbose_name='امتیاز های مثبت')
 
-    down_votes = models.ManyToManyField(
-        User, through='TutorialDownVote',
-        related_name='tutorial_down_votes', verbose_name='امتیاز های منفی')
+    down_voters = models.ManyToManyField(
+        User, through='TutorialDownVote', related_name='down_voted_tutorials',
+        verbose_name='امتیاز های منفی')
 
     class Meta:
         verbose_name = 'آموزش'
