@@ -442,7 +442,7 @@
 
 
                                         <!-- Submit comment submit button -->
-                                        <button type="submit" class="btn btn-success col-11 mt-3 mx-auto">ثبت</button>
+                                        <button type="submit" id="SubmitCommentBTN" class="btn btn-success col-11 mt-3 mx-auto">ثبت</button>
                                         <!-- End Submit comment submit button -->
 
 
@@ -611,7 +611,7 @@
 <script src="{% static 'js/sweetalert2.js' %}"></script>
 
 {% if user.is_authenticated %}
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script src="{% static 'js/js.cookie.min.js' %}"></script>
     <script src="{% static 'learning/js/tutorial.js' %}"></script>
     {% include 'shared/tinymce_partial.html' %}
 {% else %}
