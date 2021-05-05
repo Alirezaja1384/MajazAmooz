@@ -14,7 +14,7 @@ function ReplyTo(commentId,comment_title)
     document.getElementById('Comment_Reply_To').value = commentId;
     document.getElementById('ReplyTo-Alert-CommentTitle').innerHTML = 'در حال پاسخ به ' + comment_title;
     $("#ReplyTo-Alert").show();
-    $("#comment_title").focus();
+    $("#SubmitCommentBTN").focus();
 }
 
 
