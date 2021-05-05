@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = ">=3.2"
+bleach = ">=3.3.0"
+django-bleach = ">=0.6.1"
+django-debug-toolbar = ">=3.2.1"
+django-lifecycle = ">=0.9.1"
+pillow = ">=8.1.2"
+psycopg2 = ">=2.8.6"
+python-decouple = ">=3.4"
+
+[dev-packages]
+autopep8 = "*"
+pylint = "*"
+pylint-django = "*"
+
+[requires]
+python_version = "3.9"
