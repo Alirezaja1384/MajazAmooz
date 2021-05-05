@@ -1,11 +1,10 @@
 from django.views.generic import ListView
 from django.db.models import (Count, Q)
 
-from learning.models import Tutorial
+from learning.models import (Tutorial, Category)
 from utilities.model_utils import ConfirmStatusChoices
 
 
-# TODO: Add category to context
 # TODO: Apply filters
 # TODO: Apply orderings
 # TODO: Template paginator
@@ -25,3 +24,13 @@ class TutorialListView(ListView):
                 comments__confirm_status=ConfirmStatusChoices.CONFIRMED)))
 
         return tutorials
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        category_slug = self.request.GET.get('category')
+        if category_slug:
+            context['category'] = Category.objects.filter(slug=category_slug,
+                                                          is_active=True).first()
+
+        return context
