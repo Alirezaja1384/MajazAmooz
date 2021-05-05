@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load image_utils %}
+
+{% block title %} آرشیو آموزش ها {% endblock title %}
+
+{% block content %}
+
+    <!-- All tutorials -->
+    <section class=" my-6">
+
+        <!-- Heading -->
+        <section class="jumbotron rounded-0 bg-header-1">
+
+            <!-- Breadcrumb -->
+            <section class="float-right">
+                <ul class="breadcrumb bg-light d-inline-flex">
+                    <li class="breadcrumb-item">
+                        <a asp-page="/Index">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-page="./Index">آموزش ها</a>
+                    </li>
+
+                    {% if category %}
+                        <li class="breadcrumb-item">
+                            <span>{{ category }}</span>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </section>
+            <!-- End Breadcrumb -->
+
+            <!-- Header -->
+            <section class="float-left">
+                <h1 class="text-shadow-dark-1 text-white">آرشیو آموزش ها</h1>
+            </section>
+            <!-- End Header -->
+
+            <section class="clearfix"></section>
+        </section>
+        <!-- End Heading -->
+
+
+
+
+        <!-- Filters -->
+        <section class="container bg-lightblue py-3 rounded">
+
+            <!-- Filters form -->
+            <form action="{% url 'learning:tutorials_archive' %}" method="GET" class="mb-0">
+                <section class="form-group row text-center">
+
+                    
+                    <input name="category_id" type="hidden">
+
+
+                    <!-- Orderby Name, Time, and ... -->
+                    <section class="col-lg-4 col-sm-6 mt-2">
+                        <label for="order_by">مرتب سازی بر اساس</label>
+                        <select name="order_by" id="order_by" class="custom-select">
+                            <option value="date">زمان انتشار</option>
+                            <option value="likes_count">لایک ها</option>
+                            <option value="views_count">بازدید</option>
+                            <option value="name">نام</option>
+                        </select>
+                    </section>
+                    <!-- End Orderby Name, Time, and -->
+
+                    <!-- Orderby Asending,Decending -->
+                    <section class="col-lg-3 col-sm-6 mt-2">
+                        <label>نوع مرتب سازی</label>
+                        <br>
+                        <label for="ascending" class="mr-2">
+                            <input name="ascending_or_descending" value="ascending" id="ascending" type="radio" class="custom-radio"> صعودی
+                        </label>
+                        <label for="decending" class="ml-2">
+                            <input name="ascending_or_descending" value="descending" type="radio" id="decending" class="custom-radio"> نزولی
+                        </label>
+                    </section>
+                    <!-- End Orderby Asending,Decending -->
+
+                    <!-- Search -->
+                    <section class="col-lg-3 col-sm-12 mt-2">
+                        <label for="search">جستجوی عبارت</label>
+                        <br>
+                        <input type="text" name="search" id="search" name='search' placeholder="عبارت مورد نظر را وارد کنید" class="form-control">
+                    </section>
+                    <!-- End Search -->
+
+                    <!-- Submit button -->
+                    <section class="col-lg-2 d-flex flex-column justify-content-end mt-3">
+                        <button type="submit" class="btn btn-success w-100">جستجو</button>
+                    </section>
+                    <!-- End Submit button -->
+
+                </section>
+            </form>
+            <!-- End Filters form -->
+
+        </section>
+        <!-- End Filters -->
+
+
+
+
+
+
+
+
+        <!-- Tutorials -->
+
+        <section class="container mt-3">
+            <section class="row justify-content-center">
+
+
+                {% for tutorial in tutorials %}
+                    <!-- Single tutorial -->
+                    <section class="col-lg-4 col-sm-6 col-12 my-3">
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{{ tutorial.image|image_url }}" class="w-100" alt="{{ tutorial.title }}">
+                            </section>
+
+                            <section class="card-body px-3 pb-3 text-center">
+                                <h5>
+                                    <a href="{% url 'learning:tutorial' tutorial.slug %}">
+                                        {{ tutorial.title }}
+                                    </a>
+                                </h5>
+                                <p class="text-muted">
+                                    {{ tutorial.short_description|truncatewords:5 }}
+                                </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i>
+                                    {{ tutorial.comments_count }}
+                                </section>
+                                <section class="float-right">
+                                    {{ tutorial.likes_count }}
+                                    <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Single tutorial -->
+                {% endfor %}
+
+
+
+
+            </section>
+        </section>
+
+        <!-- End Tutorials -->
+
+
+
+        <!-- Pagination -->
+        <section class="d-flex justify-content-center mt-3">
+            <ul class="pagination">
+                <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
+                <li class="page-item"><a href="#" class="page-link">1</a></li>
+                <li class="page-item active"><a href="#" class="page-link">2</a></li>
+                <li class="page-item"><a href="#" class="page-link">3</a></li>
+                <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
+            </ul>
+        </section>
+        <!-- End Pagination -->
+
+
+
+
+    </section>
+    <!-- End All tutorials -->
+
+{% endblock content %}
