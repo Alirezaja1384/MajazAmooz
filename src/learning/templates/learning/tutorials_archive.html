@@ -16,10 +16,10 @@
             <section class="float-right">
                 <ul class="breadcrumb bg-light d-inline-flex">
                     <li class="breadcrumb-item">
-                        <a asp-page="/Index">خانه</a>
+                        <a href="/">خانه</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a asp-page="./Index">آموزش ها</a>
+                        <a {% if category %} href="{% url 'learning:tutorials_archive' %}" {% endif %}>آموزش ها</a>
                     </li>
 
                     {% if category %}
@@ -34,7 +34,7 @@
 
             <!-- Header -->
             <section class="float-left">
-                <h1 class="text-shadow-dark-1 text-white">آرشیو آموزش ها{% if category %}ی دسته "{{ category.name }}"{% endif %}</h1>
+                <h1 class="text-shadow-dark-1 text-white">آرشیو آموزش ها{% if category %}ی "{{ category.name }}"{% endif %}</h1>
             </section>
             <!-- End Header -->
 
@@ -60,10 +60,10 @@
                     <section class="col-lg-4 col-sm-6 mt-2">
                         <label for="order_by">مرتب سازی بر اساس</label>
                         <select name="order_by" id="order_by" class="custom-select">
-                            <option value="date">زمان انتشار</option>
+                            <option value="create_date">زمان انتشار</option>
                             <option value="likes_count">لایک ها</option>
-                            <option value="views_count">بازدید</option>
-                            <option value="name">نام</option>
+                            <option value="user_views_count">بازدید</option>
+                            <option value="title">عنوان</option>
                         </select>
                     </section>
                     <!-- End Orderby Name, Time, and -->
@@ -73,10 +73,10 @@
                         <label>نوع مرتب سازی</label>
                         <br>
                         <label for="ascending" class="mr-2">
-                            <input name="ascending_or_descending" value="ascending" id="ascending" type="radio" class="custom-radio" checked="true"> صعودی
+                            <input name="ascending_or_descending" value="ascending" id="ascending" type="radio" class="custom-radio"> صعودی
                         </label>
                         <label for="decending" class="ml-2">
-                            <input name="ascending_or_descending" value="descending" id="decending" type="radio" class="custom-radio"> نزولی
+                            <input name="ascending_or_descending" value="descending" id="decending" type="radio" class="custom-radio" checked="true"> نزولی
                         </label>
                     </section>
                     <!-- End Orderby Asending,Decending -->
@@ -192,7 +192,7 @@
     });
 
     ascending_or_descending = searchParams.get('ascending_or_descending')
-    if(ascending_or_descending != ''){
+    if(ascending_or_descending != null){
         document.querySelectorAll('input[name="ascending_or_descending"]').forEach(i => i.checked=false)
         document.querySelector('input[name="ascending_or_descending"][value="' + ascending_or_descending + '"]').checked=true
     }

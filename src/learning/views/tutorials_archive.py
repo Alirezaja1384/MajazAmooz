@@ -1,12 +1,12 @@
 from django.views.generic import ListView
 from django.db.models import (Count, Q)
+from django.http import QueryDict
 
 from learning.models import (Tutorial, Category)
 from learning.filters import TutorialArchiveFilterSet
 from utilities.model_utils import ConfirmStatusChoices
 
 
-# TODO: Apply orderings
 # TODO: Template paginator
 class TutorialListView(ListView):
     model = Tutorial
@@ -24,8 +24,13 @@ class TutorialListView(ListView):
             comments_count=Count('comments', filter=Q(
                 comments__confirm_status=ConfirmStatusChoices.CONFIRMED)))
 
-        # Filter tutorials
-        tutorials = TutorialArchiveFilterSet(self.request.GET, tutorials).qs
+        # create_date=order_by and update it with request.GET
+        # (order_by=create_date if request.GET doesn't contain order_by)
+        filters = QueryDict('order_by=create_date', mutable=True)
+        filters.update(self.request.GET)
+
+        # Filter and order tutorials
+        tutorials = TutorialArchiveFilterSet(filters, tutorials).qs
 
         return tutorials
 
