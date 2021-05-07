@@ -2,7 +2,7 @@
 from django.db.models import Count, Q
 from django.http import HttpRequest
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
+
 
 from utilities.model_utils import ConfirmStatusChoices
 
@@ -27,7 +27,6 @@ def get_tutorials(ordering: tuple, count: int):
     return tutorials
 
 
-@cache_page(60 * 5)
 def home_view(request: HttpRequest):
     """ Home view """
 
