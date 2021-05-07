@@ -103,7 +103,8 @@ ul.red-circle-liststyle>li::before {
 }
 
 .bg-header-1 {
-    background: url("../img/headers/overlay.png"), url("../img/headers/1.jpg") no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.4)),
+                url("../img/headers/1.jpg") no-repeat;
     background-size: cover;
 }
 

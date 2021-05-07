@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load image_utils %}
+{% load basic_utils %}
+
+{% block title %} آرشیو آموزش ها {% endblock title %}
+
+{% block content %}
+
+    <!-- All tutorials -->
+    <section class=" my-6">
+
+        <!-- Heading -->
+        <section class="jumbotron rounded-0 bg-header-1">
+
+            <!-- Breadcrumb -->
+            <section class="float-right">
+                <ul class="breadcrumb bg-light d-inline-flex">
+                    <li class="breadcrumb-item">
+                        <a href="/">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a {% if category %} href="{% url 'learning:tutorials_archive' %}" {% endif %}>آموزش ها</a>
+                    </li>
+
+                    {% if category %}
+                        <li class="breadcrumb-item">
+                            <span>{{ category.name }}</span>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </section>
+            <!-- End Breadcrumb -->
+
+            <!-- Header -->
+            <section class="float-left">
+                <h1 class="text-shadow-dark-1 text-white">آرشیو آموزش ها{% if category %}ی "{{ category.name }}"{% endif %}</h1>
+            </section>
+            <!-- End Header -->
+
+            <section class="clearfix"></section>
+        </section>
+        <!-- End Heading -->
+
+
+
+
+        <!-- Filters -->
+        <section class="container bg-lightblue py-3 rounded">
+
+            <!-- Filters form -->
+            <form id="filter-form" action="{% url 'learning:tutorials_archive' %}" method="GET" class="mb-0">
+                <section class="form-group row text-center">
+
+                    
+                    <input name="category" type="hidden">
+
+
+                    <!-- Orderby Name, Time, and ... -->
+                    <section class="col-lg-4 col-sm-6 mt-2">
+                        <label for="order_by">مرتب سازی بر اساس</label>
+                        <select name="order_by" id="order_by" class="custom-select">
+                            <option value="create_date">زمان انتشار</option>
+                            <option value="likes_count">لایک ها</option>
+                            <option value="user_views_count">بازدید</option>
+                            <option value="title">عنوان</option>
+                        </select>
+                    </section>
+                    <!-- End Orderby Name, Time, and -->
+
+                    <!-- Orderby Asending,Decending -->
+                    <section class="col-lg-3 col-sm-6 mt-2">
+                        <label>نوع مرتب سازی</label>
+                        <br>
+                        <label for="ascending" class="mr-2">
+                            <input name="ascending_or_descending" value="ascending" id="ascending" type="radio" class="custom-radio"> صعودی
+                        </label>
+                        <label for="decending" class="ml-2">
+                            <input name="ascending_or_descending" value="descending" id="decending" type="radio" class="custom-radio" checked="true"> نزولی
+                        </label>
+                    </section>
+                    <!-- End Orderby Asending,Decending -->
+
+                    <!-- Search -->
+                    <section class="col-lg-3 col-sm-12 mt-2">
+                        <label for="search">جستجوی عبارت</label>
+                        <br>
+                        <input type="text" name="search" id="search" name='search' placeholder="عبارت مورد نظر را وارد کنید" class="form-control">
+                    </section>
+                    <!-- End Search -->
+
+                    <input name="page" type="hidden" value="{{ page_obj.number }}">
+
+                    <!-- Submit button -->
+                    <section class="col-lg-2 d-flex flex-column justify-content-end mt-3">
+                        <button type="submit" class="btn btn-success w-100">جستجو</button>
+                    </section>
+                    <!-- End Submit button -->
+
+                </section>
+            </form>
+            <!-- End Filters form -->
+
+        </section>
+        <!-- End Filters -->
+
+
+
+
+
+
+
+
+        <!-- Tutorials -->
+
+        <section class="container mt-3">
+            <section class="row justify-content-center">
+
+
+                {% for tutorial in tutorials %}
+                    <!-- Single tutorial -->
+                    <section class="col-lg-4 col-sm-6 col-12 my-3">
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{{ tutorial.image|image_url }}" class="w-100" alt="{{ tutorial.title }}">
+                            </section>
+
+                            <section class="card-body px-3 pb-3 text-center">
+                                <h5>
+                                    <a href="{% url 'learning:tutorial' tutorial.slug %}">
+                                        {{ tutorial.title }}
+                                    </a>
+                                </h5>
+                                <p class="text-muted">
+                                    {{ tutorial.short_description|truncatewords:5 }}
+                                </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i>
+                                    {{ tutorial.comments_count }}
+                                </section>
+                                <section class="float-right">
+                                    {{ tutorial.likes_count }}
+                                    <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Single tutorial -->
+                {% empty %}
+                    <p>موردی یافت نشد</p>
+                {% endfor %}
+
+
+
+
+            </section>
+        </section>
+
+        <!-- End Tutorials -->
+
+
+
+        <!-- Pagination -->
+        <section class="d-flex justify-content-center mt-3">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a onclick="change_page(1)" class="page-link">اول</a></li>
+                    <li class="page-item"><a onclick="change_page({{page_obj.previous_page_number}})" class="page-link">&laquo;</a></li>
+                {% endif %}
+
+                {% for page_num in page_obj.paginator.num_pages|page_range %}
+                    <li class="page-item {% if page_num == page_obj.number %}active{% endif %}">
+                        <a onclick="change_page({{page_num}})" class="page-link">{{page_num}}</a>
+                    </li>
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a onclick="change_page({{page_obj.next_page_number}})" class="page-link">&raquo;</a></li>
+                    <li class="page-item"><a onclick="change_page({{page_obj.paginator.num_pages}})" class="page-link">آخر</a></li>
+                {% endif %}
+            </ul>
+        </section>
+        <!-- End Pagination -->
+
+
+
+
+    </section>
+    <!-- End All tutorials -->
+
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+    searchParams = (new URL(window.location.href)).searchParams
+    
+    searchParams.forEach((x, y) =>{
+        node = document.getElementsByName(y)[0]
+        
+        if(node.type != "radio"){
+            node.value = x
+        }
+    });
+
+    ascending_or_descending = searchParams.get('ascending_or_descending')
+    if(ascending_or_descending != null){
+        document.querySelectorAll('input[name="ascending_or_descending"]').forEach(i => i.checked=false)
+        document.querySelector('input[name="ascending_or_descending"][value="' + ascending_or_descending + '"]').checked=true
+    }
+
+    function change_page(page){
+        document.getElementsByName('page')[0].value = page;
+        document.getElementById('filter-form').submit();
+    }
+
+</script>
+{% endblock extra_scripts %}
