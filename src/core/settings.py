@@ -192,3 +192,9 @@ BLEACH_STRIP_TAGS = True
 
 # Strip HTML comments, or leave them in.
 BLEACH_STRIP_COMMENTS = False
+
+
+# Login url
+# https://docs.djangoproject.com/en/3.2/ref/settings/#login-url
+
+LOGIN_URL = '/auth/login'

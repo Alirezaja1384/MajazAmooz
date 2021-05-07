@@ -207,7 +207,7 @@
                         {% if user.is_authenticated %}
                             <a class="nav-link text-truncate" href="#">حساب کاربری</a>
                         {% else %}
-                            <a href="#" class="nav-link text-truncate">ورود</a>
+                            <a href="{% url 'authentication:login' %}" class="nav-link text-truncate">ورود</a>
                         {% endif %}
                     </li>
 
@@ -273,7 +273,7 @@
                     </section>
                     <!-- End Dropdown -->
                 {% else %}
-                    <a href="#" class="nav-link text-truncate">ورود</a>
+                    <a href="{% url 'authentication:login' %}" class="nav-link text-truncate">ورود</a>
                 {% endif %}
 
             </section>
