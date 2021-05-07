@@ -53,7 +53,7 @@
                 <section class="form-group row text-center">
 
                     
-                    <input name="category_id" type="hidden">
+                    <input name="category" type="hidden">
 
 
                     <!-- Orderby Name, Time, and ... -->
@@ -73,10 +73,10 @@
                         <label>نوع مرتب سازی</label>
                         <br>
                         <label for="ascending" class="mr-2">
-                            <input name="ascending_or_descending" value="ascending" id="ascending" type="radio" class="custom-radio"> صعودی
+                            <input name="ascending_or_descending" value="ascending" id="ascending" type="radio" class="custom-radio" checked="true"> صعودی
                         </label>
                         <label for="decending" class="ml-2">
-                            <input name="ascending_or_descending" value="descending" type="radio" id="decending" class="custom-radio"> نزولی
+                            <input name="ascending_or_descending" value="descending" id="decending" type="radio" class="custom-radio"> نزولی
                         </label>
                     </section>
                     <!-- End Orderby Asending,Decending -->
@@ -178,3 +178,24 @@
     <!-- End All tutorials -->
 
 {% endblock content %}
+
+{% block extra_scripts %}
+<script>
+    searchParams = (new URL(window.location.href)).searchParams
+    
+    searchParams.forEach((x, y) =>{
+        node = document.getElementsByName(y)[0]
+        
+        if(node.type != "radio"){
+            node.value = x
+        }
+    });
+
+    ascending_or_descending = searchParams.get('ascending_or_descending')
+    if(ascending_or_descending != ''){
+        document.querySelectorAll('input[name="ascending_or_descending"]').forEach(i => i.checked=false)
+        document.querySelector('input[name="ascending_or_descending"][value="' + ascending_or_descending + '"]').checked=true
+    }
+
+</script>
+{% endblock extra_scripts %}

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # Third-party apps
     'django_bleach',
     'debug_toolbar',
+    'django_filters',
 
     # Project apps
     'authentication.apps.AuthenticationConfig',

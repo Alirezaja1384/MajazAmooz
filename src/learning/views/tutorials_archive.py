@@ -2,10 +2,10 @@ from django.views.generic import ListView
 from django.db.models import (Count, Q)
 
 from learning.models import (Tutorial, Category)
+from learning.filters import TutorialArchiveFilterSet
 from utilities.model_utils import ConfirmStatusChoices
 
 
-# TODO: Apply filters
 # TODO: Apply orderings
 # TODO: Template paginator
 class TutorialListView(ListView):
@@ -18,12 +18,17 @@ class TutorialListView(ListView):
 
 
     def get_queryset(self):
+        # All confirmed and active tutorials
         tutorials = Tutorial.objects.active_and_confirmed_tutorials().order_by('-create_date').only(
             'title', 'slug', 'short_description', 'likes_count', 'image').annotate(
             comments_count=Count('comments', filter=Q(
                 comments__confirm_status=ConfirmStatusChoices.CONFIRMED)))
 
+        # Filter tutorials
+        tutorials = TutorialArchiveFilterSet(self.request.GET, tutorials).qs
+
         return tutorials
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
