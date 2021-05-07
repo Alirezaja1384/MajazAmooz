@@ -7,7 +7,6 @@ from learning.filters import TutorialArchiveFilterSet
 from utilities.model_utils import ConfirmStatusChoices
 
 
-# TODO: Template paginator
 class TutorialListView(ListView):
     model = Tutorial
     template_name = "learning/tutorials_archive.html"
