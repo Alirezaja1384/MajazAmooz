@@ -264,10 +264,13 @@
                             <section class="dropdown-divider"></section>
 
                             <li class="dropdown-item">
-                                <a href="#">
-                                    <i class="fa fa-sign-out" aria-hidden="true"></i>
-                                    خروج از حساب کاربری
-                                </a>
+                                <form method="POST" action="{% url 'authentication:logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" style="border: none; background-color: transparent;">
+                                        <i class="fa fa-sign-out" aria-hidden="true"></i>
+                                        خروج از حساب کاربری
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </section>
