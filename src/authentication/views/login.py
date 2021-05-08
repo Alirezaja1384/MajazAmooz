@@ -8,11 +8,13 @@ from django.contrib.auth import (
 )
 
 from authentication.forms import LoginForm
+from utilities.view_utilities import LogoutRequiredMixin
+
 
 UserModel = get_user_model()
 
 
-class LoginView(View):
+class LoginView(LogoutRequiredMixin, View):
 
     def get(self, request: HttpRequest):
         form = LoginForm()

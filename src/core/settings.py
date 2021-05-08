@@ -198,3 +198,4 @@ BLEACH_STRIP_COMMENTS = False
 # https://docs.djangoproject.com/en/3.2/ref/settings/#login-url
 
 LOGIN_URL = '/auth/login'
+LOGOUT_REQUIRED_URL = '/auth/logout_required'
