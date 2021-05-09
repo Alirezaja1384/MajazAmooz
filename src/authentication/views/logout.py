@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import HttpRequest, HttpResponseBadRequest
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -11,10 +11,10 @@ def logout_view(request: HttpRequest):
 
         # If next parameter sent and
         # it was local redirect user
-        next_url = request.POST.get('next')
-        if next_url and next_url.startswith('/'):
-            return redirect(next_url)
+        next_url = request.POST.get('next', '')
 
-        return render(request, 'authentication/logout.html')
+        return render(request, 'authentication/logout.html',{
+            'next': next_url if next_url.startswith('/') else ''
+        })
 
     return HttpResponseBadRequest()

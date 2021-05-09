@@ -11,7 +11,12 @@
         </section>
 
         <a href="{% url 'authentication:login' %}" class="btn btn-success">ورود مجدد</a>
-        <a href="{% url 'learning:home' %}" class="btn btn-primary">صفحه اصلی</a>
+
+        {% if next %}
+            <a href="{{ next }}" class="btn btn-primary">صفحه قبل</a>
+        {% else %}
+            <a href="{% url 'learning:home' %}" class="btn btn-primary">صفحه اصلی</a>
+        {% endif %}
     </section>
 
 {% endblock auth_content %}
