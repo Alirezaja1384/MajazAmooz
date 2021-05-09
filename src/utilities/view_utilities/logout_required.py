@@ -23,7 +23,7 @@ class LogoutRequiredMixin():
 
 
         if request.user.is_authenticated:
-            next_url = request.GET.get('next') or request.path
-            return redirect(logout_required_url + "?next=" + next_url)
+            current_path = request.get_full_path()
+            return redirect(logout_required_url + "?next=" + current_path)
 
         return super().dispatch(request, *args, **kwargs)
