@@ -8,7 +8,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     " Customized user model "
 
-    email = models.EmailField(max_length=254, unique=True, 
+    email = models.EmailField(max_length=254, unique=True,
                               verbose_name='ایمیل')
 
     avatar = models.ImageField(

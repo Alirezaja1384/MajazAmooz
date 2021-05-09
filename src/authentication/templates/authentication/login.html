@@ -10,7 +10,7 @@
         <section id="login-register-buttons" class="mx-auto col-lg-8 col-md-10 mt-5">
             <section class="row position-relative h-100">
                 <button type="button" class="w-50 h-100" id="login-button">
-                    <a href="#?next={{next}}" class="d-block">ثبت نام</a>
+                    <a href="{% url 'authentication:register' %}?next={{next}}" class="d-block">ثبت نام</a>
                 </button>
                 <button type="button" class="w-50 h-100" id="login-button">ورود</button>
                 <section class="w-50 h-100 left-0" id="active-login-register"></section>
@@ -32,6 +32,12 @@
 
                     <section class="col-8 form-group text-left mx-auto mt-4">
                         <section class="row">
+
+                            {% if register_success %}
+                                <section class="alert alert-success w-100">
+                                    <p>تبریک! حساب کاربری شما با موفقیت ایجاد شد</p>
+                                </section>
+                            {% endif %}
 
                             {% if form.non_field_errors %}
                                 <section class="alert alert-danger w-100">
