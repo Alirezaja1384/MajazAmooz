@@ -266,10 +266,14 @@
                             <li class="dropdown-item">
                                 <form method="POST" action="{% url 'authentication:logout' %}">
                                     {% csrf_token %}
+
+                                    <input type="hidden" name="next" value="{{request.get_full_path}}">
+
                                     <button type="submit" style="border: none; background-color: transparent;">
                                         <i class="fa fa-sign-out" aria-hidden="true"></i>
                                         خروج از حساب کاربری
                                     </button>
+
                                 </form>
                             </li>
                         </ul>
