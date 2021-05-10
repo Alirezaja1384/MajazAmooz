@@ -3,6 +3,7 @@
 """
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
@@ -20,3 +21,13 @@ class User(AbstractUser):
     coins = models.IntegerField("سکه ها", default=0)
 
     diamonds = models.PositiveIntegerField("الماس ها", default=0)
+
+    email_confirmed = models.BooleanField(verbose_name='تایید ایمیل', default=False)
+
+    class Meta:
+        verbose_name = _('user')
+        verbose_name_plural = _('users')
+
+        permissions = (
+            ('email_confirmed', 'ایمیل تایید شده'),
+        )

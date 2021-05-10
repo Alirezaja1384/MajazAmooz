@@ -22,7 +22,8 @@ class LoginView(LogoutRequiredMixin, View):
         return render(request, 'authentication/login.html', {
             'form': form,
             'next': request.GET.get('next', ''),
-            'register_success': request.GET.get('register_success')
+            'register_success': request.GET.get('register_success'),
+            'email_success': request.GET.get('email_success')
         })
 
 
