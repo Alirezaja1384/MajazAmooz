@@ -209,6 +209,18 @@
                             <a href="{% url 'authentication:login' %}" class="nav-link text-truncate">ورود</a>
                         {% endif %}
                     </li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item d-lg-none">
+                            <form method="POST" action="{% url 'authentication:logout' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{request.get_full_path}}">
+                                <button type="submit" style="border: none; background-color: transparent;">
+                                    خروج
+                                </button>
+                            </form>
+                        </li>
+                    {% endif %}
 
 
                 </ul>
