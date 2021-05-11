@@ -109,7 +109,7 @@ def tutorial_details_view(request: HttpRequest, slug: str):
 
     # if user logged in and liked this tutorial
     liked_by_current_user = request.user.is_authenticated and tutorial.likes.filter(
-        pk=request.user.id).exists()
+        user_id=request.user.id).exists()
 
     all_tutorials = Tutorial.objects.active_and_confirmed_tutorials()
 
