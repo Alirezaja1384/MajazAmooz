@@ -363,6 +363,7 @@ footer ul {
     outline: none;
     border: none;
     background: -webkit-linear-gradient(left, #25aae4, #1ebba3);
+    cursor: pointer;
 }
 
 
