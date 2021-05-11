@@ -39,24 +39,21 @@
                                 </section>
                             {% endif %}
 
-                            {% if register_success %}
-                                <section class="alert alert-success alert-dismissible w-100">
-                                    <span class="close" data-dismiss="alert">&times;</span>
-                                    <strong class="mb-0">تبریک! حساب کاربری شما با موفقیت ایجاد شد</strong>
-                                </section>
-                            {% endif %}
+                            {% for message in messages %}
 
-                            {% if email_success == 'True' %}
-                                <section class="alert alert-success alert-dismissible w-100">
-                                    <span class="close" data-dismiss="alert">&times;</span>
-                                    <strong class="mb-0">ایمیل تایید حساب با موفقیت ارسال شد</strong>
-                                </section>
-                            {% elif email_success == 'False' %}
-                                <section class="alert alert-danger alert-dismissible w-100">
-                                    <span class="close" data-dismiss="alert">&times;</span>
-                                    <strong class="mb-0">اریال ایمیل تاییید حساب با شکست مواجه شد</strong>
-                                </section>
-                            {% endif %}
+                                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                                    <section class="alert alert-success alert-dismissible w-100">
+                                        <span class="close" data-dismiss="alert">&times;</span>
+                                        <strong class="mb-0">{{ message.message }}</strong>
+                                    </section>
+                                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                                    <section class="alert alert-danger alert-dismissible w-100">
+                                        <span class="close" data-dismiss="alert">&times;</span>
+                                        <strong class="mb-0">{{ message.message }}</strong>
+                                    </section>
+                                {% endif %}
+
+                            {% endfor %}
                             
                             <section class="w-100">
                                 <input class="w-100 mt-3 account-input"

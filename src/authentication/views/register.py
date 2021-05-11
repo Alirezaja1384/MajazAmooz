@@ -3,6 +3,7 @@ from django.shortcuts import (render, redirect, reverse, resolve_url)
 from django.views.generic import View
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.contrib import messages
 
 from authentication.forms import RegisterForm
 from utilities.view_utilities import LogoutRequiredMixin
@@ -49,15 +50,19 @@ class RegisterView(LogoutRequiredMixin, View):
         token = confirm_manager.get_token()
 
         confirm_url = request.build_absolute_uri(
-            resolve_url('authentication:confirm_email', uid_base64=uid_base64, token=token)
+            resolve_url('authentication:confirm_email',
+                        uid_base64=uid_base64, token=token)
         )
 
         send_email_result = confirm_manager.send_mail('mails/email_confirmation.html',
-                                                       confirm_url, settings.EMAIL_FROM)
+                                                      confirm_url, settings.EMAIL_FROM)
+
+        messages.success(request, 'ثبت نام با موفقیت انجام شد')
+        if send_email_result:
+            messages.success(request, 'ارسال ایمیل تایید حساب کاربری با موفقیت انجام شد')
+        else:
+            messages.error(request, 'ارسال ایمیل تایید حساب کاربری موفقیت آمیز نبود')
 
         # Redirect to login page
-        redirect_url = (reverse('authentication:login') +
-                        f"?next={next_url}&register_success=True" +
-                        f"&email_success={send_email_result}")
-
-        return redirect(redirect_url)
+        login_url = reverse('authentication:login') + "?next=" + next_url
+        return redirect(login_url)
