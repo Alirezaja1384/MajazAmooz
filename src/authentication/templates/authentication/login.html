@@ -1,0 +1,94 @@
+{% extends 'authentication/shared/base.html' %}
+
+{% block title %}ورود{% endblock title %}
+
+{% block auth_content %}
+
+    <section class="text-center overflow-hidden">
+
+        <!-- Change Login Register Buttons -->
+        <section id="login-register-buttons" class="mx-auto col-lg-8 col-md-10 mt-5">
+            <section class="row position-relative h-100">
+                <button type="button" class="w-50 h-100" id="login-button">
+                    <a href="{% url 'authentication:register' %}?next={{next}}" class="d-block">ثبت نام</a>
+                </button>
+                <button type="button" class="w-50 h-100" id="login-button">ورود</button>
+                <section class="w-50 h-100 left-0" id="active-login-register"></section>
+            </section>
+        </section>
+        <!-- End Change Login Register Buttons -->
+
+
+        <!-- Login Register Section -->
+        <section id="register-login-forms">
+            <section class="row mx-0">
+
+                <!-- Login Form -->
+                <form action="{% url 'authentication:login' %}" method="POST">
+
+                    {% csrf_token %}
+                    <input name="next" value="{{ next }}" type="hidden">
+
+
+                    <section class="col-8 form-group text-left mx-auto mt-4">
+                        <section class="row">
+
+                            {% if form.non_field_errors %}
+                                <section class="alert alert-danger w-100">
+                                    {{ form.non_field_errors }}
+                                </section>
+                            {% endif %}
+
+                            {% for message in messages %}
+
+                                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                                    <section class="alert alert-success alert-dismissible w-100">
+                                        <span class="close" data-dismiss="alert">&times;</span>
+                                        <strong class="mb-0">{{ message.message }}</strong>
+                                    </section>
+                                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                                    <section class="alert alert-danger alert-dismissible w-100">
+                                        <span class="close" data-dismiss="alert">&times;</span>
+                                        <strong class="mb-0">{{ message.message }}</strong>
+                                    </section>
+                                {% endif %}
+
+                            {% endfor %}
+                            
+                            <section class="w-100">
+                                <input class="w-100 mt-3 account-input"
+                                    placeholder="{{ form.username_email.label }}" name="username_email">
+                                <span class="text-danger"> {{ form.username_email.errors }} </span>
+                            </section>
+
+                            <section class="w-100">
+                                <input class="w-100 mt-3 account-input" type="password"
+                                    placeholder="{{form.password.label }}" name="password">
+                                <span class="text-danger"> {{ form.password.errors }} </span>
+                            </section>
+
+                            <section class="w-100">
+                                <label for="remember_me" class="checkbox mt-4 text-muted">
+                                    <input type="checkbox" name="remember_me" id="remember_me" class="mr-2">
+                                    {{ form.remember_me.label }}
+                                </label>
+                            </section>
+
+
+                            <button type="submit" class="col-10 mx-auto mt-4 account-submit">ورود</button>
+
+                            <section class="text-center w-100 mt-2">
+                                <a href={% url 'authentication:password_reset' %}>فراموشی کلمه عبور</a>
+                            </section>
+                        </section>
+                    </section>
+                </form>
+                <!-- End Login Form -->
+
+            </section>
+        </section>
+        <!-- End Login Register Section -->
+
+    </section>
+
+{% endblock auth_content %}

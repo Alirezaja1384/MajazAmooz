@@ -160,13 +160,15 @@ AUTH_USER_MODEL = 'authentication.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = config('EMAIL_BACKEND',
+                        default='django.core.mail.backends.console.EmailBackend')
 
-EMAIL_HOST = config('EMAIL_HOST', default='localhost')
-EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
+EMAIL_FROM = config('EMAIL_FROM', default='')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
 
 
 # django-bleach settings
@@ -192,3 +194,10 @@ BLEACH_STRIP_TAGS = True
 
 # Strip HTML comments, or leave them in.
 BLEACH_STRIP_COMMENTS = False
+
+
+# Login url
+# https://docs.djangoproject.com/en/3.2/ref/settings/#login-url
+
+LOGIN_URL = '/auth/login'
+LOGOUT_REQUIRED_URL = '/auth/logout_required'

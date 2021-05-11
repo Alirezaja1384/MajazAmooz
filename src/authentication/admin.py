@@ -2,11 +2,14 @@ from django.contrib import admin
 from django.contrib.admin.decorators import register
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User
+from django.contrib.auth import get_user_model
 
 
-@register(User)
+UserModel = get_user_model()
+
+
+@register(UserModel)
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
-        ("پروفایل",{"fields":('avatar', )}),
+        ("سایر",{"fields":('avatar', 'email_confirmed', )}),
     )

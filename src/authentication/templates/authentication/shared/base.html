@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- Main content -->
+    <main id="login-page-content" class="py-6">
+        <section class="container">
+            <section class="col-10 col-md-8 col-lg-6 mx-auto mt-6">
+                <section class="card rounded bg-white">
+                    <section class="card-body">
+                        {% block auth_content %}
+                        {% endblock auth_content %}
+                    </section>
+                </section>
+            </section>
+        </section>
+    </main>
+    <!-- End Main content -->
+
+{% endblock content %}

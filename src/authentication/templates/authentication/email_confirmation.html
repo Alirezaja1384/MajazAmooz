@@ -1,0 +1,23 @@
+{% extends 'authentication/shared/base.html' %}
+
+{% block title %}تایید حساب کاربری{% endblock title %}
+
+{% block auth_content %}
+
+    <section class="text-center overflow-hidden py-5">
+
+        <section class="pb-2">
+            <h2>تایید حساب کاربری</h2>
+            {% if result %}
+                <h5>حساب کاربری شما با موفقیت تایید شد</h5>
+            {% else %}
+                <h5>حساب کاربری شما تایید نشد! ممکن است مدت زمان اعتبار لینک ارسالی به پایان رسیده باشد</h5>
+            {% endif %}
+        </section>
+
+        <a href="{% url 'authentication:login' %}" class="btn btn-success">ورود</a>
+        <a href="{% url 'learning:home' %}" class="btn btn-primary">صفحه اصلی</a>
+
+    </section>
+
+{% endblock auth_content %}

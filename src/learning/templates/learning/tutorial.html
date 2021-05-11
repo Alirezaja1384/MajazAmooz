@@ -452,7 +452,7 @@
                         
 
                     {% else %}
-                        <p class="text-center">لطفا برای ثبت نظر ابتدا <a href="#">وارد</a> شوید</p>
+                        <p class="text-center">لطفا برای ثبت نظر ابتدا <a href="{% url 'authentication:login' %}?next={{request.get_full_path}}">وارد شوید</a></p>
                     {% endif %}
 
 
