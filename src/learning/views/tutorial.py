@@ -92,9 +92,6 @@ def record_tutorial_view(tutorial: Tutorial, user: User):
                                     score=tutorial_view_score,
                                     coin=tutorial_view_coin)
 
-        tutorial.user_views_count += 1
-        tutorial.save(update_fields=['user_views_count'])
-
 
 @requires_csrf_token
 def tutorial_details_view(request: HttpRequest, slug: str):

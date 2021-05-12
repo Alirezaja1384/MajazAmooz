@@ -3,11 +3,10 @@ from django.db import models
 from django.utils import timezone
 from django_lifecycle import hook, BEFORE_UPDATE, LifecycleModel
 
+from learning.models import Tutorial
+from learning.querysets import TutorialCommentQueryset
 from authentication.models import User
 from utilities.model_utils import ConfirmStatusChoices
-
-from . import Tutorial
-from ..querysets import TutorialCommentQueryset
 
 
 class TutorialComment(LifecycleModel):

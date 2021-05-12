@@ -58,54 +58,32 @@ def tutorial_comment_like_view(request: HttpRequest):
         try:
 
             tutorial_comment_id = int(json.loads(request.body).get('comment_id'))
-            tutorial_comment = TutorialComment.objects.active_and_confirmed_comments(
-                                                       ).prefetch_related('user'
-                                                       ).get(id=tutorial_comment_id)
 
-            tutorial_comment_user = tutorial_comment.user
+            # It will throw ObjectDoesNotExist exception
+            # if can't find comment
+            tutorial_comment = TutorialComment.objects.active_and_confirmed_comments(
+                                                       ).select_related('user'
+                                                       ).get(id=tutorial_comment_id)
 
             tutorial_comment_likes = TutorialCommentLike.objects.filter(
                 user=request.user, comment=tutorial_comment)
 
-            # If tutorial_comment like already exist delete it,
-            # decrease tutorial_comment like and
-            # decrease user's coins and score
+            # If tutorial_comment like already exist delete it
             if tutorial_comment_likes.exists():
 
                 tutorial_comment_like = tutorial_comment_likes.first()
-
-                # decrease tutorial_comment like
-                tutorial_comment.likes_count -= 1
-                tutorial_comment.save()
-
-                # decrease user's scores and coins
-                tutorial_comment_user.scores -= tutorial_comment_like.score
-                tutorial_comment_user.coins -= tutorial_comment_like.coin
-                tutorial_comment_user.save()
-
                 # delete tutorial_comment like
                 tutorial_comment_like.delete()
 
                 return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
 
-            # Else insert tutorial_comment like,
-            # increase tutorial_comment like and
-            # increase user's coins and score
+            # Else insert tutorial_comment like
             else:
 
                 TutorialCommentLike.objects.create(user=request.user,
-                                                       comment=tutorial_comment,
-                                                       score=tutorial_comment_like_score,
-                                                       coin=tutorial_comment_like_coin)
-
-                # increase tutorial_comment like
-                tutorial_comment.likes_count += 1
-                tutorial_comment.save()
-
-                # increase user's scores and coins
-                tutorial_comment_user.scores += tutorial_comment_like_score
-                tutorial_comment_user.coins += tutorial_comment_like_coin
-                tutorial_comment_user.save()
+                                                   comment=tutorial_comment,
+                                                   score=tutorial_comment_like_score,
+                                                   coin=tutorial_comment_like_coin)
 
                 return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
 
@@ -136,54 +114,32 @@ def tutorial_comment_upvote_view(request: HttpRequest):
         try:
 
             tutorial_comment_id = int(json.loads(request.body).get('comment_id'))
-            tutorial_comment = TutorialComment.objects.active_and_confirmed_comments(
-                                                       ).prefetch_related('user'
-                                                       ).get(id=tutorial_comment_id)
 
-            tutorial_comment_user = tutorial_comment.user
+            # It will throw ObjectDoesNotExist exception
+            # if can't find comment
+            tutorial_comment = TutorialComment.objects.active_and_confirmed_comments(
+                                                       ).select_related('user'
+                                                       ).get(id=tutorial_comment_id)
 
             tutorial_comment_upvotes = TutorialCommentUpVote.objects.filter(
                 user=request.user, comment=tutorial_comment)
 
-            # If tutorial_comment upvote already exist delete it,
-            # decrease tutorial_comment upvote and
-            # decrease user's coins and score
+            # If tutorial_comment upvote already exist delete it
             if tutorial_comment_upvotes.exists():
 
                 tutorial_comment_upvote = tutorial_comment_upvotes.first()
-
-                # decrease tutorial_comment upvote
-                tutorial_comment.up_votes_count -= 1
-                tutorial_comment.save()
-
-                # decrease user's scores and coins
-                tutorial_comment_user.scores -= tutorial_comment_upvote.score
-                tutorial_comment_user.coins -= tutorial_comment_upvote.coin
-                tutorial_comment_user.save()
-
                 # delete tutorial_comment upvote
                 tutorial_comment_upvote.delete()
 
                 return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
 
-            # Else insert tutorial_comment upvote,
-            # increase tutorial_comment upvote and
-            # increase user's coins and score
+            # Else insert tutorial_comment upvote
             else:
 
                 TutorialCommentUpVote.objects.create(user=request.user,
                                                      comment=tutorial_comment,
                                                      score=tutorial_comment_upvote_score,
                                                      coin=tutorial_comment_upvote_coin)
-
-                # increase tutorial_comment upvote
-                tutorial_comment.up_votes_count += 1
-                tutorial_comment.save()
-
-                # increase user's scores and coins
-                tutorial_comment_user.scores += tutorial_comment_upvote_score
-                tutorial_comment_user.coins += tutorial_comment_upvote_coin
-                tutorial_comment_user.save()
 
                 return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
 
@@ -214,54 +170,32 @@ def tutorial_comment_downvote_view(request: HttpRequest):
         try:
 
             tutorial_comment_id = int(json.loads(request.body).get('comment_id'))
-            tutorial_comment = TutorialComment.objects.active_and_confirmed_comments(
-                                                       ).prefetch_related('user'
-                                                       ).get(id=tutorial_comment_id)
 
-            tutorial_comment_user = tutorial_comment.user
+            # It will throw ObjectDoesNotExist exception
+            # if can't find comment
+            tutorial_comment = TutorialComment.objects.active_and_confirmed_comments(
+                                                       ).select_related('user'
+                                                       ).get(id=tutorial_comment_id)
 
             tutorial_comment_downvotes = TutorialCommentDownVote.objects.filter(
                 user=request.user, comment=tutorial_comment)
 
-            # If tutorial_comment downvote already exist delete it,
-            # decrease tutorial_comment downvote and
-            # decrease user's coins and score
+            # If tutorial_comment downvote already exist delete it
             if tutorial_comment_downvotes.exists():
 
                 tutorial_comment_downvote = tutorial_comment_downvotes.first()
-
-                # decrease tutorial_comment downvote
-                tutorial_comment.down_votes_count -= 1
-                tutorial_comment.save()
-
-                # decrease user's scores and coins
-                tutorial_comment_user.scores -= tutorial_comment_downvote.score
-                tutorial_comment_user.coins -= tutorial_comment_downvote.coin
-                tutorial_comment_user.save()
-
                 # delete tutorial_comment downvote
                 tutorial_comment_downvote.delete()
 
                 return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
 
-            # Else insert tutorial_comment downvote,
-            # increase tutorial_comment downvote and
-            # increase user's coins and score
+            # Else insert tutorial_comment downvote
             else:
 
                 TutorialCommentDownVote.objects.create(user=request.user,
                                                        comment=tutorial_comment,
                                                        score=tutorial_comment_downvote_score,
                                                        coin=tutorial_comment_downvote_coin)
-
-                # increase tutorial_comment downvote
-                tutorial_comment.down_votes_count += 1
-                tutorial_comment.save()
-
-                # increase user's scores and coins
-                tutorial_comment_user.scores += tutorial_comment_downvote_score
-                tutorial_comment_user.coins += tutorial_comment_downvote_coin
-                tutorial_comment_user.save()
 
                 return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
 
