@@ -2,11 +2,8 @@ import json
 
 from django.http import HttpRequest, JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.db import (
-    DatabaseError, IntegrityError,
-    DataError
-)
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError
 
 from learning.models import (
     Tutorial, TutorialLike,
@@ -82,7 +79,7 @@ def tutorial_like_view(request: HttpRequest):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'اطلاعات ارسالی صحیح نمی باشد'})
 
-        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
+        except (DatabaseError, ObjectDoesNotExist):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'خطایی در ثبت اطلاعات رخ داد'})
 
@@ -153,7 +150,7 @@ def tutorial_upvote_view(request: HttpRequest):
 
                 return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
 
-        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
+        except (DatabaseError, ObjectDoesNotExist):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'خطایی در ثبت اطلاعات رخ داد'})
 
@@ -232,7 +229,7 @@ def tutorial_downvote_view(request: HttpRequest):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'اطلاعات ارسالی صحیح نمی باشد'})
 
-        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
+        except (DatabaseError, ObjectDoesNotExist):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'خطایی در ثبت اطلاعات رخ داد'})
 
