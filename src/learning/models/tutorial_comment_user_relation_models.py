@@ -24,25 +24,25 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
     def on_create(self):
         self.comment.user.scores += self.score
         self.comment.user.coins += self.coin
-        self.comment.user.save()
+        self.comment.user.save(update_fields=['scores', 'coins'])
 
         if self.comment_object_count_field :
             # Increase comment.{comment_object_count_field}
             current_count = getattr(self.comment, self.comment_object_count_field)
             setattr(self.comment, self.comment_object_count_field, current_count + 1)
-            self.comment.save()
+            self.comment.save(update_fields=[self.comment_object_count_field])
 
     @hook(BEFORE_DELETE)
     def on_delete(self):
         self.comment.user.scores -= self.score
         self.comment.user.coins -= self.coin
-        self.comment.user.save()
+        self.comment.user.save(update_fields=['scores', 'coins'])
 
         if self.comment_object_count_field and self.comment:
             # Decrease comment.{comment_object_count_field}
             current_count = getattr(self.comment, self.comment_object_count_field)
             setattr(self.comment, self.comment_object_count_field, current_count - 1)
-            self.comment.save()
+            self.comment.save(update_fields=[self.comment_object_count_field])
 
     class Meta:
         abstract = True

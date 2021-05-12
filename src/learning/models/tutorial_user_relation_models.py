@@ -24,25 +24,25 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
     def on_create(self):
         self.tutorial.author.scores += self.score
         self.tutorial.author.coins += self.coin
-        self.tutorial.author.save()
+        self.tutorial.author.save(update_fields=['scores', 'coins'])
 
         if self.tutorial_object_count_field :
             # Increase tutorial.{tutorial_object_count_field}
             current_count = getattr(self.tutorial, self.tutorial_object_count_field)
             setattr(self.tutorial, self.tutorial_object_count_field, current_count + 1)
-            self.tutorial.save()
+            self.tutorial.save(update_fields=[self.tutorial_object_count_field])
 
     @hook(BEFORE_DELETE)
     def on_delete(self):
         self.tutorial.author.scores -= self.score
         self.tutorial.author.coins -= self.coin
-        self.tutorial.author.save()
+        self.tutorial.author.save(update_fields=['scores', 'coins'])
 
         if self.tutorial_object_count_field :
             # Increase tutorial.{tutorial_object_count_field}
             current_count = getattr(self.tutorial, self.tutorial_object_count_field)
             setattr(self.tutorial, self.tutorial_object_count_field, current_count - 1)
-            self.tutorial.save()
+            self.tutorial.save(update_fields=[self.tutorial_object_count_field])
 
     class Meta:
         abstract = True
