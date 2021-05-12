@@ -4,6 +4,7 @@ from django.utils.text import slugify
 
 from django_lifecycle import LifecycleModel, hook, BEFORE_SAVE
 
+from learning.querysets import CategoryQueryset
 
 class Category(LifecycleModel):
     """ Category model """
@@ -29,3 +30,6 @@ class Category(LifecycleModel):
 
     def __str__(self):
         return self.name
+
+    # Custom queryset
+    objects = CategoryQueryset.as_manager()
