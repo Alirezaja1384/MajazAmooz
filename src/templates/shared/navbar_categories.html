@@ -1,4 +1,4 @@
-
+{% load base_tmplatetags %}
 {% regroup categories by parent_category as category_group %}
 
 <li class="nav-item">
@@ -6,28 +6,33 @@
         data-toggle="dropdown">آموزش ها</a>
 
     {% for category_list in category_group %}
-        <section id="tutorials-{% if category_list.list.0.parent_category %}children-{{category_list.list.0.parent_category.pk}}{% else %}main{% endif %}" class="dropdown">
-            <ul class="dropdown-menu bg-lightblue">
-                
-                
-                {% for category in category_list.list %}
-                    <li class="dropdown-item">
-                        <a href="{% if category.child_categories.all %}#tutorials-children-{{category.pk}}
-                        {% else %}{% url 'learning:tutorials_archive'%}?category={{ category.slug }}{% endif %}"
-                        {% if category.child_categories.all %}data-toggle="dropdown" class="dropdown-toggle"{% endif %}>
-                            {{category.name}}
-                        </a>
-                    </li>
-                {% endfor %}
+        {% with category_list.grouper as parent_cat %}
 
-                {% if category_list.list|length > 1 %}
-                    <li class="dropdown-item">
-                        <a href="{% url 'learning:tutorials_archive'%}{% if category_list.list.0.parent_category %}?category={{ category_list.list.0.parent_category.slug }}{% endif %}">تمامی {% if category_list.list.0.parent_category %}زیر{% endif %}دسته ها</a>
-                    </li>
-                {% endif %}
+            <section id="tutorials-{% if parent_cat %}children-{{parent_cat.id}}{% else %}main{% endif %}" class="dropdown">
+                <ul class="dropdown-menu bg-lightblue">
 
-            </ul>
-        </section>
+                    {% for category in category_list.list %}
+                        {% with category|is_in_parents:categories as is_parent %}
+                            <li class="dropdown-item">
+                                <a href="{% if is_parent %}#tutorials-children-{{category.pk}}
+                                        {% else %}{% url 'learning:tutorials_archive'%}?category={{ category.slug }}{% endif %}"
+                                    {% if is_parent %}data-toggle="dropdown" class="dropdown-toggle"{% endif %}>
+                                        {{category.name}}
+                                </a>
+                            </li>
+                        {% endwith %}
+                    {% endfor %}
+
+                    {% if category_list.list|length > 1 %}
+                        <li class="dropdown-item">
+                            <a href="{% url 'learning:tutorials_archive'%}{% if parent_cat %}?category={{ parent_cat.slug }}{% endif %}">تمامی {% if parent_cat %}زیر{% endif %}دسته ها</a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </section>
+
+        {% endwith %}
     {% endfor %}
 
 </li>
