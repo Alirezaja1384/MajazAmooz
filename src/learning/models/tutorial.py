@@ -8,8 +8,8 @@ from django_lifecycle import LifecycleModel, hook, BEFORE_UPDATE, BEFORE_SAVE
 from authentication.models import User
 from utilities.model_utils import ConfirmStatusChoices
 
-from . import Category
-from ..querysets import TutorialQuerySet
+from learning.models import Category
+from learning.querysets import TutorialQuerySet
 
 
 class Tutorial(LifecycleModel):

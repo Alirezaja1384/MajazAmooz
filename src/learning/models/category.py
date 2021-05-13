@@ -6,6 +6,7 @@ from django_lifecycle import LifecycleModel, hook, BEFORE_SAVE
 
 from learning.querysets import CategoryQueryset
 
+
 class Category(LifecycleModel):
     """ Category model """
 

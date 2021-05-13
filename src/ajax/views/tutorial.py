@@ -2,12 +2,8 @@ import json
 
 from django.http import HttpRequest, JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.db import (
-    DatabaseError, IntegrityError,
-    DataError
-)
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.db import (DatabaseError, transaction)
 from learning.models import (
     Tutorial, TutorialLike,
     TutorialUpVote, TutorialDownVote
@@ -28,65 +24,48 @@ def tutorial_like_view(request: HttpRequest):
 
     # If request is ajax and tutorial_id sent by client
     if request.method == 'POST' and request.is_ajax():
+
+        before_operation = transaction.savepoint()
+
         try:
 
             tutorial_id = int(json.loads(request.body).get('tutorial_id'))
-            tutorial = Tutorial.objects.active_and_confirmed_tutorials(
-            ).prefetch_related('author').get(id=tutorial_id)
 
-            tutorial_author = tutorial.author
+            # It will throw ObjectDoesNotExist exception
+            # if can't find tutorial
+            tutorial = Tutorial.objects.active_and_confirmed_tutorials(
+            ).select_related('author').get(id=tutorial_id)
 
             tutorial_likes = TutorialLike.objects.filter(
                 user=request.user, tutorial=tutorial)
 
-            # If tutorial upvote already exist delete it,
-            # decrease tutorial upvote and
-            # decrease author's coins and score
-            if tutorial_likes.exists():
+            with transaction.atomic():
+                # If tutorial upvote already exist delete it
+                if tutorial_likes.exists():
 
-                tutorial_like = tutorial_likes.first()
+                    tutorial_like = tutorial_likes.first()
+                    # delete tutorial upvote
+                    tutorial_like.delete()
 
-                # decrease tutorial upvote
-                tutorial.likes_count -= 1
-                tutorial.save()
+                    return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
 
-                # decrease author's scores and coins
-                tutorial_author.scores -= tutorial_like.score
-                tutorial_author.coins -= tutorial_like.coin
-                tutorial_author.save()
+                # Else insert tutorial upvote
+                else:
+                    TutorialLike.objects.create(user=request.user, tutorial=tutorial,
+                                                score=tutorial_like_score, coin=tutorial_like_coin)
 
-                # delete tutorial upvote
-                tutorial_like.delete()
+                    return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
 
-                return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
-
-            # Else insert tutorial upvote,
-            # increase tutorial upvote and
-            # increase author's coins and score
-            else:
-
-                TutorialLike.objects.create(user=request.user, tutorial=tutorial,
-                                            score=tutorial_like_score, coin=tutorial_like_coin)
-                # increase tutorial upvote
-                tutorial.likes_count += 1
-                tutorial.save()
-
-                # increase author's scores and coins
-                tutorial_author.scores += tutorial_like_score
-                tutorial_author.coins += tutorial_like_coin
-                tutorial_author.save()
-
-                return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
+        except (DatabaseError, ObjectDoesNotExist):
+            return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
+                                 'error': 'خطایی در ثبت اطلاعات رخ داد'})
 
         except TypeError:
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'اطلاعات ارسالی صحیح نمی باشد'})
 
-        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
-            return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
-                                 'error': 'خطایی در ثبت اطلاعات رخ داد'})
-
         except Exception as ex:
+            transaction.rollback(before_operation)
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR, 'error': ex.args})
 
     else:
@@ -102,58 +81,38 @@ def tutorial_upvote_view(request: HttpRequest):
 
     # If request is ajax and tutorial_id sent by client
     if request.method == 'POST' and request.is_ajax():
+
+        before_operation = transaction.savepoint()
+
         try:
 
             tutorial_id = int(json.loads(request.body).get('tutorial_id'))
-            tutorial = Tutorial.objects.active_and_confirmed_tutorials(
-            ).prefetch_related('author').get(id=tutorial_id)
 
-            tutorial_author = tutorial.author
+            # It will throw ObjectDoesNotExist exception
+            # if can't find tutorial
+            tutorial = Tutorial.objects.active_and_confirmed_tutorials(
+            ).select_related('author').get(id=tutorial_id)
 
             tutorial_upvotes = TutorialUpVote.objects.filter(
                 user=request.user, tutorial=tutorial)
 
-            # If tutorial upvote already exist delete it,
-            # decrease tutorial upvote and
-            # decrease author's coins and score
-            if tutorial_upvotes.exists():
+            with transaction.atomic():
+                # If tutorial upvote already exist delete it
+                if tutorial_upvotes.exists():
+                    tutorial_upvote = tutorial_upvotes.first()
+                    # delete tutorial upvote
+                    tutorial_upvote.delete()
 
-                tutorial_upvote = tutorial_upvotes.first()
+                    return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
+                # Else insert tutorial upvote
+                else:
+                    TutorialUpVote.objects.create(user=request.user, tutorial=tutorial,
+                                                score=tutorial_upvote_score,
+                                                coin=tutorial_upvote_coin)
 
-                # decrease tutorial upvote
-                tutorial.up_votes_count -= 1
-                tutorial.save()
+                    return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
 
-                # decrease author's scores and coins
-                tutorial_author.scores -= tutorial_upvote.score
-                tutorial_author.coins -= tutorial_upvote.coin
-                tutorial_author.save()
-
-                # delete tutorial upvote
-                tutorial_upvote.delete()
-
-                return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
-
-            # Else insert tutorial upvote,
-            # increase tutorial upvote and
-            # increase author's coins and score
-            else:
-
-                TutorialUpVote.objects.create(user=request.user, tutorial=tutorial,
-                                              score=tutorial_upvote_score,
-                                              coin=tutorial_upvote_coin)
-                # increase tutorial upvote
-                tutorial.up_votes_count += 1
-                tutorial.save()
-
-                # increase author's scores and coins
-                tutorial_author.scores += tutorial_upvote_score
-                tutorial_author.coins += tutorial_upvote_coin
-                tutorial_author.save()
-
-                return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
-
-        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
+        except (DatabaseError, ObjectDoesNotExist):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'خطایی در ثبت اطلاعات رخ داد'})
 
@@ -162,6 +121,7 @@ def tutorial_upvote_view(request: HttpRequest):
                                  'error': 'اطلاعات ارسالی صحیح نمی باشد'})
 
         except Exception as ex:
+            transaction.rollback(before_operation)
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR, 'error': ex.args})
 
     else:
@@ -177,66 +137,48 @@ def tutorial_downvote_view(request: HttpRequest):
 
     # If request is ajax and tutorial_id sent by client
     if request.method == 'POST' and request.is_ajax():
+
+        before_operation = transaction.savepoint()
+
         try:
 
             tutorial_id = int(json.loads(request.body).get('tutorial_id'))
-            tutorial = Tutorial.objects.active_and_confirmed_tutorials(
-            ).prefetch_related('author').get(id=tutorial_id)
 
-            tutorial_author = tutorial.author
+            # It will throw ObjectDoesNotExist exception
+            # if can't find tutorial
+            tutorial = Tutorial.objects.active_and_confirmed_tutorials(
+            ).select_related('author').get(id=tutorial_id)
 
             tutorial_downvotes = TutorialDownVote.objects.filter(user=request.user,
                                                                  tutorial=tutorial)
+            with transaction.atomic():
+                # If tutorial downvote already exist delete it
+                if tutorial_downvotes.exists():
 
-            # If tutorial downvote already exist delete it,
-            # decrease tutorial downvote and
-            # decrease author's coins and score
-            if tutorial_downvotes.exists():
+                    tutorial_downvote = tutorial_downvotes.first()
+                    # delete tutorial downvote
+                    tutorial_downvote.delete()
 
-                tutorial_downvote = tutorial_downvotes.first()
+                    return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
 
-                # decrease tutorial downvote
-                tutorial.down_votes_count -= 1
-                tutorial.save()
+                # Else insert tutorial downvote
+                else:
+                    TutorialDownVote.objects.create(user=request.user, tutorial=tutorial,
+                                                    score=tutorial_downvote_score,
+                                                    coin=tutorial_downvote_coin)
 
-                # decrease author's scores and coins
-                tutorial_author.scores -= tutorial_downvote.score
-                tutorial_author.coins -= tutorial_downvote.coin
-                tutorial_author.save()
-
-                # delete tutorial downvote
-                tutorial_downvote.delete()
-
-                return JsonResponse({'status': InsertOrDeleteStatus.DELETED})
-
-            # Else insert tutorial downvote,
-            # increase tutorial downvote and
-            # increase author's coins and score
-            else:
-
-                TutorialDownVote.objects.create(user=request.user, tutorial=tutorial,
-                                                score=tutorial_downvote_score,
-                                                coin=tutorial_downvote_coin)
-                # increase tutorial downvote
-                tutorial.down_votes_count += 1
-                tutorial.save()
-
-                # increase author's scores and coins
-                tutorial_author.scores += tutorial_downvote_score
-                tutorial_author.coins += tutorial_downvote_coin
-                tutorial_author.save()
-
-                return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
+                    return JsonResponse({'status': InsertOrDeleteStatus.INSERTED})
 
         except TypeError:
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'اطلاعات ارسالی صحیح نمی باشد'})
 
-        except (DatabaseError, IntegrityError, DataError, ObjectDoesNotExist):
+        except (DatabaseError, ObjectDoesNotExist):
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR,
                                  'error': 'خطایی در ثبت اطلاعات رخ داد'})
 
         except Exception as ex:
+            transaction.rollback(before_operation)
             return JsonResponse({'status': InsertOrDeleteStatus.ERROR, 'error': ex.args})
 
     else:
