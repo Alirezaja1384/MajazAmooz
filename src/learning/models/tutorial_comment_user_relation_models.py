@@ -13,7 +13,24 @@ from utilities.models import AbstractScoreCoinModel
 
 
 class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
+    """ Abstract comment score-coin model
 
+    Needs these (required ones flagged by *):
+        [comment relation field *]: required for increase/decrease
+                                     object's count and comment.user's score and coin
+
+        [comment_object_count_field]: object field on comment model to increase/decrease
+                                       on insert/delete. Defaults to None.
+
+    Provides these hooks:
+        AFTER_CREATE: increases comment.user's score and coin by object's
+                      score and coin field and object count on
+                      comment model (if specified by comment_object_count_field)
+
+        AFTER_CREATE: decreases comment.user's score and coin by object's
+                      score andcoin field and object count on
+                      comment model (if specified by comment_object_count_field)
+    """
     comment_object_count_field = None
 
     @property
@@ -22,6 +39,7 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
 
     @hook(AFTER_CREATE)
     def on_create(self):
+        # Increase commnet.user's scores and coins
         self.comment.user.scores += self.score
         self.comment.user.coins += self.coin
         self.comment.user.save(update_fields=['scores', 'coins'])
@@ -34,6 +52,7 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
 
     @hook(BEFORE_DELETE)
     def on_delete(self):
+        # Decrease commnet.user's scores and coins
         self.comment.user.scores -= self.score
         self.comment.user.coins -= self.coin
         self.comment.user.save(update_fields=['scores', 'coins'])
