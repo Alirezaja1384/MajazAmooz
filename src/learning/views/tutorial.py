@@ -99,7 +99,8 @@ def tutorial_details_view(request: HttpRequest, slug: str):
     tutorial = get_object_or_404(
         Tutorial.objects.active_and_confirmed_tutorials().select_related('author'), slug=slug)
 
-    comments = tutorial.comments.active_and_confirmed_comments()
+    comments = tutorial.comments.select_related('parent_comment', 'user'
+                                                ).active_and_confirmed_comments()
 
     related_tutorials = get_related_tutorials(
         tutorial, ('id', 'title', 'short_description', 'image'), 5)

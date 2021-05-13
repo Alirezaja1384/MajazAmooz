@@ -1,0 +1,148 @@
+{% load image_utils %}
+{% load bleach_tags %}
+{% load authentication_filters %}
+
+{% regroup comments by parent_comment as comments_group %}
+
+<!-- Comments -->
+<section class="card card-rounded mt-5 text-center">
+
+    <!-- Heading -->
+    <section class="card-header card-rounded-header bg-lightblue">
+        <h3>نظرات کاربران</h3>
+    </section>
+    <!-- End Heading -->
+
+
+
+    <!-- Comments body -->
+    <section class="card-body card-rounded-content bg-white text-left px-1 px-sm-2 px-md-3">
+
+
+            {% for comment_group_item in comments_group %}
+                {% if not comment_group_item.grouper %}
+
+                    {% for comment in comment_group_item.list %}
+                        <!-- Single comment -->
+                        <section class="row m-1 m-sm-3">
+
+                            <!-- Single comment user details -->
+                            <section class="col-lg-2 col-3 text-center px-0">
+                                <section class="w-100">
+                                    <!-- User image -->
+                                    <img src="{{ comment.user.avatar|image_url }}" alt="{{ comment.user|full_name }}" class="w-100">
+                                    <!-- End User image -->
+
+                                    <!-- User name -->
+                                    <h5>
+                                        <a href="#">
+                                            {{ comment.user|full_name }}
+                                        </a>
+                                    </h5>
+                                    <!-- End User name -->
+                                </section>
+                            </section>
+                            <!-- End Single comment user details -->
+
+
+                            <!-- Single comment title,vote and comment body -->
+                            <section class="col-lg-10 col-9">
+                                <section class="card">
+                                    <section class="card-body">
+
+
+                                        <!-- Single comment title and vote -->
+                                        <section>
+
+
+
+                                            <!-- Single comment vote -->
+                                            <section class="d-flex justify-content-around pb-3">
+                                                <!-- UpVote -->
+                                                <a id="comment-upvote-btn-{{ comment.pk }}" class="btn btn-sm btn-success" onclick="UpVoteTutorialComment({{ comment.pk }})">
+                                                    <i class="fa fa-thumbs-o-up"></i>
+                                                    <span id="TutorialCommentUpVotesCount-{{ comment.pk }}">{{ comment.up_votes_count }}</span>
+                                                </a>
+                                                <!-- End UpVote -->
+
+                                                <!-- DownVote -->
+                                                <a id="comment-downvote-btn-{{ comment.pk }}" class="btn btn-sm btn-danger" onclick="DownVoteTutorialComment({{ comment.pk }})">
+                                                    <i class="fa fa-thumbs-o-down"></i>
+                                                    <span id="TutorialCommentDownVotesCount-{{ comment.pk }}">{{ comment.down_votes_count }}</span>
+                                                </a>
+                                                <!-- End DownVote -->
+
+                                                <!-- Like -->
+                                                <a id="comment-like-btn-{{ comment.pk }}" class="btn btn-sm btn-outline-danger" onclick="LikeTutorialComment({{ comment.pk }})">
+                                                    <i class="fa fa-heart"></i>
+                                                    <span id="TutorialCommentLikesCount-{{ comment.pk }}">{{ comment.likes_count }}</span>
+                                                </a>
+                                                <!-- End Like -->
+
+                                                {% if comment.allow_reply %}
+                                                    <!-- Reply button -->
+                                                    <a class="btn btn-sm btn-outline-info" onclick="ReplyTo({{comment.pk}},'{{comment.title}}')">
+                                                        <i class="fa fa-reply"></i> پاسخ
+                                                    </a>
+                                                    <!-- End Reply button -->
+                                                {% endif %}
+                                            </section>
+                                            <!-- End Single comment vote -->
+
+
+
+                                            <!-- Single comment title -->
+                                            <section>
+                                                <h5>{{ comment.title }}</h5>
+                                            </section>
+                                            <!-- End Single comment title -->
+
+
+
+                                            <section class="clearfix"></section>
+                                        </section>
+                                        <!-- End Single comment title and vote -->
+
+
+                                        <!-- Comment text -->
+                                        <section class="mt-3">
+                                            <p>
+                                                {{ comment.body|bleach }}
+                                            </p>
+                                        </section>
+                                        <!-- End Comment text -->
+
+                                    </section>
+                                </section>
+
+
+
+                                {% if comment.allow_reply %}
+                                    {% include 'learning/shared/tutorial_replied_comments.html' with comments=comments parent_comment=comment %}
+                                {% endif %}
+
+
+                            </section>
+                            <!-- End Single comment title,vote and comment body -->
+
+
+
+
+                        </section>
+                        <!-- End Single comment -->
+                    {% endfor %}
+
+                {% endif %}
+            {% empty %}
+                <p class="text-center">هیچ نظری تاکنون درج نشده</p>
+            {% endfor %}
+
+
+
+    </section>
+    <!-- End Comments body -->
+
+</section>
+<!-- End Comments -->
+
+
