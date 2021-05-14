@@ -2,8 +2,9 @@
     Production learning models admin settings
 """
 from django.contrib import admin
+from django.db.models import Prefetch
 
-from learning.models import Tutorial
+from learning.models import (Tutorial, Category)
 from .actions import (confirm_action, disprove_action)
 
 
@@ -18,6 +19,10 @@ class CategoryAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'slug',)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).select_related('parent_category')
+        return qs
+
 
 class TutorialAdmin(admin.ModelAdmin):
     """ Tutorial admin settings """
@@ -31,8 +36,7 @@ class TutorialAdmin(admin.ModelAdmin):
         Returns:
             str: Name of categories as a string
         """
-        categories = [cat.name for cat in obj.categories.filter(
-            is_active=True).only('name')]
+        categories = [cat.name for cat in obj.categories.all()]
         return '، '.join(categories)
     get_categories.short_description = 'دسته بندی ها'
 
@@ -51,6 +55,12 @@ class TutorialAdmin(admin.ModelAdmin):
 
     actions = (confirm_action, disprove_action,)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).select_related('author').prefetch_related(
+            Prefetch('categories', queryset=Category.objects.active_categories())
+        )
+        return qs
+
 
 class TutorialTagAdmin(admin.ModelAdmin):
     """ Tutorial admin settings """
@@ -62,7 +72,7 @@ class TutorialTagAdmin(admin.ModelAdmin):
 class TutorialCommentAdmin(admin.ModelAdmin):
     """ TutorialComment admin settings """
 
-    list_display = ('title', 'parent_comment', 'tutorial', 'create_date', 'last_edit_date',
+    list_display = ('title', 'parent_comment', 'tutorial', 'user', 'create_date', 'last_edit_date',
                     'confirm_status', 'is_edited', 'allow_reply', 'notify_replies', 'is_active',)
 
     fields = ('user', 'tutorial', 'parent_comment',
@@ -75,3 +85,7 @@ class TutorialCommentAdmin(admin.ModelAdmin):
     search_fields = ('title', 'body',)
 
     actions = (confirm_action, disprove_action,)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).select_related('parent_comment', 'tutorial', 'user')
+        return qs
