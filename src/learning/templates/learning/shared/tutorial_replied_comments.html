@@ -99,7 +99,7 @@
 
 
 
-                {% if comment.allow_reply and comment.is_leaf %}
+                {% if comment.allow_reply %}
                     {% include 'learning/shared/tutorial_replied_comments.html' with comments=comments parent_comment=comment %}
                 {% endif %}
 
