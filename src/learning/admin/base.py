@@ -40,9 +40,23 @@ class TutorialAdmin(admin.ModelAdmin):
         return '، '.join(categories)
     get_categories.short_description = 'دسته بندی ها'
 
+    def get_tags(self, obj: Tutorial) -> str:
+        """ Returns tutorial tags
+
+        Args:
+            obj (Tutorial): Tutorial object
+
+        Returns:
+            str: tutorial tags as a string
+        """
+        tags = [tag.title for tag in obj.tags.all()]
+        return '، '.join(tags)
+    get_tags.short_description = 'کلمات کلیدی'
+
     list_display = ('title', 'slug', 'author', 'user_views_count',
                     'likes_count', 'create_date', 'last_edit_date',
-                    'confirm_status', 'is_active', 'is_edited', 'get_categories',)
+                    'confirm_status', 'is_active', 'is_edited',
+                    'get_categories', 'get_tags')
 
     list_filter = ('create_date', 'last_edit_date',
                    'confirm_status', 'is_active',)
@@ -51,13 +65,13 @@ class TutorialAdmin(admin.ModelAdmin):
 
     fields = ('author', 'title', 'slug', 'short_description',
               'body', 'image', 'confirm_status', 'categories',
-              'is_active', 'is_edited',)
+              'is_active', 'is_edited')
 
     actions = (confirm_action, disprove_action,)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('author').prefetch_related(
-            Prefetch('categories', queryset=Category.objects.active_categories())
+            Prefetch('categories', queryset=Category.objects.active_categories()), 'tags'
         )
         return qs
 
