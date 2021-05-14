@@ -5,7 +5,6 @@ from django.shortcuts import (
     render, get_object_or_404
 )
 
-from utilities.model_utils import ConfirmStatusChoices
 from authentication.models import User
 from learning.models import (
     Tutorial, Category,
@@ -22,9 +21,11 @@ def get_tutorial_by_categories(categories: list[Category], fields: tuple,
     @param tutorial_count: returns given count of tutorial
     @return: list of tutor tutorials
     """
-    return Tutorial.objects.filter(is_active=True, confirm_status=ConfirmStatusChoices.CONFIRMED,
-                                   categories__in=categories).only(*fields).exclude(
-                                       id=tutorial_id).order_by('-create_date')[:tutorial_count]
+    tutorials = Tutorial.objects.filter(categories__in=categories).only(
+        *fields).exclude(id=tutorial_id).order_by(
+            '-create_date').active_and_confirmed_tutorials().distinct()[:tutorial_count]
+
+    return tutorials
 
 
 def get_related_tutorials(tutorial: Tutorial, fields: tuple,
@@ -36,42 +37,30 @@ def get_related_tutorials(tutorial: Tutorial, fields: tuple,
     @return: related tutorials by given tutorial object
     """
 
-    # if tutorial doesn't have any active category return latest tutorials
-    if not tutorial.categories.filter(is_active=True).count():
-        return Tutorial.objects.active_and_confirmed_tutorials().order_by(
-            '-create_date')[:tutorial_count]
+    def _flat_categories_parents(categories: list[Category]):
+        """ Returns list of categories and their parents """
+        result = categories
 
-    categories = []
-    related_tutorials = []
+        for category in categories:
+            while category.parent_category:
+                category = category.parent_category
+                result.append(category)
 
-    # while tutorials count are not enough and
-    # there isn't any category in list
-    # or there is at least a not None category
-    # (when all categories are none search will end)
-    while len(related_tutorials) < tutorial_count and (
-            len(categories) == 0 or any(map(lambda cat: cat is not None, categories))):
+        # Distinct result
+        return list(dict.fromkeys(result))
 
-        # when categories has at least one item
-        if len(categories) > 0:
-            # replace categories by their parent categories
-            # if category is not None else return None
-            categories = list(
-                map(lambda cat: cat.parent_category if cat is not None else None, categories))
-        # first time running this loop
-        else:
-            # Use tutorial categories for first time
-            categories = tutorial.categories.filter(is_active=True).all()
+    categories_and_parents = list(tutorial.categories.select_related(
+        'parent_category').active_categories())
 
-        # categories that they're not None
-        not_none_categories = list(
-            filter(lambda cat: cat is not None, categories))
+    # If tutorial doesn't have any active category return empty
+    if len(categories_and_parents) == 0:
+        return Tutorial.objects.none()
 
-        # adds founded tutorials to related_tutorials list
-        related_tutorials += get_tutorial_by_categories(not_none_categories, fields, tutorial.id,
-                                                        tutorial_count - len(related_tutorials))
+    categories = _flat_categories_parents(categories_and_parents)
 
-        # distinct related_tutorials
-        related_tutorials = list(dict.fromkeys(related_tutorials))
+    # Get tutorials with joint categories
+    related_tutorials = list(get_tutorial_by_categories(
+        categories, fields, tutorial.id, tutorial_count))
 
     return related_tutorials
 
@@ -97,13 +86,14 @@ def record_tutorial_view(tutorial: Tutorial, user: User):
 def tutorial_details_view(request: HttpRequest, slug: str):
     """ Tutorial details view """
     tutorial = get_object_or_404(
-        Tutorial.objects.active_and_confirmed_tutorials().select_related('author'), slug=slug)
+        Tutorial.objects.prefetch_related('categories').select_related(
+            'author').active_and_confirmed_tutorials(), slug=slug)
 
     comments = tutorial.comments.select_related('parent_comment', 'user'
                                                 ).active_and_confirmed_comments()
 
     related_tutorials = get_related_tutorials(
-        tutorial, ('id', 'title', 'short_description', 'image'), 5)
+        tutorial, ('title', 'slug', 'short_description', 'image'), 5)
 
     # if user logged in and liked this tutorial
     liked_by_current_user = request.user.is_authenticated and tutorial.likes.filter(
@@ -120,7 +110,8 @@ def tutorial_details_view(request: HttpRequest, slug: str):
         "tutorial": tutorial,
         "liked_by_current_user": liked_by_current_user,
         "comments": comments,
-        "related_tutorials": related_tutorials,
+        # If there wasn't any related_tutorial use latest_tutorials instead
+        "related_tutorials": related_tutorials or latest_tutorials,
         'latest_tutorials': latest_tutorials,
         'most_popular_tutorials': most_popular_tutorials
     }
