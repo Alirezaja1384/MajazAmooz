@@ -15,13 +15,11 @@ class TutorialListView(ListView):
     page_kwarg = 'page'
     context_object_name = 'tutorials'
 
-
     def get_queryset(self):
         # All confirmed and active tutorials
-        tutorials = Tutorial.objects.active_and_confirmed_tutorials().order_by('-create_date').only(
-            'title', 'slug', 'short_description', 'likes_count', 'image').annotate(
-            comments_count=Count('comments', filter=Q(
-                comments__confirm_status=ConfirmStatusChoices.CONFIRMED)))
+        tutorials = Tutorial.objects.order_by('-create_date').only(
+            'title', 'slug', 'short_description', 'likes_count', 'image'
+        ).active_and_confirmed_tutorials()
 
         # create_date=order_by and update it with request.GET
         # (order_by=create_date if request.GET doesn't contain order_by)
@@ -31,8 +29,14 @@ class TutorialListView(ListView):
         # Filter and order tutorials
         tutorials = TutorialArchiveFilterSet(filters, tutorials).qs
 
-        return tutorials
+        # Annonate comments_count
+        # Note: if distinct=False it will count comments
+        #       multiple times then count will go wrong
+        tutorials = tutorials.annotate(
+            comments_count=Count('comments', distinct=True, filter=Q(comments__is_active=True) &
+                                 Q(comments__confirm_status=ConfirmStatusChoices.CONFIRMED)))
 
+        return tutorials
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
