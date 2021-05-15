@@ -432,7 +432,7 @@
                 <section class="card-body card-rounded-content bg-white ح-0">
                     {% for tag in tutorial.tags.all %}
                         
-                        <a href="#" class="rounded bg-light px-2 pt-1 m-1 d-inline-block">{{ tag.title }}</a>
+                        <a href="{% url 'learning:tutorials_archive' %}?search={{ tag.title }}" class="rounded bg-light px-2 pt-1 m-1 d-inline-block">{{ tag.title }}</a>
 
                     {% empty %}
                         <p>هیچ کلمه کلیدی یافت نشد</p>
