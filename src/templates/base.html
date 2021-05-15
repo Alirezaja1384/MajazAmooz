@@ -202,15 +202,18 @@
                         <a class="nav-link text-truncate" href="#">رتبه بندی کاربران</a>
                     </li>
                     
-                    <li class="nav-item d-lg-none">
-                        {% if user.is_authenticated %}
-                            <a class="nav-link text-truncate" href="#">حساب کاربری</a>
-                        {% else %}
-                            <a href="{% url 'authentication:login' %}" class="nav-link text-truncate">ورود</a>
-                        {% endif %}
-                    </li>
-                    
                     {% if user.is_authenticated %}
+
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link text-truncate" href="#">حساب کاربری</a>
+                        </li>
+
+                        {% if user.is_staff %}
+                            <li class="nav-item d-lg-none">
+                                <a class="nav-link text-truncate" href="{% url 'admin:index' %}">پنل ادمین</a>
+                            </li>
+                        {% endif %}
+
                         <li class="nav-item d-lg-none">
                             <form method="POST" action="{% url 'authentication:logout' %}">
                                 {% csrf_token %}
@@ -219,6 +222,11 @@
                                     خروج
                                 </button>
                             </form>
+                        </li>
+
+                    {% else %}
+                        <li class="nav-item d-lg-none">
+                            <a href="{% url 'authentication:login' %}" class="nav-link text-truncate">ورود</a>
                         </li>
                     {% endif %}
 
@@ -266,7 +274,7 @@
                             
                             {% if user.is_staff %}
                                 <li class="dropdown-item">
-                                    <a href="/admin">
+                                    <a href="{% url 'admin:index' %}">
                                         پنل ادمین
                                     </a>
                                 </li>
