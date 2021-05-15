@@ -1,6 +1,7 @@
 """ Tutorial view """
 from django.http import HttpRequest
 from django.views.decorators.csrf import requires_csrf_token
+from django.db.models import Prefetch
 from django.shortcuts import (
     render, get_object_or_404
 )
@@ -49,8 +50,7 @@ def get_related_tutorials(tutorial: Tutorial, fields: tuple,
         # Distinct result
         return list(dict.fromkeys(result))
 
-    categories_and_parents = list(tutorial.categories.select_related(
-        'parent_category').active_categories())
+    categories_and_parents = list(tutorial.categories.all())
 
     # If tutorial doesn't have any active category return empty
     if len(categories_and_parents) == 0:
@@ -86,8 +86,10 @@ def record_tutorial_view(tutorial: Tutorial, user: User):
 def tutorial_details_view(request: HttpRequest, slug: str):
     """ Tutorial details view """
     tutorial = get_object_or_404(
-        Tutorial.objects.prefetch_related('categories').select_related(
-            'author').active_and_confirmed_tutorials(), slug=slug)
+        Tutorial.objects.select_related('author').prefetch_related(
+            Prefetch('categories', queryset=Category.objects.active_categories())
+        ).active_and_confirmed_tutorials(), slug=slug)
+    tutorial.categories.select_related('parent_category')
 
     comments = tutorial.comments.select_related('parent_comment', 'user'
                                                 ).active_and_confirmed_comments()

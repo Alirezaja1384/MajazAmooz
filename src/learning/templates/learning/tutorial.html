@@ -426,20 +426,37 @@
 
             <section class="card card-rounded mt-4">
                 <section class="card-header card-rounded-header bg-lightblue text-center">
-                    <h4>کلمات کلیدی</h4>
+                    <h4>دسته بندی ها</h4>
                 </section>
 
                 <section class="card-body card-rounded-content bg-white ح-0">
-                    {% for tag in tutorial.tags.all %}
-                        
-                        <a href="{% url 'learning:tutorials_archive' %}?search={{ tag.title }}" class="rounded bg-light px-2 pt-1 m-1 d-inline-block">{{ tag.title }}</a>
-
+                    {% for category in tutorial.categories.all %}
+                        <a href="{% url 'learning:tutorials_archive' %}?category={{ category.name }}" class="rounded bg-light px-2 pt-1 m-1 d-inline-block">{{ category.name }}</a>
                     {% empty %}
-                        <p>هیچ کلمه کلیدی یافت نشد</p>
+                        <p>این آموزش فاقد دسته بندی است</p>
                     {% endfor %}
 
                 </section>
             </section>
+
+
+
+            {% if tutorial.tags %}
+                <section class="card card-rounded mt-4">
+                    <section class="card-header card-rounded-header bg-lightblue text-center">
+                        <h4>کلمات کلیدی</h4>
+                    </section>
+
+                    <section class="card-body card-rounded-content bg-white ح-0">
+                        {% for tag in tutorial.tags.all %}
+                            <a href="{% url 'learning:tutorials_archive' %}?search={{ tag.title }}" class="rounded bg-light px-2 pt-1 m-1 d-inline-block">{{ tag.title }}</a>
+                        {% empty %}
+                            <p>این آموزش فاقد کلمه کلیدی است</p>
+                        {% endfor %}
+
+                    </section>
+                </section>
+            {% endif %}
 
 
 
