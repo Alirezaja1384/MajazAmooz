@@ -1,5 +1,5 @@
 import django_filters
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
 
 class TutorialArchiveFilterSet(django_filters.FilterSet):
@@ -21,12 +21,13 @@ class TutorialArchiveFilterSet(django_filters.FilterSet):
     )
 
 
-    def search_filter(self, queryset, _, value):
+    def search_filter(self, queryset: QuerySet, _, value):
         """ Search condition in title, body and more ... """
         return queryset.filter(
             Q(title__contains=value) | Q(short_description__contains=value) |
             Q(body__contains=value) | Q(slug__contains=value) |
-            Q(categories__name__contains=value)
+            (Q(categories__name__contains=value) & Q(categories__is_active=True)) |
+            Q(tags__title__contains=value)
         )
 
 
