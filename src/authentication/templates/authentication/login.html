@@ -33,6 +33,16 @@
                     <section class="col-8 form-group text-left mx-auto mt-4">
                         <section class="row">
 
+                            {% if next %}
+                                <section class="alert alert-info ">
+                                    {% if user.is_authenticated %}
+                                        <strong>شما اجازه دسترسی به مسیر درخواستی را ندارید! در صورتی که حساب کاربری دیگری دارید که این دسترسی را دارد وارد شوید</strong>
+                                    {% else %}
+                                        <strong>کاربر گرامی برای دسترسی به مسیر درخواستی باید ابتدا وارد شوید</strong>
+                                    {% endif %}
+                                </section>
+                            {% endif %}
+
                             {% if form.non_field_errors %}
                                 <section class="alert alert-danger w-100">
                                     {{ form.non_field_errors }}

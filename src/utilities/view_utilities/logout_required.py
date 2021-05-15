@@ -6,7 +6,8 @@ from django.conf import settings
 class LogoutRequiredMixin():
     """
         Redirects user to LOGOUT_REQUIRED_URL
-        set in settings if was authenticated
+        set in settings if authenticated and
+        url doesn't have "next" pareneter
     """
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
@@ -22,7 +23,7 @@ class LogoutRequiredMixin():
             raise AttributeError(msg) from ex
 
 
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and not request.GET.get('next'):
             current_path = request.get_full_path()
             return redirect(logout_required_url + "?next=" + current_path)
 
