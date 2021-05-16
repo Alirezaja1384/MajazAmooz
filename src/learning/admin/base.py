@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.db.models import Prefetch
 
 from learning.models import (Tutorial, Category)
-from .actions import (confirm_action, disprove_action)
+from . import actions
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -67,7 +67,7 @@ class TutorialAdmin(admin.ModelAdmin):
               'body', 'image', 'confirm_status', 'categories',
               'is_active', 'is_edited')
 
-    actions = (confirm_action, disprove_action,)
+    actions = (actions.confirm_tutorial_action, actions.disprove_tutorial_action,)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('author').prefetch_related(
@@ -98,7 +98,7 @@ class TutorialCommentAdmin(admin.ModelAdmin):
 
     search_fields = ('title', 'body',)
 
-    actions = (confirm_action, disprove_action,)
+    actions = (actions.confirm_tutorial_comment_action, actions.disprove_tutorial_comment_action,)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('parent_comment', 'tutorial', 'user')
