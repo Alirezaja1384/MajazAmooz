@@ -95,7 +95,8 @@ def confirm_tutorial_action(modeladmin: ModelAdmin, request: HttpRequest, querys
         confirm_status=ConfirmStatusChoices.CONFIRMED).filter(is_active=True)
     update_item_pks = [tutorial.pk for tutorial in update_queryset]
 
-    updated = update_queryset.update(confirm_status=ConfirmStatusChoices.CONFIRMED)
+    updated = update_queryset.update(
+        confirm_status=ConfirmStatusChoices.CONFIRMED)
 
     # Execute new query to get updated objects for notification
     send_mail_queryset = queryset.filter(
@@ -115,8 +116,24 @@ def confirm_tutorial_action(modeladmin: ModelAdmin, request: HttpRequest, querys
 
 @admin.action(description='رد آموزش های انتخاب شده')
 def disprove_tutorial_action(modeladmin: ModelAdmin, request: HttpRequest, queryset: QuerySet):
-    updated = queryset.update(confirm_status=ConfirmStatusChoices.DISPROVED)
+
+    update_queryset = queryset.exclude(
+        confirm_status=ConfirmStatusChoices.DISPROVED).filter(is_active=True)
+    update_item_pks = [tutorial.pk for tutorial in update_queryset]
+
+    updated = update_queryset.update(
+        confirm_status=ConfirmStatusChoices.DISPROVED)
+
+    # Execute new query to get updated objects for notification
+    send_mail_queryset = queryset.filter(
+        pk__in=update_item_pks).select_related('author')
+
+    # Send mails
+    disprove_email = notify_tutorial_confirm_disprove(
+        request, send_mail_queryset)
 
     modeladmin.message_user(request,
                             f"{updated} مورد با موفقیت رد شد",
                             messages.SUCCESS)
+
+    message_user_email_results(request, modeladmin, disprove_email)
