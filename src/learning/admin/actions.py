@@ -4,8 +4,25 @@ from django.contrib.admin import ModelAdmin
 from django.db.models import QuerySet
 
 from utilities.model_utils import ConfirmStatusChoices
-from learning.emails import notify_tutorial_comments_reply
+from learning.emails import (
+    EmailsResult,
+    notify_tutorial_comments_reply,
+    notify_tutorial_comment_confirm_disprove
+)
 from learning.models import TutorialComment
+
+
+def message_user_email_results(request: HttpRequest, modeladmin: ModelAdmin,
+                               emails_result: EmailsResult):
+
+    if emails_result.success:
+        successful_email_msg = f'{emails_result.success} ایمیل با موفقیت ارسال شد'
+        modeladmin.message_user(
+            request, successful_email_msg, messages.SUCCESS)
+
+    if emails_result.failed:
+        failed_email_msg = f'ارسال {emails_result.failed} ایمیل با خطا مواجه شد'
+        modeladmin.message_user(request, failed_email_msg, messages.ERROR)
 
 
 # TODO: Add permissions
@@ -13,37 +30,61 @@ from learning.models import TutorialComment
 def confirm_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpRequest,
                                     queryset: QuerySet[TutorialComment]):
 
-    queryset = queryset.exclude(confirm_status=ConfirmStatusChoices.CONFIRMED
-                                ).filter(is_active=True)
+    # After update update_queryset becomes empty because of applied exclusion
+    # then we store update item primary keys in update_item_pks t use later
+    update_queryset = queryset.exclude(
+        confirm_status=ConfirmStatusChoices.CONFIRMED).filter(is_active=True)
+    update_item_pks = [comment.pk for comment in update_queryset]
 
-    # Send email before update because after update queryset will be empty by exclusion
-    email_success_count, email_failed_count = notify_tutorial_comments_reply(
-        request, queryset)
+    updated_count = update_queryset.update(
+        confirm_status=ConfirmStatusChoices.CONFIRMED)
 
-    updated = queryset.update(confirm_status=ConfirmStatusChoices.CONFIRMED)
+    # Execute new query to get updated objects for notification
+    send_mail_queryset = queryset.filter(
+        pk__in=update_item_pks).select_related(
+            'user', 'tutorial', 'parent_comment', 'parent_comment__user')
 
-    confirm_msg = f"{updated} مورد با موفقیت تایید شد"
+    # Send mails
+    confirm_email = notify_tutorial_comment_confirm_disprove(
+        request, send_mail_queryset)
+
+    reply_email = notify_tutorial_comments_reply(
+        request, send_mail_queryset)
+
+    emails_result = confirm_email + reply_email
+
+    # Send messages
+    confirm_msg = f"{updated_count} مورد با موفقیت تایید شد"
     modeladmin.message_user(request, confirm_msg, messages.SUCCESS)
-
-    if email_success_count:
-        successful_email_msg = f'{email_success_count} ایمیل با موفقیت ارسال شد'
-        modeladmin.message_user(
-            request, successful_email_msg, messages.SUCCESS)
-
-    if email_failed_count:
-        failed_email_msg = f'ارسال {email_failed_count} ایمیل با خطا مواجه شد'
-        modeladmin.message_user(request, failed_email_msg, messages.ERROR)
+    message_user_email_results(request, modeladmin, emails_result)
 
 
 @admin.action(description='رد دیدگاه های انتخاب شده')
 def disprove_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpRequest,
                                      queryset: QuerySet):
 
-    updated = queryset.update(confirm_status=ConfirmStatusChoices.DISPROVED)
+    # After update update_queryset becomes empty because of applied exclusion
+    # then we store update item primary keys in update_item_pks t use later
+    update_queryset = queryset.exclude(
+        confirm_status=ConfirmStatusChoices.DISPROVED).filter(is_active=True)
+    update_item_pks = [comment.pk for comment in update_queryset]
+
+    updated_count = queryset.update(
+        confirm_status=ConfirmStatusChoices.DISPROVED)
+
+    # Execute new query to get updated objects for notification
+    send_mail_queryset = queryset.filter(pk__in=update_item_pks
+                                         ).select_related('user', 'tutorial')
+
+    # Send mails
+    disprove_email = notify_tutorial_comment_confirm_disprove(
+        request, send_mail_queryset)
 
     modeladmin.message_user(request,
-                            f"{updated} مورد با موفقیت رد شد",
+                            f"{updated_count} مورد با موفقیت رد شد",
                             messages.SUCCESS)
+
+    message_user_email_results(request, modeladmin, disprove_email)
 
 
 @admin.action(description='تایید آموزش های انتخاب شده')
