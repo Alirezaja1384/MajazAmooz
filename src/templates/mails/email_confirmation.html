@@ -1,19 +1,10 @@
-<html>
-<head>
-	<title>تایید ایمیل</title>
-</head>
-<body>
+{% extends 'mails/base.html' %}
 
-    <div style="direction: rtl;text-align: right;">
-        <h3>تایید ایمیل</h3>
-        <h6>سلام {{ user.first_name }}!<h6>
-        <p>برای فعالسازی حساب کاربریت به <a href="{{ confirm_url }}">این لینک</a> برو</p>
-        <p style="color: gray;">برای کلیک روی لینک مشکلی پیش اومده؟ لینک پایین رو copy و توی مرورگرت paste کن!</p>
-        <div style="direction: rtl;text-align: right;">
-            <p style="color: gray;">{{ confirm_url }}</p>
-        </div>
+{% block title %} تایید ایمیل {% endblock title %}
 
-        <p style="text-align: center;">مجازآموز</p>
-    </div>
+{% block content %}
 
-</html>
+    <h6>سلام {{ user.first_name }}!<h6>
+    <p>برای فعالسازی حساب کاربریت به <a href="{{ url }}">این لینک</a> برو</p>
+
+{% endblock content %}

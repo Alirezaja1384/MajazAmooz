@@ -88,8 +88,9 @@ class EmailConfirmationManager:
                              f"لینک تایید ایمیل شما {confirm_url}")
 
         html_message = render_to_string(template, {
+            'subject': subject,
             'user': self.user,
-            'confirm_url': confirm_url
+            'url': confirm_url
         })
 
         email = EmailMultiAlternatives(

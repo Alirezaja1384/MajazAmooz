@@ -1,0 +1,28 @@
+<html>
+
+<body>
+
+    <div style="direction: rtl;text-align: right;">
+
+        
+        <h3> {% block title %} {{subject|default:'عنوان ایمیل'}} {% endblock title %} </h3>
+
+
+        {% block content %}متن ایمیل{% endblock content %}
+
+        {% if url %}
+            <p style="color: gray;">برای کلیک روی لینک مشکلی پیش اومده؟ لینک پایین رو copy و توی مرورگرت paste کن!</p>
+
+            <div style="direction: rtl;text-align: right;">
+                <p style="color: gray;">{{ url }}</p>
+            </div>
+        {% endif %}
+
+        <p>
+            ممنون که به بزرگ تر شدن این جامعه کمک میکنی :)
+        </p>
+
+        <p style="text-align: center;">مجازآموز</p>
+    </div>
+
+</html>

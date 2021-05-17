@@ -1,0 +1,15 @@
+{% extends 'mails/base.html' %}
+
+{% block content %}
+
+    <h6>سلام {{comment.user.first_name}} عزیز!<h6>
+
+    <p>
+        دیدگاه شما با عنوان <strong>"{{comment.title}}"</strong> برای آموزش <strong>"{{comment.tutorial.title}}"</strong> {{status_text}}
+    </p>
+
+    {% if url %}
+        <p>اگه خواستی بهش یه نگاه بندازی روی <a href="{{ url }}">این لینک</a> کلیک کن</p>
+    {% endif %}
+
+{% endblock content %}

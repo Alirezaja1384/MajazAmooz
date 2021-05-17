@@ -163,7 +163,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = config('EMAIL_BACKEND',
                         default='django.core.mail.backends.console.EmailBackend')
 
-EMAIL_FROM = config('EMAIL_FROM', default='')
+EMAIL_FROM = config('EMAIL_FROM', default=None)
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
@@ -200,4 +200,6 @@ BLEACH_STRIP_COMMENTS = False
 # https://docs.djangoproject.com/en/3.2/ref/settings/#login-url
 
 LOGIN_URL = '/auth/login'
+
+# Logout required url for LogoutRequiredMixin
 LOGOUT_REQUIRED_URL = '/auth/logout_required'
