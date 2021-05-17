@@ -199,3 +199,44 @@ def notify_tutorial_confirm_disprove(
             failed_count += 1
 
     return EmailsResult(success_count, failed_count)
+
+
+def notify_tutorial_new_confirmed_comment(
+        request: HttpRequest, queryset: QuerySet[Tutorial]) -> EmailsResult:
+
+    success_count = 0
+    failed_count = 0
+
+    queryset = queryset.exclude(tutorial=None).filter(
+        confirm_status=ConfirmStatusChoices.CONFIRMED, is_active=True,
+        tutorial__confirm_status=ConfirmStatusChoices.CONFIRMED,
+        tutorial__is_active=True
+    )
+
+    def _send_notification_mail(comment: TutorialComment) -> bool:
+        tutorial = comment.tutorial
+
+        url = request.build_absolute_uri(resolve_url('learning:tutorial', slug=tutorial.slug) +
+                                         f'#comment-{comment.pk}')
+
+        to = [comment.tutorial.author.email]
+        subject = 'ثبت دیدگاه جدید برای آموزش شما'
+        plain_message = (f'دیدگاه "{comment.title}" برای آموزش "{tutorial.title}" ثبت و تایید شد \n'
+                         f'لینک دیدگاه: {url}')
+        template = 'mails/tutorial_new_confirmed_comment.html'
+        context = {
+            'comment': comment,
+            'tutorial': tutorial,
+            'url': url
+        }
+
+        return send_mail(subject, to, plain_message, template, context)
+
+    for comment in queryset:
+        result = _send_notification_mail(comment)
+        if result:
+            success_count += 1
+        else:
+            failed_count += 1
+
+    return EmailsResult(success_count, failed_count)

@@ -8,7 +8,8 @@ from learning.emails import (
     EmailsResult,
     notify_tutorial_comments_reply,
     notify_tutorial_comment_confirm_disprove,
-    notify_tutorial_confirm_disprove
+    notify_tutorial_confirm_disprove,
+    notify_tutorial_new_confirmed_comment
 )
 from learning.models import TutorialComment
 
@@ -52,7 +53,10 @@ def confirm_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpRequest
     reply_email = notify_tutorial_comments_reply(
         request, send_mail_queryset)
 
-    emails_result = confirm_email + reply_email
+    tutorial_new_comment_email = notify_tutorial_new_confirmed_comment(
+        request, send_mail_queryset)
+
+    emails_result = confirm_email + reply_email + tutorial_new_comment_email
 
     # Send messages
     confirm_msg = f"{updated_count} مورد با موفقیت تایید شد"

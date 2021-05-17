@@ -1,0 +1,16 @@
+{% extends 'mails/base.html' %}
+
+{% block title %} ثبت دیدگاه جدید برای آموزش شما {{status_text}} {% endblock title %}
+
+{% block content %}
+
+    <h3>ثبت دیدگاه جدید برای آموزش شما</h3>
+    <h6>سلام {{tutorial.author.first_name}} عزیز!<h6>
+
+    <p>
+        کاربر عزیزمون <strong>"{{comment.user.first_name}}"</strong> یه دیدگاه جدید با عنوان <strong>"{{comment.title}}"</strong> برای آموزش <strong>"{{tutorial.title}}"</strong> که منتشر کرده بودی گذاشت!
+    </p>
+
+    <p>اگه خواستی بهش یه نگاه بندازی روی <a href="{{ url }}">این لینک</a> کلیک کن</p>
+
+{% endblock content %}
