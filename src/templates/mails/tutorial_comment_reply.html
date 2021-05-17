@@ -1,10 +1,7 @@
 {% extends 'mails/base.html' %}
 
-{% block title %} پاسخ به دیدگاه {% endblock title %}
-
 {% block content %}
 
-    <h3>پاسخ به دیدگاه </h3>
     <h6>سلام {{parent_comment.user.first_name}} عزیز!<h6>
     <p>
         کاربر عزیزمون <strong>"{{child_comment.user.first_name}}"</strong> زحمت کشیده و به نظر <strong>"{{parent_comment.title}}"</strong> برای آموزش <strong>"{{tutorial.title}}"<strong> پاسخ داده و الان تایید شده

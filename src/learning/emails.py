@@ -69,6 +69,7 @@ def notify_tutorial_comments_reply(
                          f'لینک پاسخ: {url}')
         template = 'mails/tutorial_comment_reply.html'
         context = {
+            'subject': subject,
             'child_comment': child_comment,
             'parent_comment': parent_comment,
             'tutorial': tutorial,
@@ -123,6 +124,7 @@ def notify_tutorial_comment_confirm_disprove(
         plain_message = f'دیدگاه "{comment.title}" برای آموزش {tutorial.title} {status_text}'
         template = 'mails/tutorial_comment_confirm_disprove.html'
         context = {
+            'subject': subject,
             'status_text': status_text,
             'tutorial': tutorial,
             'comment': comment
@@ -177,6 +179,7 @@ def notify_tutorial_confirm_disprove(
         plain_message = f'دیدگاه "{tutorial.title}" {status_text}'
         template = 'mails/tutorial_confirm_disprove.html'
         context = {
+            'subject': subject,
             'status_text': status_text,
             'tutorial': tutorial
         }
@@ -225,6 +228,7 @@ def notify_tutorial_new_confirmed_comment(
                          f'لینک دیدگاه: {url}')
         template = 'mails/tutorial_new_confirmed_comment.html'
         context = {
+            'subject': subject,
             'comment': comment,
             'tutorial': tutorial,
             'url': url

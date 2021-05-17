@@ -1,10 +1,9 @@
 {% extends 'mails/base.html' %}
 
-{% block title %} تایید ایمیل {{status_text}} {% endblock title %}
+{% block title %} تایید ایمیل {% endblock title %}
 
 {% block content %}
 
-    <h3>تایید ایمیل</h3>
     <h6>سلام {{ user.first_name }}!<h6>
     <p>برای فعالسازی حساب کاربریت به <a href="{{ url }}">این لینک</a> برو</p>
 
