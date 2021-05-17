@@ -1,10 +1,10 @@
 {% extends 'mails/base.html' %}
 
-{% block title %} دیدگاه شما {{status_text}} {% endblock title %}
+{% block title %} تایید/رد دیدگاه {% endblock title %}
 
 {% block content %}
 
-    <h3>دیدگاه شما {{status_text}}</h3>
+    <h3>تایید/رد دیدگاه</h3>
     <h6>سلام {{comment.user.first_name}} عزیز!<h6>
 
     <p>
@@ -12,7 +12,7 @@
     </p>
 
     {% if url %}
-        <p>اگه خواستی بهش یه نگاه بندازی روی این <a href="{{ url }}">این لینک</a> کلیک کن</p>
+        <p>اگه خواستی بهش یه نگاه بندازی روی <a href="{{ url }}">این لینک</a> کلیک کن</p>
     {% endif %}
 
 {% endblock content %}
