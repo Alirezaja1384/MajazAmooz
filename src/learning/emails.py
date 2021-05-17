@@ -61,7 +61,7 @@ def notify_tutorial_comments_reply(
         tutorial: Tutorial = parent_comment.tutorial
 
         url = request.build_absolute_uri(resolve_url('learning:tutorial', slug=tutorial.slug) +
-                                         f'#comment-{parent_comment.pk}')
+                                         f'#comment-{child_comment.pk}')
 
         to = [parent_comment.user.email]
         subject = f'پاسخ به نظر "{parent_comment.title}"'
