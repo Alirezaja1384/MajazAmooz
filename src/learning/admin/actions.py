@@ -69,7 +69,7 @@ def disprove_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpReques
         confirm_status=ConfirmStatusChoices.DISPROVED).filter(is_active=True)
     update_item_pks = [comment.pk for comment in update_queryset]
 
-    updated_count = queryset.update(
+    updated_count = update_queryset.update(
         confirm_status=ConfirmStatusChoices.DISPROVED)
 
     # Execute new query to get updated objects for notification
