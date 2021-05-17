@@ -1,23 +1,14 @@
-<html>
-<head>
-	<title>پاسخ به دیدگاه</title>
-</head>
-<body>
+{% extends 'mails/base.html' %}
 
-    <div style="direction: rtl;text-align: right;">
-        <h3>پاسخ به دیدگاه </h3>
-        <h6>سلام {{parent_comment.user.first_name}} عزیز!<h6>
-        <p>
-            کاربر عزیزمون <strong>"{{child_comment.user.first_name}}"</strong> زحمت کشیده و به نظر <strong>"{{parent_comment.title}}"</strong> برای آموزش <strong>"{{tutorial.title}}"<strong> پاسخ داده و الان تایید شده
-        </p>
-        <p>اگه خواستی بهش یه نگاه بندازی روی این <a href="{{ url }}">این لینک</a> کلیک کن</p>
-    
-        <p style="color: gray;">برای کلیک روی لینک مشکلی پیش اومده؟ لینک پایین رو copy و توی مرورگرت paste کن!</p>
-        <div style="direction: rtl;text-align: right;">
-            <p style="color: gray;">{{ url }}</p>
-        </div>
+{% block title %} پاسخ به دیدگاه {% endblock title %}
 
-        <p style="text-align: center;">مجازآموز</p>
-    </div>
+{% block content %}
 
-</html>
+    <h3>پاسخ به دیدگاه </h3>
+    <h6>سلام {{parent_comment.user.first_name}} عزیز!<h6>
+    <p>
+        کاربر عزیزمون <strong>"{{child_comment.user.first_name}}"</strong> زحمت کشیده و به نظر <strong>"{{parent_comment.title}}"</strong> برای آموزش <strong>"{{tutorial.title}}"<strong> پاسخ داده و الان تایید شده
+    </p>
+    <p>اگه خواستی بهش یه نگاه بندازی روی این <a href="{{ url }}">این لینک</a> کلیک کن</p>
+
+{% endblock content %}

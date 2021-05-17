@@ -1,0 +1,21 @@
+<html>
+<head>
+	<title>{% block title %}عنوان ایمیل{% endblock title %}</title>
+</head>
+<body>
+
+    <div style="direction: rtl;text-align: right;">
+
+        {% block content %}متن ایمیل{% endblock content %}
+
+        {% if url %}
+            <p style="color: gray;">برای کلیک روی لینک مشکلی پیش اومده؟ لینک پایین رو copy و توی مرورگرت paste کن!</p>
+
+            <div style="direction: rtl;text-align: right;">
+                <p style="color: gray;">{{ url }}</p>
+            </div>
+        {% endif %}
+        <p style="text-align: center;">مجازآموز</p>
+    </div>
+
+</html>

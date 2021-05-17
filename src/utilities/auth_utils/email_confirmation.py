@@ -89,7 +89,7 @@ class EmailConfirmationManager:
 
         html_message = render_to_string(template, {
             'user': self.user,
-            'confirm_url': confirm_url
+            'url': confirm_url
         })
 
         email = EmailMultiAlternatives(
