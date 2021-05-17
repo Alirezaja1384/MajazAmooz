@@ -7,7 +7,8 @@ from utilities.model_utils import ConfirmStatusChoices
 from learning.emails import (
     EmailsResult,
     notify_tutorial_comments_reply,
-    notify_tutorial_comment_confirm_disprove
+    notify_tutorial_comment_confirm_disprove,
+    notify_tutorial_confirm_disprove
 )
 from learning.models import TutorialComment
 
@@ -77,7 +78,7 @@ def disprove_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpReques
                                          ).select_related('user', 'tutorial')
 
     # Send mails
-    disprove_email = notify_tutorial_comment_confirm_disprove(
+    disprove_email = notify_tutorial_confirm_disprove(
         request, send_mail_queryset)
 
     modeladmin.message_user(request,
@@ -89,11 +90,27 @@ def disprove_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpReques
 
 @admin.action(description='تایید آموزش های انتخاب شده')
 def confirm_tutorial_action(modeladmin: ModelAdmin, request: HttpRequest, queryset: QuerySet):
-    updated = queryset.update(confirm_status=ConfirmStatusChoices.DISPROVED)
 
+    update_queryset = queryset.exclude(
+        confirm_status=ConfirmStatusChoices.CONFIRMED).filter(is_active=True)
+    update_item_pks = [tutorial.pk for tutorial in update_queryset]
+
+    updated = update_queryset.update(confirm_status=ConfirmStatusChoices.CONFIRMED)
+
+    # Execute new query to get updated objects for notification
+    send_mail_queryset = queryset.filter(
+        pk__in=update_item_pks).select_related('author')
+
+    # Send mails
+    confirm_email = notify_tutorial_confirm_disprove(
+        request, send_mail_queryset)
+
+    # Send messages
     modeladmin.message_user(request,
-                            f"{updated} مورد با موفقیت رد شد",
+                            f"{updated} مورد با موفقیت تایید شد",
                             messages.SUCCESS)
+
+    message_user_email_results(request, modeladmin, confirm_email)
 
 
 @admin.action(description='رد آموزش های انتخاب شده')

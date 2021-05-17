@@ -119,7 +119,7 @@ def notify_tutorial_comment_confirm_disprove(
             status_text = 'رد شد'
 
         to = [comment.user.email]
-        subject = f'دیدگاه "{comment.title}" {status_text}'
+        subject = 'تایید/رد دیدگاه'
         plain_message = f'دیدگاه "{comment.title}" برای آموزش {tutorial.title} {status_text}'
         template = 'mails/tutorial_comment_confirm_disprove.html'
         context = {
@@ -140,6 +140,59 @@ def notify_tutorial_comment_confirm_disprove(
 
     for comment in queryset:
         result = _send_notification_mail(comment)
+        if result:
+            success_count += 1
+        else:
+            failed_count += 1
+
+    return EmailsResult(success_count, failed_count)
+
+
+def notify_tutorial_confirm_disprove(
+        request: HttpRequest, queryset: QuerySet[Tutorial]) -> EmailsResult:
+    """ Notifies user about tutorial confirmation/disprovation by email
+
+    Args:
+        request (HttpRequest): Required for making absolute url
+        queryset (QuerySet[Tutorial]): Queryset of confirmed/disproved tutorials
+
+    Returns:
+        EmailsResult: Count of successful and failed emails
+    """
+    success_count = 0
+    failed_count = 0
+
+    queryset = queryset.exclude(
+        confirm_status=ConfirmStatusChoices.WAITING_FOR_CONFIRM)
+
+    def _send_notification_mail(tutorial: Tutorial) -> bool:
+
+        if tutorial.confirm_status == ConfirmStatusChoices.CONFIRMED:
+            status_text = 'تایید شد'
+        else:
+            status_text = 'رد شد'
+
+        to = [tutorial.author.email]
+        subject = 'تایید/رد آموزش'
+        plain_message = f'دیدگاه "{tutorial.title}" {status_text}'
+        template = 'mails/tutorial_confirm_disprove.html'
+        context = {
+            'status_text': status_text,
+            'tutorial': tutorial
+        }
+
+        if tutorial.confirm_status == ConfirmStatusChoices.CONFIRMED:
+
+            url = request.build_absolute_uri(
+                resolve_url('learning:tutorial', slug=tutorial.slug))
+
+            plain_message += f'\n لینک آموزش: {url}'
+            context['url'] = url
+
+        return send_mail(subject, to, plain_message, template, context)
+
+    for tutorial in queryset:
+        result = _send_notification_mail(tutorial)
         if result:
             success_count += 1
         else:
