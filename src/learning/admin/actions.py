@@ -78,7 +78,7 @@ def disprove_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpReques
                                          ).select_related('user', 'tutorial')
 
     # Send mails
-    disprove_email = notify_tutorial_confirm_disprove(
+    disprove_email = notify_tutorial_comment_confirm_disprove(
         request, send_mail_queryset)
 
     modeladmin.message_user(request,
