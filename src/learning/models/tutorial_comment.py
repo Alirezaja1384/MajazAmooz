@@ -1,5 +1,6 @@
 """ TutorialComment model """
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django_lifecycle import (
     hook, LifecycleModel,
@@ -73,14 +74,7 @@ class TutorialComment(LifecycleModel):
         related_name='down_voted_tutorial_commens',
         verbose_name='امتیاز منفی دیدگاه ها')
 
-    class Meta:
-        verbose_name = 'دیدگاه آموزش'
-        verbose_name_plural = 'دیدگاه آموزش ها'
-        ordering = ('-create_date', )
-
-    def __str__(self):
-        return self.title
-
+    # Lifecycle hooks
     @hook(BEFORE_UPDATE, when_any=['title', 'body'], has_changed=True)
     def on_edit(self):
         self.is_edited = True
@@ -91,6 +85,19 @@ class TutorialComment(LifecycleModel):
     def on_save(self):
         if self.parent_comment:
             self.tutorial = self.parent_comment.tutorial
+
+    # Validate data (for admin panel)
+    def clean(self):
+        if self.id == self.parent_comment_id:
+            raise ValidationError('پاسخ نمی تواند با دیدگاه یکسان باشد')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'دیدگاه آموزش'
+        verbose_name_plural = 'دیدگاه آموزش ها'
+        ordering = ('-create_date', )
 
     # Custom manager
     objects = TutorialCommentQueryset.as_manager()
