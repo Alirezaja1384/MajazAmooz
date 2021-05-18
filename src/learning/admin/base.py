@@ -3,6 +3,7 @@
 """
 from django.contrib import admin
 from django.db.models import Prefetch
+from django.http import HttpRequest
 
 from learning.models import (Tutorial, Category)
 from . import actions
@@ -67,13 +68,19 @@ class TutorialAdmin(admin.ModelAdmin):
               'body', 'image', 'confirm_status', 'categories',
               'is_active', 'is_edited')
 
-    actions = (actions.confirm_tutorial_action, actions.disprove_tutorial_action,)
+    actions = (actions.confirm_tutorial_action,
+               actions.disprove_tutorial_action,)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('author').prefetch_related(
-            Prefetch('categories', queryset=Category.objects.active_categories()), 'tags'
+            Prefetch('categories',
+                     queryset=Category.objects.active_categories()), 'tags'
         )
         return qs
+
+    def has_confirm_disprove_permission(self, request: HttpRequest):
+        permission_name = 'learning.confirm_disprove_tutorial'
+        return request.user.has_perm(permission_name)
 
 
 class TutorialTagAdmin(admin.ModelAdmin):
@@ -98,8 +105,14 @@ class TutorialCommentAdmin(admin.ModelAdmin):
 
     search_fields = ('title', 'body',)
 
-    actions = (actions.confirm_tutorial_comment_action, actions.disprove_tutorial_comment_action,)
+    actions = (actions.confirm_tutorial_comment_action,
+               actions.disprove_tutorial_comment_action,)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request).select_related('parent_comment', 'tutorial', 'user')
+        qs = super().get_queryset(request).select_related(
+            'parent_comment', 'tutorial', 'user')
         return qs
+
+    def has_confirm_disprove_permission(self, request: HttpRequest):
+        permission_name = 'learning.confirm_disprove_tutorialcomment'
+        return request.user.has_perm(permission_name)

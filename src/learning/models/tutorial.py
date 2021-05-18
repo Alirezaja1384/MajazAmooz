@@ -79,14 +79,6 @@ class Tutorial(LifecycleModel):
         User, through='TutorialDownVote', related_name='down_voted_tutorials',
         verbose_name='امتیاز های منفی')
 
-    class Meta:
-        verbose_name = 'آموزش'
-        verbose_name_plural = 'آموزش ها'
-        ordering = ('-create_date', )
-
-    def __str__(self):
-        return self.title
-
     @hook(BEFORE_UPDATE, when_any=['title', 'slug', 'short_description', 'body', 'image'],
           has_changed=True)
     def on_edit(self):
@@ -97,6 +89,17 @@ class Tutorial(LifecycleModel):
     @hook(BEFORE_SAVE)
     def on_save(self):
         self.slug = slugify(self.title, allow_unicode=True)
+
+    class Meta:
+        verbose_name = 'آموزش'
+        verbose_name_plural = 'آموزش ها'
+        ordering = ('-create_date', )
+        permissions = (
+            ('confirm_disprove_tutorial', 'تایید/رد آموزش ها'),
+        )
+
+    def __str__(self):
+        return self.title
 
     # Custom manager
     objects = TutorialQuerySet.as_manager()
