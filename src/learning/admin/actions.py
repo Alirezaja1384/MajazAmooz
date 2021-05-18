@@ -27,8 +27,8 @@ def message_user_email_results(request: HttpRequest, modeladmin: ModelAdmin,
         modeladmin.message_user(request, failed_email_msg, messages.ERROR)
 
 
-# TODO: Add permissions
-@admin.action(description='تایید دیدگاه های انتخاب شده')
+@admin.action(permissions=['confirm_disprove'],
+              description='تایید دیدگاه های انتخاب شده')
 def confirm_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpRequest,
                                     queryset: QuerySet[TutorialComment]):
 
@@ -64,7 +64,8 @@ def confirm_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpRequest
     message_user_email_results(request, modeladmin, emails_result)
 
 
-@admin.action(description='رد دیدگاه های انتخاب شده')
+@admin.action(permissions=['confirm_disprove'],
+              description='رد دیدگاه های انتخاب شده')
 def disprove_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpRequest,
                                      queryset: QuerySet):
 
@@ -92,7 +93,8 @@ def disprove_tutorial_comment_action(modeladmin: ModelAdmin, request: HttpReques
     message_user_email_results(request, modeladmin, disprove_email)
 
 
-@admin.action(description='تایید آموزش های انتخاب شده')
+@admin.action(permissions=['confirm_disprove'],
+              description='تایید آموزش های انتخاب شده')
 def confirm_tutorial_action(modeladmin: ModelAdmin, request: HttpRequest, queryset: QuerySet):
 
     update_queryset = queryset.exclude(
@@ -118,7 +120,8 @@ def confirm_tutorial_action(modeladmin: ModelAdmin, request: HttpRequest, querys
     message_user_email_results(request, modeladmin, confirm_email)
 
 
-@admin.action(description='رد آموزش های انتخاب شده')
+@admin.action(permissions=['confirm_disprove'],
+              description='رد آموزش های انتخاب شده')
 def disprove_tutorial_action(modeladmin: ModelAdmin, request: HttpRequest, queryset: QuerySet):
 
     update_queryset = queryset.exclude(
