@@ -98,6 +98,9 @@ class TutorialComment(LifecycleModel):
         verbose_name = 'دیدگاه آموزش'
         verbose_name_plural = 'دیدگاه آموزش ها'
         ordering = ('-create_date', )
+        permissions = (
+            ('confirm_disprove_tutorialcomment', 'تایید/رد نظرات'),
+        )
 
     # Custom manager
     objects = TutorialCommentQueryset.as_manager()
