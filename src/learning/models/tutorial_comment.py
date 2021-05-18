@@ -1,7 +1,10 @@
 """ TutorialComment model """
 from django.db import models
 from django.utils import timezone
-from django_lifecycle import hook, BEFORE_UPDATE, LifecycleModel
+from django_lifecycle import (
+    hook, LifecycleModel,
+    BEFORE_UPDATE, BEFORE_SAVE
+)
 
 from learning.models import Tutorial
 from learning.querysets import TutorialCommentQueryset
@@ -83,6 +86,11 @@ class TutorialComment(LifecycleModel):
         self.is_edited = True
         self.last_edit_date = timezone.now()
         self.confirm_status = ConfirmStatusChoices.WAITING_FOR_CONFIRM
+
+    @hook(BEFORE_SAVE)
+    def on_save(self):
+        if self.parent_comment:
+            self.tutorial = self.parent_comment.tutorial
 
     # Custom manager
     objects = TutorialCommentQueryset.as_manager()
