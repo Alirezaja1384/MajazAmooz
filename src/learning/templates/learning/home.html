@@ -33,7 +33,7 @@
                                 <section class="feature-text mt-3">
                                     <h4>با هم</h4>
                                     <p class="text-muted">
-                                        مجاز آموز، جامعه ای بزرگ از دانش آموزان و دانشجویان سراسر ایران است
+                                        مجاز آموز، جامعه ای از دانش آموزان سراسر ایران است
                                     </p>
                                 </section>
                             </section>
@@ -53,8 +53,7 @@
                                 <section class="feature-text mt-3">
                                     <h4>مجازی</h4>
                                     <p class="text-muted">
-                                        مجاز آموز، فضایی آنلاین برای آموزش مجازی دانش آموزان و دانشجویان در هر مکان
-                                        است
+                                        مجاز آموز، فضایی آنلاین برای آموزش مجازی دانش آموزان در هر مکان است
                                     </p>
                                 </section>
                             </section>
@@ -74,7 +73,7 @@
                                 <section class="feature-text mt-3">
                                     <h4>می آموزیم</h4>
                                     <p class="text-muted">
-                                        مجاز آموز، فضایی است که دانش آموزان و دانشجویان به یکدیگر آموزش میدهند
+                                        مجاز آموز، فضایی است که دانش آموزان به یکدیگر آموزش می دهند
                                     </p>
                                 </section>
                             </section>
@@ -112,7 +111,7 @@
 
                 {% for tutorial_item in latest_published_tutorials %}
                     <!-- Carousel item -->
-                    <section>
+                    <article>
                         <section class="card bg-whiteblue">
                             <section class="card-header">
                                 <img src="{{ tutorial_item.image|image_url }}" alt="{{ tutorial_item.title }}" class="mx-auto" style="max-height: 150px;max-width: 100%;width: auto">
@@ -136,7 +135,7 @@
                                 </section>
                             </section>
                         </section>
-                    </section>
+                    </article>
                     <!-- End Carousel item -->
                 {% endfor %}
 
@@ -172,7 +171,7 @@
 
                     {% for tutorial_item in most_liked_tutorials %}
                         <!-- Carousel item -->
-                        <section>
+                        <article>
                             <section class="card bg-whiteblue">
                                 <section class="card-header">
                                     <img src="{{ tutorial_item.image|image_url }}" alt="{{ tutorial_item.title }}" class="mx-auto" style="max-height: 150px;max-width: 100%;width: auto">
@@ -196,7 +195,7 @@
                                     </section>
                                 </section>
                             </section>
-                        </section>
+                        </article>
                         <!-- End Carousel item -->
                     {% endfor %}
 
@@ -215,221 +214,18 @@
         </section>
 
 
+    {% comment %} 
 
-
-
-    <!-- Latest exams -->
-    <section class="container py-5">
-        <!-- Header -->
-        <section class="text-center">
-            <h2 class="heading">جدیدترین آزمون ها</h2>
-            <section class="underline"></section>
-        </section>
-        <!-- End Header -->
-
-        <!-- Latest exams carousel -->
-        <section class="owl-carousel owl-theme">
-            <!-- Carousel item -->
-            <section>
-                <section class="card bg-whiteblue">
-                    <section class="card-header">
-                        <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
-                    </section>
-
-                    <section class="card-body px-3 pb-3">
-                        <h5>
-                            <a href="#">
-                                آزمون 1
-                            </a>
-                        </h5>
-                        <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
-                            استفاده از </p>
-                    </section>
-
-                    <section class="card-footer bg-whiteblue text-left">
-                        <section class="float-left">
-                            <i class="fa fa-comments-o"></i> 15
-                        </section>
-                        <section class="float-right">
-                            25 <i class="fa fa-heart-o"></i>
-                        </section>
-                    </section>
-                </section>
-            </section>
-            <!-- End Carousel item -->
-
-            <!-- Carousel item -->
-            <section>
-                <section class="card bg-whiteblue">
-                    <section class="card-header">
-                        <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
-                    </section>
-
-                    <section class="card-body px-3 pb-3">
-                        <h5>
-                            <a href="#">
-                                آزمون 2
-                            </a>
-                        </h5>
-                        <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
-                            استفاده از </p>
-                    </section>
-
-                    <section class="card-footer bg-whiteblue text-left">
-                        <section class="float-left">
-                            <i class="fa fa-comments-o"></i> 15
-                        </section>
-                        <section class="float-right">
-                            25 <i class="fa fa-heart-o"></i>
-                        </section>
-                    </section>
-                </section>
-            </section>
-            <!-- End Carousel item -->
-
-            <!-- Carousel item -->
-            <section>
-                <section class="card bg-whiteblue">
-                    <section class="card-header">
-                        <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
-                    </section>
-
-                    <section class="card-body px-3 pb-3">
-                        <h5>
-                            <a href="#">
-                                آزمون 3
-                            </a>
-                        </h5>
-                        <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
-                            استفاده از </p>
-                    </section>
-
-                    <section class="card-footer bg-whiteblue text-left">
-                        <section class="float-left">
-                            <i class="fa fa-comments-o"></i> 15
-                        </section>
-                        <section class="float-right">
-                            25 <i class="fa fa-heart-o"></i>
-                        </section>
-                    </section>
-                </section>
-            </section>
-            <!-- End Carousel item -->
-
-            <!-- Carousel item -->
-            <section>
-                <section class="card bg-whiteblue">
-                    <section class="card-header">
-                        <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
-                    </section>
-
-                    <section class="card-body px-3 pb-3">
-                        <h5>
-                            <a href="#">
-                                آزمون 4
-                            </a>
-                        </h5>
-                        <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
-                            استفاده از </p>
-                    </section>
-
-                    <section class="card-footer bg-whiteblue text-left">
-                        <section class="float-left">
-                            <i class="fa fa-comments-o"></i> 15
-                        </section>
-                        <section class="float-right">
-                            25 <i class="fa fa-heart-o"></i>
-                        </section>
-                    </section>
-                </section>
-            </section>
-            <!-- End Carousel item -->
-
-            <!-- Carousel item -->
-            <section>
-                <section class="card bg-whiteblue">
-                    <section class="card-header">
-                        <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
-                    </section>
-
-                    <section class="card-body px-3 pb-3">
-                        <h5>
-                            <a href="#">
-                                آزمون 5
-                            </a>
-                        </h5>
-                        <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
-                            استفاده از </p>
-                    </section>
-
-                    <section class="card-footer bg-whiteblue text-left">
-                        <section class="float-left">
-                            <i class="fa fa-comments-o"></i> 15
-                        </section>
-                        <section class="float-right">
-                            25 <i class="fa fa-heart-o"></i>
-                        </section>
-                    </section>
-                </section>
-            </section>
-            <!-- End Carousel item -->
-
-            <!-- Carousel item -->
-            <section>
-                <section class="card bg-whiteblue">
-                    <section class="card-header">
-                        <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
-                    </section>
-
-                    <section class="card-body px-3 pb-3">
-                        <h5>
-                            <a href="#">
-                                آزمون 6
-                            </a>
-                        </h5>
-                        <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
-                            استفاده از </p>
-                    </section>
-
-                    <section class="card-footer bg-whiteblue text-left">
-                        <section class="float-left">
-                            <i class="fa fa-comments-o"></i> 15
-                        </section>
-                        <section class="float-right">
-                            25 <i class="fa fa-heart-o"></i>
-                        </section>
-                    </section>
-                </section>
-            </section>
-            <!-- End Carousel item -->
-        </section>
-        <!-- End Latest exams carousel -->
-
-
-        <!-- Show more exams button -->
-        <section class="text-center mt-4">
-            <a href="#" class="btn btn-success rounded-0 px-4 pt-2">نمایش همه آزمون ها</a>
-        </section>
-        <!-- End Show more exams button -->
-
-    </section>
-    <!-- End Latest exams -->
-
-
-
-
-
-    <!-- Most liked exams -->
-    <section class="jumbotron rounded-0 mb-0 py-5 px-0">
-        <section class="container">
+        <!-- Latest exams -->
+        <section class="container py-5">
             <!-- Header -->
             <section class="text-center">
-                <h2 class="heading">محبوب ترین آزمون ها</h2>
+                <h2 class="heading">جدیدترین آزمون ها</h2>
                 <section class="underline"></section>
             </section>
             <!-- End Header -->
 
-            <!-- Most liked exams carousel -->
+            <!-- Latest exams carousel -->
             <section class="owl-carousel owl-theme">
                 <!-- Carousel item -->
                 <section>
@@ -605,7 +401,7 @@
                 </section>
                 <!-- End Carousel item -->
             </section>
-            <!-- End Most liked exams carousel -->
+            <!-- End Latest exams carousel -->
 
 
             <!-- Show more exams button -->
@@ -613,9 +409,209 @@
                 <a href="#" class="btn btn-success rounded-0 px-4 pt-2">نمایش همه آزمون ها</a>
             </section>
             <!-- End Show more exams button -->
-        </section>
-    </section>
-    <!-- End Most liked exams -->
 
+        </section>
+        <!-- End Latest exams -->
+
+
+        <!-- Most liked exams -->
+        <section class="jumbotron rounded-0 mb-0 py-5 px-0">
+            <section class="container">
+                <!-- Header -->
+                <section class="text-center">
+                    <h2 class="heading">محبوب ترین آزمون ها</h2>
+                    <section class="underline"></section>
+                </section>
+                <!-- End Header -->
+
+                <!-- Most liked exams carousel -->
+                <section class="owl-carousel owl-theme">
+                    <!-- Carousel item -->
+                    <section>
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
+                            </section>
+
+                            <section class="card-body px-3 pb-3">
+                                <h5>
+                                    <a href="#">
+                                        آزمون 1
+                                    </a>
+                                </h5>
+                                <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
+                                    استفاده از </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i> 15
+                                </section>
+                                <section class="float-right">
+                                    25 <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Carousel item -->
+
+                    <!-- Carousel item -->
+                    <section>
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
+                            </section>
+
+                            <section class="card-body px-3 pb-3">
+                                <h5>
+                                    <a href="#">
+                                        آزمون 2
+                                    </a>
+                                </h5>
+                                <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
+                                    استفاده از </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i> 15
+                                </section>
+                                <section class="float-right">
+                                    25 <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Carousel item -->
+
+                    <!-- Carousel item -->
+                    <section>
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
+                            </section>
+
+                            <section class="card-body px-3 pb-3">
+                                <h5>
+                                    <a href="#">
+                                        آزمون 3
+                                    </a>
+                                </h5>
+                                <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
+                                    استفاده از </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i> 15
+                                </section>
+                                <section class="float-right">
+                                    25 <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Carousel item -->
+
+                    <!-- Carousel item -->
+                    <section>
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
+                            </section>
+
+                            <section class="card-body px-3 pb-3">
+                                <h5>
+                                    <a href="#">
+                                        آزمون 4
+                                    </a>
+                                </h5>
+                                <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
+                                    استفاده از </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i> 15
+                                </section>
+                                <section class="float-right">
+                                    25 <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Carousel item -->
+
+                    <!-- Carousel item -->
+                    <section>
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
+                            </section>
+
+                            <section class="card-body px-3 pb-3">
+                                <h5>
+                                    <a href="#">
+                                        آزمون 5
+                                    </a>
+                                </h5>
+                                <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
+                                    استفاده از </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i> 15
+                                </section>
+                                <section class="float-right">
+                                    25 <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Carousel item -->
+
+                    <!-- Carousel item -->
+                    <section>
+                        <section class="card bg-whiteblue">
+                            <section class="card-header">
+                                <img src="{% static 'img/tutorial/online-learning.png' %}" class="w-100" alt="تصویر آموزش">
+                            </section>
+
+                            <section class="card-body px-3 pb-3">
+                                <h5>
+                                    <a href="#">
+                                        آزمون 6
+                                    </a>
+                                </h5>
+                                <p class="text-muted">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
+                                    استفاده از </p>
+                            </section>
+
+                            <section class="card-footer bg-whiteblue text-left">
+                                <section class="float-left">
+                                    <i class="fa fa-comments-o"></i> 15
+                                </section>
+                                <section class="float-right">
+                                    25 <i class="fa fa-heart-o"></i>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <!-- End Carousel item -->
+                </section>
+                <!-- End Most liked exams carousel -->
+
+
+                <!-- Show more exams button -->
+                <section class="text-center mt-4">
+                    <a href="#" class="btn btn-success rounded-0 px-4 pt-2">نمایش همه آزمون ها</a>
+                </section>
+                <!-- End Show more exams button -->
+            </section>
+        </section>
+        <!-- End Most liked exams -->
+
+    {% endcomment %}
 
 {% endblock content %}

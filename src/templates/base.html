@@ -1,5 +1,6 @@
 {% load static %}
 {% load base_tmplatetags %}
+{% load website_configs %}
 
 <!DOCTYPE HTML>
 <html lang="fa">
@@ -8,11 +9,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="keywords" content="{% block keywords %} {% endblock keywords %}">
-    <meta name="description" content="{% block description %} {% endblock description %}">
+    <meta name="keywords" content="{% block keywords %} {% website_keywords %} {% endblock keywords %}">
+    <meta name="description" content="{% block description %} {% website_description %} {% endblock description %}">
+    {% block extra_metas %}{% endblock extra_metas %}
 
     <title>
-        مجازآموز | {% block title %} {% endblock title %}
+        {% block title %} {% endblock title %} - مجازآموز
     </title>
 
     <link rel="stylesheet" href="{% static 'css/bootstrap-rtl.min.css' %}">
@@ -76,132 +78,132 @@
                    {% navbar_tutorial_categories %}
 
 
-
-                    <li class="nav-item">
+                    <li class="nav-item" data-toggle="tooltip" title="به زودی!">
                         <a href="#exams-dropdown" class="nav-link text-truncate dropdown-toggle"
-                            data-toggle="dropdown">آزمون ها</a>
+                            data-toggle="dropdown">آزمون ها (به زودی)</a>
 
 
-                        <!-- School types dropdown -->
-                        <section id="exams-dropdown" class="dropdown">
-                            <ul class="dropdown-menu bg-lightblue">
+                        {% comment %} 
+                            <!-- School types dropdown -->
+                            <section id="exams-dropdown" class="dropdown">
+                                <ul class="dropdown-menu bg-lightblue">
 
-                                <li class="dropdown-item">
-                                    <a href="#exams-school" data-toggle="dropdown" class="dropdown-toggle">دبستان</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#exams-school" data-toggle="dropdown" class="dropdown-toggle">دبستان</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#exams-middle-school" data-toggle="dropdown" class="dropdown-toggle">متوسطه
-                                        اول</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#exams-middle-school" data-toggle="dropdown" class="dropdown-toggle">متوسطه
+                                            اول</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#exams-high-school" data-toggle="dropdown" class="dropdown-toggle">متوسطه
-                                        دوم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#exams-high-school" data-toggle="dropdown" class="dropdown-toggle">متوسطه
+                                            دوم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">تمامی پایه ها</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">تمامی پایه ها</a>
+                                    </li>
 
-                            </ul>
-                        </section>
-                        <!-- End School types dropdown -->
+                                </ul>
+                            </section>
+                            <!-- End School types dropdown -->
 
 
-                        <!-- School grades -->
-                        <section id="exams-school" class="dropdown">
-                            <ul class="dropdown-menu bg-lightblue">
+                            <!-- School grades -->
+                            <section id="exams-school" class="dropdown">
+                                <ul class="dropdown-menu bg-lightblue">
 
-                                <li class="dropdown-item">
-                                    <a href="#">اول</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">اول</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">دوم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">دوم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">سوم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">سوم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">چهارم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">چهارم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">پنجم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">پنجم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">ششم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">ششم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">تمامی پایه های دبستان</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">تمامی پایه های دبستان</a>
+                                    </li>
 
-                            </ul>
-                        </section>
-                        <!-- End School grades -->
+                                </ul>
+                            </section>
+                            <!-- End School grades -->
 
-                        <!-- Middle school grades -->
-                        <section id="exams-middle-school" class="dropdown">
-                            <ul class="dropdown-menu bg-lightblue">
+                            <!-- Middle school grades -->
+                            <section id="exams-middle-school" class="dropdown">
+                                <ul class="dropdown-menu bg-lightblue">
 
-                                <li class="dropdown-item">
-                                    <a href="#">هفتم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">هفتم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">هشتم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">هشتم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">نهم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">نهم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#">تمامی پایه های متوسطه اول</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#">تمامی پایه های متوسطه اول</a>
+                                    </li>
 
-                            </ul>
-                        </section>
-                        <!-- End Middle school grades -->
+                                </ul>
+                            </section>
+                            <!-- End Middle school grades -->
 
-                        <!-- High school grades -->
-                        <section id="exams-high-school" class="dropdown">
-                            <ul class="dropdown-menu bg-lightblue">
+                            <!-- High school grades -->
+                            <section id="exams-high-school" class="dropdown">
+                                <ul class="dropdown-menu bg-lightblue">
 
-                                <li class="dropdown-item">
-                                    <a href="#" class="dropdown-item">دهم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#" class="dropdown-item">دهم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#" class="dropdown-item">یازدهم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#" class="dropdown-item">یازدهم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#" class="dropdown-item">دوازدهم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#" class="dropdown-item">دوازدهم</a>
+                                    </li>
 
-                                <li class="dropdown-item">
-                                    <a href="#" class="dropdown-item">تمامی پایه های متوسطه دوم</a>
-                                </li>
+                                    <li class="dropdown-item">
+                                        <a href="#" class="dropdown-item">تمامی پایه های متوسطه دوم</a>
+                                    </li>
 
-                            </ul>
-                        </section>
-                        <!-- End High school grades -->
+                                </ul>
+                            </section>
+                            <!-- End High school grades -->
+                        {% endcomment %}
+
 
                     </li>
 
-
-
-
-                    <li class="nav-item">
-                        <a class="nav-link text-truncate" href="#">رتبه بندی کاربران</a>
+                    <li data-toggle="tooltip" title="به زودی!" class="nav-item">
+                        <a class="nav-link text-truncate">رتبه بندی کاربران (به زودی)</a>
                     </li>
-                    
+
+
                     {% if user.is_authenticated %}
 
                         <li class="nav-item d-lg-none">
@@ -349,7 +351,7 @@
                         </li>
 
                         <li>
-                            <a href="#" class=" text-light">آموزش ها</a>
+                            <a href="{% url 'learning:tutorials_archive' %}" class=" text-light">آموزش ها</a>
                         </li>
 
                         <li>

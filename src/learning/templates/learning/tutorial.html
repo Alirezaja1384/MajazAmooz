@@ -4,7 +4,16 @@
 {% load image_utils %}
 {% load bleach_tags %}
 
+
+{% block keywords %}{% if tags %}{{ tags|join:', ' }}{% else %}{{ block.super }}{% endif %}{% endblock keywords %}
+{% block description %}{{ tutorial.short_description }}{% endblock description %}
+
+{% block extra_metas %}
+    <meta name="author" content="{{ tutorial.author|full_name }}">
+{% endblock extra_metas %}
+
 {% block title %} {{ tutorial.title }} {% endblock title %}
+
 
 {% block content %}
     <section class="container py-6">
@@ -14,8 +23,6 @@
 
         <!-- Right side (Tutorial content,comments and ...) -->
         <section class="col-lg-8 col-12">
-
-
 
 
             <!-- Tutorial content -->
@@ -159,7 +166,7 @@
                         {% for related_tutorial in related_tutorials %}
                             
                             <!-- Recommended tutorials carousel item -->
-                            <section>
+                            <article>
                                 <section class="card card-rounded m-1">
 
                                     <!-- Carousel image -->
@@ -189,7 +196,7 @@
                                     <!-- End Carousel content -->
 
                                 </section>
-                            </section>
+                            </article>
                             <!-- End Recommended tutorials carousel item -->
 
                         {% empty %}
@@ -359,7 +366,7 @@
 
                     {% for tutorial_item in latest_tutorials %}
 
-                        <section class="row mx-0 my-2">
+                        <article class="row mx-0 my-2">
 
                             <section
                                 class="col-4 p-0 px-1 border-right border-left-0  d-flex flex-column justify-content-center">
@@ -374,7 +381,7 @@
                                     {{ tutorial_item.short_description|truncatewords:5 }}
                                 </p>
                             </section>
-                        </section>
+                        </article>
 
                     {% endfor %}
                     
@@ -397,7 +404,7 @@
 
                     {% for tutorial_item in most_popular_tutorials %}
 
-                        <section class="row mx-0 my-2">
+                        <article class="row mx-0 my-2">
 
                             <section
                                 class="col-4 p-0 px-1 border-right border-left-0  d-flex flex-column justify-content-center">
@@ -412,7 +419,7 @@
                                     {{ tutorial_item.short_description|truncatewords:5 }}
                                 </p>
                             </section>
-                        </section>
+                        </article>
 
                     {% endfor %}
                     
@@ -448,7 +455,7 @@
                     </section>
 
                     <section class="card-body card-rounded-content bg-white ح-0">
-                        {% for tag in tutorial.tags.all %}
+                        {% for tag in tags %}
                             <a href="{% url 'learning:tutorials_archive' %}?search={{ tag.title }}" class="rounded bg-light px-2 pt-1 m-1 d-inline-block">{{ tag.title }}</a>
                         {% empty %}
                             <p>این آموزش فاقد کلمه کلیدی است</p>
