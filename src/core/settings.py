@@ -68,6 +68,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Custom middlewares
+    'utilities.middleware.LoginRequiredMiddleware'
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -203,6 +206,12 @@ LOGIN_URL = '/auth/login'
 
 # Logout required url for LogoutRequiredMixin
 LOGOUT_REQUIRED_URL = '/auth/logout_required'
+
+# Login required by url pattern
+# Used for LoginRequiredMiddleware
+LOGIN_REQUIRED_URLS = [
+    r'/user/(.*)$'
+]
 
 # Logging configuration
 # https://docs.djangoproject.com/en/3.2/topics/logging/
