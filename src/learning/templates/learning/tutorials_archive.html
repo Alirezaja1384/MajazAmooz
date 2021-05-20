@@ -3,7 +3,9 @@
 {% load image_utils %}
 {% load basic_utils %}
 
-{% block title %} آرشیو آموزش ها {% endblock title %}
+
+{% block title %} آرشیو آموزش ها{% if category %}ی "{{ category.name }}"{% endif %} {% endblock title %}
+
 
 {% block content %}
 
@@ -120,7 +122,7 @@
 
                 {% for tutorial in tutorials %}
                     <!-- Single tutorial -->
-                    <section class="col-lg-4 col-sm-6 col-12 my-3">
+                    <article class="col-lg-4 col-sm-6 col-12 my-3">
                         <section class="card bg-whiteblue">
                             <section class="card-header">
                                 <img src="{{ tutorial.image|image_url }}" class="w-100" alt="{{ tutorial.title }}">
@@ -148,7 +150,7 @@
                                 </section>
                             </section>
                         </section>
-                    </section>
+                    </article>
                     <!-- End Single tutorial -->
                 {% empty %}
                     <p>موردی یافت نشد</p>

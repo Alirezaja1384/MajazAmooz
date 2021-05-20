@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 from smtplib import SMTPException
 from django.contrib.auth import get_user_model
@@ -12,6 +13,8 @@ from django.db import DatabaseError
 
 from authentication.models import User
 
+
+logger = logging.getLogger('emails')
 
 UserModel = get_user_model()
 
@@ -101,7 +104,8 @@ class EmailConfirmationManager:
         try:
             email.send()
             return True
-        except SMTPException:
+        except SMTPException as ex:
+            logger.warning(ex)
             return False
 
     def confirm(self) -> bool:

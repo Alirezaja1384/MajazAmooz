@@ -1,3 +1,4 @@
+import logging
 from smtplib import SMTPException
 from django.conf import settings
 from django.http import HttpRequest
@@ -9,6 +10,8 @@ from django.db.models import QuerySet
 from utilities.model_utils import ConfirmStatusChoices
 from learning.models import (TutorialComment, Tutorial)
 
+
+logger = logging.getLogger('emails')
 
 FROM_EMAIL = getattr(settings, 'EMAIL_FROM', None)
 
@@ -36,7 +39,8 @@ def send_mail(subject, to: list[str], plain_message=None,
     try:
         email.send()
         return True
-    except SMTPException:
+    except SMTPException as ex:
+        logger.warning(ex)
         return False
 
 

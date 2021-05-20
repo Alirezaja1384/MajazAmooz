@@ -109,11 +109,12 @@ def tutorial_details_view(request: HttpRequest, slug: str):
     record_tutorial_view(tutorial, request.user)
 
     context = {
-        "tutorial": tutorial,
-        "liked_by_current_user": liked_by_current_user,
-        "comments": comments,
+        'tutorial': tutorial,
+        'liked_by_current_user': liked_by_current_user,
+        'comments': comments,
+        'tags': tutorial.tags.all(),
         # If there wasn't any related_tutorial use latest_tutorials instead
-        "related_tutorials": related_tutorials or latest_tutorials,
+        'related_tutorials': related_tutorials or latest_tutorials,
         'latest_tutorials': latest_tutorials,
         'most_popular_tutorials': most_popular_tutorials
     }

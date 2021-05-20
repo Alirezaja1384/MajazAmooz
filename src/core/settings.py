@@ -203,3 +203,57 @@ LOGIN_URL = '/auth/login'
 
 # Logout required url for LogoutRequiredMixin
 LOGOUT_REQUIRED_URL = '/auth/logout_required'
+
+# Logging configuration
+# https://docs.djangoproject.com/en/3.2/topics/logging/
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s '
+                      '%(process)d %(thread)d %(message)s'
+        },
+        'json': {
+            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+            'format': '%(levelname)s %(asctime)s %(module)s '
+                      '%(pathname)s %(process)d %(thread)d %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {
+            'formatter': 'simple',
+            'class': 'logging.StreamHandler',
+        },
+        'verbose_console':{
+            'formatter': 'verbose',
+            'class': 'logging.StreamHandler',
+        },
+        'file_json': {
+            'level': 'WARNING',
+            'formatter': 'json',
+            'class': 'logging.FileHandler',
+            'filename': config('LOGGING_FILE_NAME', 'logs.log'),
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console', 'file_json'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console', 'file_json'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'emails': {
+            'handlers': ['verbose_console', 'file_json'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
