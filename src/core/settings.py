@@ -210,7 +210,7 @@ LOGOUT_REQUIRED_URL = '/auth/logout_required'
 # Login required by url pattern
 # Used for LoginRequiredMiddleware
 LOGIN_REQUIRED_URLS = [
-    r'/user/(.*)$'
+    r'^/user/(.*)$'
 ]
 
 # Logging configuration
