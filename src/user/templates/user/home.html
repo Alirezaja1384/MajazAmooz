@@ -1,0 +1,300 @@
+{% extends 'user/shared/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+    <!-- Info boxes -->
+    <div class="row">
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"><i class="fa fa-book"></i></span>
+
+                <div class="info-box-content">
+                    <h4 class="info-box-text">آموزش ها</h4>
+                    <span class="info-box-number">
+                        <a href="#">مدیریت آموزش های شما</a>
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-danger elevation-1"><i class="fa fa-book"></i></span>
+
+                <div class="info-box-content">
+                    <h4 class="info-box-text">آزمون ها (به زودی)</h4>
+                    <span class="info-box-number">
+                        <a>مدیریت آزمون های شما</a>
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <!-- fix for small devices only -->
+        <div class="clearfix hidden-md-up"></div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fa fa-comment"></i></span>
+
+                <div class="info-box-content">
+                    <h4 class="info-box-text">دیدگاه های من</h4>
+                    <span class="info-box-number">
+                        <a href="#">مدیریت دیدگاه های شما</a>
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+
+        <!-- /.col -->
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-warning elevation-1"><i class="fa fa-users"></i></span>
+
+                <div class="info-box-content">
+                    <h4 class="info-box-text">دیدگاه های دیگران</h4>
+                    <span class="info-box-number">
+                        <a href="#">دیدگاه های دیگران برای آموزش های شما</a>
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">گزارش</h5>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-widget="remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                    <div class="col-md-8">
+                        <p class="text-center">
+                            <strong>بازدید این ماه</strong>
+                        </p>
+
+                        <div class="chart">
+                            <!-- Sales Chart Canvas -->
+                            <canvas id="salesChart" height="180" style="height: 180px;"></canvas>
+                        </div>
+                        <!-- /.chart-responsive -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-md-4">
+                        <p class="text-center">
+                            <strong>میزان پیشرفت اهداف</strong>
+                        </p>
+
+                        <div class="progress-group">
+                            آموزش ها
+                            <span class="float-left"><b>160</b>/200</span>
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-primary" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <!-- /.progress-group -->
+
+                        <div class="progress-group">
+                            دیدگاه ها
+                            <span class="float-left"><b>310</b>/400</span>
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-info" style="width: 80%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-group">
+                            لایک ها
+                            <span class="float-left"><b>310</b>/400</span>
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-danger" style="width: 75%"></div>
+                            </div>
+                        </div>
+
+                        <!-- /.progress-group -->
+                        <div class="progress-group">
+                            بازدید ها
+                            <span class="float-left"><b>480</b>/800</span>
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-success" style="width: 60%"></div>
+                            </div>
+                        </div>
+
+                        <!-- /.progress-group -->
+                    </div>
+                    <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+
+        <!-- Left col -->
+        <div class="col-md-8">
+            
+
+            <!-- TABLE: LATEST ORDERS -->
+            <div class="card">
+                <div class="card-header border-transparent">
+                    <h3 class="card-title">آخرین آموزش های شما</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-widget="remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table m-0">
+                            <thead>
+                                <tr>
+                                    <th>آموزش</th>
+                                    <th>زمان ایجاد</th>
+                                    <th>دسته بندی ها</th>
+                                    <th>وضعیت</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td><a href="#">آموزش شماره 1</a></td>
+                                    <td><span>1400/02/30</span></td>
+                                    <td><a href="#">تست</a></td>
+                                    <td><span class="badge badge-success">تایید شده</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td><a href="#">آموزش شماره 1</a></td>
+                                    <td><span>1400/02/30</span></td>
+                                    <td><a href="#">تست</a></td>
+                                    <td><span class="badge badge-success">تایید شده</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td><a href="#">آموزش شماره 1</a></td>
+                                    <td><span>1400/02/30</span></td>
+                                    <td><a href="#">تست</a></td>
+                                    <td><span class="badge badge-success">تایید شده</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td><a href="#">آموزش شماره 1</a></td>
+                                    <td><span>1400/02/30</span></td>
+                                    <td><a href="#">تست</a></td>
+                                    <td><span class="badge badge-success">تایید شده</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td><a href="#">آموزش شماره 1</a></td>
+                                    <td><span>1400/02/30</span></td>
+                                    <td><a href="#">تست</a></td>
+                                    <td><span class="badge badge-success">تایید شده</span></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer clearfix">
+                    <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">مشاهده همه آموزش ها</a>
+                </div>
+                <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+
+        <div class="col-md-4">
+            <!-- Info Boxes Style 2 -->
+            <div class="info-box mb-3 bg-info">
+                <span class="info-box-icon"><i class="fa fa-book"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">آموزش</span>
+                    <span class="info-box-number">250</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+            <div class="info-box mb-3 bg-success">
+                    <span class="info-box-icon"><i class="fa fa-book"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">آزمون ها</span>
+                        <span class="info-box-number">5</span>
+                    </div>
+                    <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+
+            <div class="info-box mb-3 bg-danger">
+                <span class="info-box-icon"><i class="fa fa-heart"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">لایک ها</span>
+                    <span class="info-box-number">50</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+
+            <div class="info-box mb-3 bg-warning">
+                <span class="info-box-icon"><i class="fa fa-eye"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">بازدید ها</span>
+                    <span class="info-box-number">20</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+
+        </div>
+        <!-- /.col -->
+
+    </div>
+
+{% endblock content %}
+
+
+{% block extra_scripts %}
+  <script src="{% static 'user/js/pages/dashboard2.js' %}"></script>
+{% endblock extra_scripts %}

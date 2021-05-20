@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'learning.apps.LearningConfig',
     'ajax.apps.AjaxConfig',
+    'user.apps.UserConfig',
     'utilities'
 ]
 

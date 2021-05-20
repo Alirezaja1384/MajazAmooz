@@ -9,6 +9,7 @@ urlpatterns = [
     path('', include('learning.urls')),
     path('auth/', include('authentication.url')),
     path('ajax/', include('ajax.urls')),
+    path('user/', include('user.urls')),
     path('admin/', admin.site.urls, name='admin'),
 
     # debug-toolbar
