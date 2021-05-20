@@ -113,35 +113,35 @@
 
                         <div class="progress-group">
                             آموزش ها
-                            <span class="float-left"><b>160</b>/200</span>
+                            <span class="float-left"><b>{{statistics.tutorials_count}}</b>/{{statistics.tutorials_count_goal}}</span>
                             <div class="progress progress-sm">
-                                <div class="progress-bar bg-primary" style="width: 90%"></div>
+                                <div class="progress-bar bg-primary" style="width: {{statistics.tutorial_count_goal_percent}}%"></div>
                             </div>
                         </div>
                         <!-- /.progress-group -->
 
                         <div class="progress-group">
                             دیدگاه ها
-                            <span class="float-left"><b>310</b>/400</span>
+                            <span class="float-left"><b>{{statistics.comments_count}}</b>/{{statistics.comments_count_goal}}</span>
                             <div class="progress progress-sm">
-                                <div class="progress-bar bg-info" style="width: 80%"></div>
+                                <div class="progress-bar bg-info" style="width: {{statistics.comments_count_goal_percent}}%"></div>
                             </div>
                         </div>
 
                         <div class="progress-group">
                             لایک ها
-                            <span class="float-left"><b>310</b>/400</span>
+                            <span class="float-left"><b>{{statistics.likes_count}}</b>/{{statistics.likes_count_goal}}</span>
                             <div class="progress progress-sm">
-                                <div class="progress-bar bg-danger" style="width: 75%"></div>
+                                <div class="progress-bar bg-danger" style="width: {{statistics.likes_count_goal_percent}}%"></div>
                             </div>
                         </div>
 
                         <!-- /.progress-group -->
                         <div class="progress-group">
                             بازدید ها
-                            <span class="float-left"><b>480</b>/800</span>
+                            <span class="float-left"><b>{{statistics.views_count}}</b>/{{statistics.views_count_goal}}</span>
                             <div class="progress progress-sm">
-                                <div class="progress-bar bg-success" style="width: 60%"></div>
+                                <div class="progress-bar bg-success" style="width: {{statistics.views_count_goal_percent}}%"></div>
                             </div>
                         </div>
 
@@ -248,8 +248,8 @@
                 <span class="info-box-icon"><i class="fa fa-book"></i></span>
 
                 <div class="info-box-content">
-                    <span class="info-box-text">آموزش</span>
-                    <span class="info-box-number">250</span>
+                    <span class="info-box-text">آموزش ها</span>
+                    <span class="info-box-number">{{ statistics.tutorials_count }}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -258,8 +258,8 @@
                     <span class="info-box-icon"><i class="fa fa-book"></i></span>
 
                     <div class="info-box-content">
-                        <span class="info-box-text">آزمون ها</span>
-                        <span class="info-box-number">5</span>
+                        <span class="info-box-text">دیدگاه ها</span>
+                        <span class="info-box-number">{{ statistics.comments_count }}</span>
                     </div>
                     <!-- /.info-box-content -->
             </div>
@@ -270,7 +270,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">لایک ها</span>
-                    <span class="info-box-number">50</span>
+                    <span class="info-box-number">{{ statistics.likes_count }}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -281,7 +281,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">بازدید ها</span>
-                    <span class="info-box-number">20</span>
+                    <span class="info-box-number">{{ statistics.views_count }}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
