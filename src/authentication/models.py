@@ -22,7 +22,18 @@ class User(AbstractUser):
 
     diamonds = models.PositiveIntegerField("الماس ها", default=0)
 
-    email_confirmed = models.BooleanField(verbose_name='تایید ایمیل', default=False)
+    email_confirmed = models.BooleanField(
+        verbose_name='تایید ایمیل', default=False)
+
+    # Goals
+    tutorials_count_goal = models.PositiveIntegerField(
+        default=20, verbose_name='تعداد آموزش هدف')
+    comments_count_goal = models.PositiveIntegerField(
+        default=50, verbose_name='تعداد دیدگاه هدف')
+    likes_count_goal = models.PositiveIntegerField(
+        default=200, verbose_name='تعداد لایک هدف')
+    views_count_goal = models.PositiveIntegerField(
+        default=200, verbose_name='تعداد بازدید هدف')
 
     class Meta:
         verbose_name = _('user')
