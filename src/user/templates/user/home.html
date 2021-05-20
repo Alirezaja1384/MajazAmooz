@@ -185,47 +185,41 @@
                             <thead>
                                 <tr>
                                     <th>آموزش</th>
-                                    <th>زمان ایجاد</th>
                                     <th>دسته بندی ها</th>
+                                    <th>زمان ایجاد</th>
                                     <th>وضعیت</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                <tr>
-                                    <td><a href="#">آموزش شماره 1</a></td>
-                                    <td><span>1400/02/30</span></td>
-                                    <td><a href="#">تست</a></td>
-                                    <td><span class="badge badge-success">تایید شده</span></td>
-                                </tr>
 
-                                <tr>
-                                    <td><a href="#">آموزش شماره 1</a></td>
-                                    <td><span>1400/02/30</span></td>
-                                    <td><a href="#">تست</a></td>
-                                    <td><span class="badge badge-success">تایید شده</span></td>
-                                </tr>
+                                {% for tutorial in latest_user_tutorials %}
+                                    <tr>
+                                        <td>
+                                            {% if tutorial.confirm_status == ConfirmStatusChoices.CONFIRMED %}
+                                                <a href="{% url 'learning:tutorial' slug=tutorial.slug %}">{{ tutorial.title }}</a>
+                                            {% else %}
+                                                <span>{{ tutorial.title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% for category in tutorial.categories.all %}
+                                                <a class="badge badge-info" href="{% url 'learning:tutorials_archive' %}?category={{category.slug}}">{{ category.name }}</a>
+                                            {% endfor %}
+                                        </td>
+                                        <td><span>{{ tutorial.create_date }}</span></td>
+                                        <td>
+                                            {% if tutorial.confirm_status == ConfirmStatusChoices.CONFIRMED %}
+                                                <span class="badge badge-success">{{ tutorial.get_confirm_status_display }}</span>
+                                            {% elif tutorial.confirm_status == ConfirmStatusChoices.DISPROVED %}
+                                                <span class="badge badge-danger">{{ tutorial.get_confirm_status_display }}</span>
+                                            {% else %}
+                                                <span class="badge badge-info">{{ tutorial.get_confirm_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
 
-                                <tr>
-                                    <td><a href="#">آموزش شماره 1</a></td>
-                                    <td><span>1400/02/30</span></td>
-                                    <td><a href="#">تست</a></td>
-                                    <td><span class="badge badge-success">تایید شده</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td><a href="#">آموزش شماره 1</a></td>
-                                    <td><span>1400/02/30</span></td>
-                                    <td><a href="#">تست</a></td>
-                                    <td><span class="badge badge-success">تایید شده</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td><a href="#">آموزش شماره 1</a></td>
-                                    <td><span>1400/02/30</span></td>
-                                    <td><a href="#">تست</a></td>
-                                    <td><span class="badge badge-success">تایید شده</span></td>
-                                </tr>
                             </tbody>
 
                         </table>
@@ -234,7 +228,7 @@
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer clearfix">
-                    <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">مشاهده همه آموزش ها</a>
+                    <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">مدیریت آموزش ها</a>
                 </div>
                 <!-- /.card-footer -->
             </div>

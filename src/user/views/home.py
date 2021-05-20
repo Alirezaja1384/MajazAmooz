@@ -1,10 +1,13 @@
 from math import ceil
+
 from django.shortcuts import render
 from django.http import HttpRequest
+from django.db.models import Prefetch
 
 from authentication.models import User
+from utilities.model_utils import ConfirmStatusChoices
 from learning.models import (
-    Tutorial, TutorialComment,
+    Tutorial, Category, TutorialComment,
     TutorialLike, TutorialView
 )
 
@@ -56,7 +59,16 @@ def get_user_statistics(user: User):
 
 
 def home_view(request: HttpRequest):
+    latest_user_tutorials_count = 5
+
+    latest_user_tutorials = Tutorial.objects.filter(author=request.user).prefetch_related(
+        Prefetch('categories', queryset=Category.objects.active_categories())
+    ).order_by('-create_date')[:latest_user_tutorials_count]
+
     context = {
-        'statistics': get_user_statistics(request.user)
+        'statistics': get_user_statistics(request.user),
+        'latest_user_tutorials': latest_user_tutorials,
+        'ConfirmStatusChoices': ConfirmStatusChoices,
     }
+
     return render(request, 'user/home.html', context)
