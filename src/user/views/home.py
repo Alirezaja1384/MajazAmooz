@@ -6,6 +6,7 @@ from django.db.models import Prefetch
 
 from authentication.models import User
 from utilities.model_utils import ConfirmStatusChoices
+from utilities.date_time import get_last_months
 from learning.models import (
     Tutorial, Category, TutorialComment,
     TutorialLike, TutorialView
@@ -13,7 +14,8 @@ from learning.models import (
 
 
 class UserStatistics:
-    def __init__(self, tutorials_count, comments_count, likes_count, views_count, user: User):
+    def __init__(self, tutorials_count, comments_count, likes_count, views_count,
+                 user: User, view_statistics: list[dict]):
         self.tutorials_count = tutorials_count
         self.comments_count = comments_count
         self.likes_count = likes_count
@@ -22,6 +24,8 @@ class UserStatistics:
         self.comments_count_goal = user.comments_count_goal
         self.likes_count_goal = user.likes_count_goal
         self.views_count_goal = user.views_count_goal
+
+        self.view_statistics = view_statistics
 
     @property
     def tutorial_count_goal_percent(self):
@@ -40,6 +44,25 @@ class UserStatistics:
         return ceil(self.views_count / self.views_count_goal * 100)
 
 
+# TODO: Make last_months_count dynamic
+def get_view_statistics(user: User):
+    last_months_count = 5
+
+    all_views = TutorialView.objects.filter(
+        tutorial__author=user).active_confirmed_tutorials()
+    last_months = get_last_months(last_months_count)
+
+    result = []
+    for month in last_months:
+        result.append({
+            'label': month.label,
+            'count': all_views.filter(create_date__gte=month.gregorian_start,
+                                      create_date__lte=month.gregorian_end).count()
+        })
+
+    return result
+
+
 def get_user_statistics(user: User):
 
     tutorials_count = Tutorial.objects.filter(
@@ -55,7 +78,8 @@ def get_user_statistics(user: User):
     views_count = TutorialView.objects.active_confirmed_tutorials().filter(
         tutorial__author=user).count()
 
-    return UserStatistics(tutorials_count, comments_count, likes_count, views_count, user)
+    return UserStatistics(tutorials_count, comments_count, likes_count, views_count,
+                          user, get_view_statistics(user))
 
 
 def home_view(request: HttpRequest):
@@ -66,9 +90,9 @@ def home_view(request: HttpRequest):
     ).order_by('-create_date')[:latest_user_tutorials_count]
 
     context = {
+        'ConfirmStatusChoices': ConfirmStatusChoices,
         'statistics': get_user_statistics(request.user),
         'latest_user_tutorials': latest_user_tutorials,
-        'ConfirmStatusChoices': ConfirmStatusChoices,
     }
 
     return render(request, 'user/home.html', context)
