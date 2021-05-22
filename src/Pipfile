@@ -14,6 +14,7 @@ psycopg2 = ">=2.8.6"
 python-decouple = ">=3.4"
 django-filter = ">=2.4.0"
 python-json-logger = ">=2.0.1"
+jdatetime = ">=3.6.2"
 
 [dev-packages]
 autopep8 = "*"
