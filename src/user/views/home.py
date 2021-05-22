@@ -27,21 +27,28 @@ class UserStatistics:
 
         self.view_statistics = view_statistics
 
+    @staticmethod
+    def __goal_completion_percent(count, goal_count):
+        if goal_count == 0 or count > goal_count:
+            return 100
+        else:
+            return ceil((count / goal_count) * 100)
+
     @property
     def tutorial_count_goal_percent(self):
-        return ceil(self.tutorials_count / self.tutorials_count_goal * 100)
+        return self.__goal_completion_percent(self.tutorials_count, self.tutorials_count_goal)
 
     @property
     def comments_count_goal_percent(self):
-        return ceil(self.comments_count / self.comments_count_goal * 100)
+        return self.__goal_completion_percent(self.comments_count, self.comments_count_goal)
 
     @property
     def likes_count_goal_percent(self):
-        return ceil(self.likes_count / self.likes_count_goal * 100)
+        return self.__goal_completion_percent(self.likes_count, self.likes_count_goal)
 
     @property
     def views_count_goal_percent(self):
-        return ceil(self.views_count / self.views_count_goal * 100)
+        return self.__goal_completion_percent(self.views_count, self.views_count_goal)
 
 
 # TODO: Make last_months_count dynamic
