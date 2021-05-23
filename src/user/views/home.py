@@ -2,7 +2,7 @@ from math import ceil
 
 from django.shortcuts import render
 from django.http import HttpRequest
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Sum, Count
 
 from authentication.models import User
 from utilities.model_utils import ConfirmStatusChoices
@@ -14,8 +14,8 @@ from learning.models import (
 
 
 class UserStatistics:
-    def __init__(self, tutorials_count, comments_count, likes_count, views_count,
-                 user: User, view_statistics: list[dict]):
+    def __init__(self, user: User, view_statistics: list[dict],
+                 tutorials_count, comments_count, likes_count, views_count):
         self.tutorials_count = tutorials_count
         self.comments_count = comments_count
         self.likes_count = likes_count
@@ -72,21 +72,17 @@ def get_view_statistics(user: User):
 
 def get_user_statistics(user: User):
 
-    tutorials_count = Tutorial.objects.filter(
-        author=user).active_and_confirmed_tutorials().count()
+    tutorial_statistics = Tutorial.objects.active_and_confirmed_tutorials(
+    ).filter(author=user).aggregate(
+        tutorials_count=Count('pk'),
+        likes_count=Sum('likes_count'),
+        views_count=Sum('user_views_count')
+    )
+    tutorial_statistics['comments_count'] = TutorialComment.objects.filter(
+        tutorial__author=user).active_and_confirmed_comments().count()
 
-    comments_count = TutorialComment.objects.filter(
-        tutorial__author=user).active_confirmed_tutorials(
-    ).active_and_confirmed_comments().count()
-
-    likes_count = TutorialLike.objects.active_confirmed_tutorials().filter(
-        tutorial__author=user).count()
-
-    views_count = TutorialView.objects.active_confirmed_tutorials().filter(
-        tutorial__author=user).count()
-
-    return UserStatistics(tutorials_count, comments_count, likes_count, views_count,
-                          user, get_view_statistics(user))
+    return UserStatistics(user, get_view_statistics(user),
+                          **tutorial_statistics)
 
 
 def home_view(request: HttpRequest):
