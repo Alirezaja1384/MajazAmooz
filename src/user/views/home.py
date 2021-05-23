@@ -9,7 +9,7 @@ from utilities.model_utils import ConfirmStatusChoices
 from utilities.date_time import get_last_months
 from learning.models import (
     Tutorial, Category, TutorialComment,
-    TutorialLike, TutorialView
+    TutorialView
 )
 
 
@@ -52,6 +52,7 @@ class UserStatistics:
 
 
 # TODO: Make last_months_count dynamic
+# TODO: Improve performance by reducing query count
 def get_view_statistics(user: User):
     last_months_count = 5
 
@@ -67,7 +68,8 @@ def get_view_statistics(user: User):
                                       create_date__lte=month.gregorian_end).count()
         })
 
-    return result
+    # Convert descending months data to ascending
+    return result[::-1]
 
 
 def get_user_statistics(user: User):
@@ -85,6 +87,7 @@ def get_user_statistics(user: User):
                           **tutorial_statistics)
 
 
+# TODO: Make latest_user_tutorials_count dynamic
 def home_view(request: HttpRequest):
     latest_user_tutorials_count = 5
 
