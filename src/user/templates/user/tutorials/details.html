@@ -1,0 +1,25 @@
+{% extends 'user/shared/base.html' %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb float-sm-left">
+        <li class="breadcrumb-item"><a href="{% url 'user:home' %}">خانه</a></li>
+        <li class="breadcrumb-item active"><a href="{% url 'user:tutorials' %}">آموزش ها</a></li>
+        <li class="breadcrumb-item active">{{title}}</li>
+    </ol>
+{% endblock breadcrumb %}
+
+{% block content %}
+
+    <div class="col-12">
+        {% for field in fields %}
+            <div class="row">
+                <div class="col-md-2">
+                    <p>{{ field.name }}</p>
+                </div>
+                <div class="col-md-10">
+                    <strong>{{ field.value }}</strong>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

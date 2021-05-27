@@ -1,2 +1,4 @@
 from .home import home_view
-from .tutorials import TutorialListView
+from .tutorials import (
+    TutorialListView, TutorialDetailView
+)

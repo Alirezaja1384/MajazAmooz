@@ -288,6 +288,9 @@
           <div class="col-sm-6">
             <h1 class="m-0 text-dark">{{ title|default:'پنل کاربری' }}</h1>
           </div><!-- /.col -->
+          <div class="col-sm-6">
+            {% block breadcrumb %}{% endblock breadcrumb %}
+          </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
