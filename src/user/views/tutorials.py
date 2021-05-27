@@ -17,20 +17,9 @@ class TutorialListView(SingleTableView):
     def get_queryset(self):
         return get_tutorials_queryset(user=self.request.user)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'مدیریت آموزش ها'
-        return context
-
 
 class TutorialDetailView(DynamicModelFieldDetailView):
     template_name = 'user/tutorials/details.html'
 
     def get_queryset(self):
         return get_tutorials_queryset(self.request.user)
-
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'اطلاعات آموزش'
-        return context
