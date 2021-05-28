@@ -1,6 +1,9 @@
 {% extends 'user/shared/base.html' %}
 {% load render_table from django_tables2 %}
 
+
 {% block content %}
+    <a href="{% url 'user:tutorial_create' %}" class="btn btn-sm btn-success">افزودن</a>
+
     {% render_table table %}
 {% endblock content %}

@@ -281,6 +281,25 @@
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
+
+
+    {% for message in messages %}
+
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+            <section class="alert alert-success alert-dismissible w-100">
+                <span class="close" data-dismiss="alert">&times;</span>
+                <strong class="mb-0">{{ message.message }}</strong>
+            </section>
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+            <section class="alert alert-danger alert-dismissible w-100">
+                <span class="close" data-dismiss="alert">&times;</span>
+                <strong class="mb-0">{{ message.message }}</strong>
+            </section>
+        {% endif %}
+
+    {% endfor %}
+
+
     <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="container-fluid">
@@ -299,7 +318,6 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-
 
           {% block content %}{% endblock content %}
 
