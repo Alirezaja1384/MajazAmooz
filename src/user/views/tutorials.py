@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django.contrib import messages
-from django.views.generic import CreateView
+from django.views.generic import (CreateView, UpdateView)
 from  django.shortcuts import (reverse, redirect)
 from django_tables2 import SingleTableView
 
@@ -32,7 +32,7 @@ class TutorialDetailView(DynamicModelFieldDetailView):
 
 
 class TutorialCreateView(CreateView):
-    template_name = "user/tutorials/create.html"
+    template_name = "user/tutorials/create_update.html"
 
     form_class = TutorialForm
 
@@ -42,6 +42,24 @@ class TutorialCreateView(CreateView):
         tutorial.save()
 
         messages.success(self.request, f'آموزش "{tutorial.title}" با موفقیت افزوده شد')
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('user:tutorials')
+
+
+class TutorialUpdateView(UpdateView):
+    template_name = "user/tutorials/create_update.html"
+
+    form_class = TutorialForm
+
+    def get_queryset(self):
+        return get_tutorials_queryset(self.request.user)
+
+    def form_valid(self, form: ModelForm):
+        tutorial: Tutorial = form.save()
+
+        messages.success(self.request, f'آموزش "{tutorial.title}" با موفقیت ویرایش شد')
         return redirect(self.get_success_url())
 
     def get_success_url(self):

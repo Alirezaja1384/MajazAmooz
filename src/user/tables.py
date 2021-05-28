@@ -4,6 +4,7 @@ from learning.models import Tutorial
 
 ACTION_TEMPLATE = '''
     <a href="{% url details_url record.pk %}" class="btn btn-sm btn-info">اطلاعات</a>
+    <a href="{% url update_url record.pk %}" class="btn btn-sm btn-warning">ویرایش</a>
 '''
 
 
@@ -12,7 +13,8 @@ class TutorialTable(tables.Table):
     details = tables.TemplateColumn(
         ACTION_TEMPLATE, orderable=False,
         verbose_name='اقدام', extra_context={
-            'details_url': 'user:tutorial_details'
+            'details_url': 'user:tutorial_details',
+            'update_url': 'user:tutorial_update',
         })
 
     class Meta:

@@ -2,7 +2,8 @@ from django.urls import path
 
 from user.views import (
     home_view, TutorialListView,
-    TutorialDetailView, TutorialCreateView
+    TutorialDetailView, TutorialCreateView,
+    TutorialUpdateView
 )
 
 
@@ -16,6 +17,9 @@ urlpatterns = [
 
     path('tutorials/create', TutorialCreateView.as_view(
         extra_context={'title': 'افزودن آموزش'}), name='tutorial_create'),
+
+    path('tutorials/edit/<int:pk>', TutorialUpdateView.as_view(
+        extra_context={'title': 'ویرایش آموزش'}), name='tutorial_update'),
 
     path('tutorials/details/<int:pk>', TutorialDetailView.as_view(
         extra_context={'title': 'اطلاعات آموزش'}), name='tutorial_details'),

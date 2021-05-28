@@ -12,7 +12,7 @@ class TutorialForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
-        self.helper.add_input(Submit('create', 'افزودن', css_class='btn-success'))
+        self.helper.add_input(Submit('create_update', 'انجام', css_class='btn-success'))
 
 
     class Meta:
