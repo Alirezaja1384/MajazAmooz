@@ -1,10 +1,16 @@
 from typing import TypedDict
-from django.views.generic import DetailView
+from django import forms
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.http import (HttpRequest, HttpResponseBadRequest)
+from django.views.generic import (DetailView, DeleteView)
 from django.db.models import (
     Field, Model,
     CharField, TextField,
     BooleanField, IntegerField
 )
+from crispy_forms.layout import Submit
+from crispy_forms.helper import FormHelper
 
 
 class FieldNameValue(TypedDict):
@@ -156,4 +162,107 @@ class DynamicModelFieldDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context[self.context_fields_name] = self.get_visible_field_name_values()
 
+        return context
+
+
+class DeleteDeactivationForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add submit button
+        self.helper = FormHelper()
+        self.helper.add_input(
+            Submit('create_update', 'حذف', css_class='btn-danger'))
+
+    DELETE = 'delete'
+    DEACTIVATE = 'deactivate'
+    CHOICES = [
+        (DEACTIVATE, 'غیر فعالسازی'),
+        (DELETE, 'حذف'),
+    ]
+
+    action = forms.ChoiceField(
+        choices=CHOICES, required=True, initial=DEACTIVATE,
+        widget=forms.RadioSelect, label='عملیات مورد نظر')
+
+    @property
+    def action_display(self) -> str:
+        """ Returns display of chosen action
+
+        Returns:
+            str: Display of chosen action
+        """
+        return dict(self.fields['action'].choices)[self.cleaned_data['action']]
+
+
+class DeleteDeactivationView(DeleteView):
+
+    # Delate/Deactivation form
+    form = DeleteDeactivationForm
+    # Field to choose action by its value
+    form_action_field = 'action'
+    # Delate/Deactivation form context name
+    context_action_form_name = 'form'
+
+    # Form field and value to set if deactivate chose
+    model_deactivation_field = 'is_active'
+    model_deactivation_value = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.object = None
+
+    def deactivate_object(self, obj: Model, deactivation_field: str, deactivation_value: str):
+        """ Deactivates model object
+
+        Args:
+            obj (Model): Model objects
+            deactivation_field (str): Field to set deactivation_value as its value
+            deactivation_value (str): Value to set as deactivation_field's value
+        """
+        setattr(obj, deactivation_field, deactivation_value)
+        self.object.save()
+
+    def delete_object(self, obj: Model):
+        """ Deletes model object
+
+        Args:
+            obj (Model): model object
+        """
+        obj.delete()
+
+    def delete_deactivate(self, request: HttpRequest, *args, **kwargs):
+        """ Deletes/Deactivates model object
+        """
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        form = self.form(request.POST)
+
+        if not form.is_valid():
+            return HttpResponseBadRequest()
+
+        action = form.cleaned_data[self.form_action_field]
+
+        if action == self.form.DEACTIVATE:
+            # Deactivate model object
+            self.deactivate_object(self.object, self.model_deactivation_field,
+                                   self.model_deactivation_value)
+
+        elif action == self.form.DELETE:
+            # Delete model object
+            self.delete_object(self.object)
+
+        # Message user
+        messages.success(
+            request, f'{form.action_display} "{self.object.title}" با موفقیت انجام شد')
+
+        return redirect(success_url)
+
+    def post(self, request: HttpRequest, *args, **kwargs):
+        return self.delete_deactivate(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Create instance of form for context and assign it
+        context[self.context_action_form_name] = self.form()
         return context

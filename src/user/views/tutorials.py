@@ -1,14 +1,15 @@
-from django.http import HttpResponseBadRequest
 from django.forms import ModelForm
 from django.contrib import messages
-from django.views.generic import (CreateView, UpdateView, DeleteView)
+from django.views.generic import (CreateView, UpdateView)
 from django.shortcuts import (reverse, redirect)
 from django_tables2 import SingleTableView
 
 from user.tables import TutorialTable
-from user.forms import (TutorialForm, DeleteForm)
+from user.forms import TutorialForm
 from learning.models import Tutorial
-from utilities.views.generic import DynamicModelFieldDetailView
+from utilities.views.generic import (
+    DynamicModelFieldDetailView, DeleteDeactivationView
+)
 
 
 SUCCESS_VIEW_NAME = 'user:tutorials'
@@ -72,7 +73,7 @@ class TutorialUpdateView(UpdateView):
         return reverse(SUCCESS_VIEW_NAME)
 
 
-class TutorialDeleteView(DeleteView):
+class TutorialDeleteDeactivateView(DeleteDeactivationView):
     template_name = "user/tutorials/delete.html"
     context_object_name = 'tutorial'
 
@@ -81,26 +82,3 @@ class TutorialDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse(SUCCESS_VIEW_NAME)
-
-    def post(self, request, *args, **kwargs):
-        tutorial: Tutorial = self.get_object()
-        form = DeleteForm(request.POST)
-
-        if not form.is_valid():
-            return HttpResponseBadRequest()
-
-        if form.cleaned_data['action'] == 'deactivate':
-            tutorial.is_active = False
-            tutorial.save()
-        elif form.cleaned_data['action'] == 'delete':
-            tutorial.delete()
-
-        messages.success(
-            request, f'{form.get_action_display} آموزش "{tutorial.title}" با موفقیت انجام شد')
-
-        return redirect(self.get_success_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = DeleteForm()
-        return context

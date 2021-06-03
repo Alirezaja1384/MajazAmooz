@@ -23,26 +23,3 @@ class TutorialForm(forms.ModelForm):
         widgets = {
             'body': TinyMCE(),
         }
-
-
-class DeleteForm(forms.Form):
-
-    CHOICES = [
-        ('deactivate', 'غیر فعالسازی'),
-        ('delete', 'حذف'),
-    ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.helper = FormHelper()
-        self.helper.add_input(
-            Submit('create_update', 'حذف', css_class='btn-danger'))
-
-    action = forms.ChoiceField(choices=CHOICES, required=True,
-                               initial='deactivate', label='عملیات مورد نظر',
-                               widget=forms.RadioSelect)
-
-    @property
-    def get_action_display(self):
-        return dict(self.fields['action'].choices)[self.cleaned_data['action']]
