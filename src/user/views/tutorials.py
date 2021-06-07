@@ -6,12 +6,16 @@ from django_tables2 import SingleTableView
 
 from user.tables import (TutorialTable, TutorialUserRelationsTable)
 from user.forms import TutorialForm
-from learning.models import (Tutorial, TutorialView)
+from learning.models import (
+    Tutorial, TutorialView,
+    TutorialLike
+)
 from utilities.views.generic import (
     DynamicModelFieldDetailView, DeleteDeactivationView
 )
 
 
+PAGINATE_BY = 10
 SUCCESS_VIEW_NAME = 'user:tutorials'
 
 
@@ -74,7 +78,7 @@ class TutorialUpdateView(UpdateView):
 
 
 class TutorialDeleteDeactivateView(DeleteDeactivationView):
-    template_name = "user/tutorials/delete.html"
+    template_name = 'user/tutorials/delete.html'
     context_object_name = 'tutorial'
 
     def get_queryset(self):
@@ -84,13 +88,23 @@ class TutorialDeleteDeactivateView(DeleteDeactivationView):
         return reverse(SUCCESS_VIEW_NAME)
 
 
-
-class TutorialsViewedByOthersListView(SingleTableView):
+class TutorialRelationsAbstractTableView(SingleTableView):
     table_class = TutorialUserRelationsTable
 
-    paginate_by = 10
+    paginate_by = PAGINATE_BY
+    default_ordering = ('-create_date',)
     template_name = 'user/tutorials/relations_index.html'
+
+
+class TutorialsViewedByOthersListView(TutorialRelationsAbstractTableView):
 
     def get_queryset(self):
         return TutorialView.objects.active_confirmed_tutorials().filter(
-            tutorial__author=self.request.user).order_by('-create_date')
+            tutorial__author=self.request.user).order_by(*self.default_ordering)
+
+
+class TutorialsLikedByOthersListView(TutorialRelationsAbstractTableView):
+
+    def get_queryset(self):
+        return TutorialLike.objects.active_confirmed_tutorials().filter(
+            tutorial__author=self.request.user).order_by(*self.default_ordering)

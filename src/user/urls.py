@@ -27,4 +27,8 @@ urlpatterns = [
         extra_context={'title': 'بازدید های دیگران از آموزش های شما'}),
         name='tutorials_viewed_by_others'),
 
+    path('tutorials/liked_by_others', views.TutorialsLikedByOthersListView.as_view(
+        extra_context={'title': 'لایک های دیگران برای آموزش های شما'}),
+        name='tutorials_liked_by_others'),
+
 ]
