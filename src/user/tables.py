@@ -1,6 +1,5 @@
 import django_tables2 as tables
 from learning.models import Tutorial
-from learning.models.tutorial_user_relation_models import AbstractTutorialScoreCoinModel
 
 
 ACTION_TEMPLATE = '''
@@ -27,7 +26,14 @@ class TutorialTable(tables.Table):
 
 
 class TutorialUserRelationsTable(tables.Table):
+    _tutorial_link_template = '<a href="{% url \'learning:tutorial\' record.tutorial.slug %}">\
+                               {{record.tutorial.title}}</a>'
+
+    tutorial = tables.TemplateColumn(_tutorial_link_template)
+    user = tables.Column()
+    score = tables.Column()
+    coin = tables.Column()
+    create_date = tables.Column()
 
     class Meta:
-        model = AbstractTutorialScoreCoinModel
         fields = ('tutorial', 'user', 'score', 'coin', 'create_date',)
