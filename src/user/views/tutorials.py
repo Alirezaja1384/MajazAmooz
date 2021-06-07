@@ -95,6 +95,9 @@ class TutorialRelationsAbstractTableView(SingleTableView):
     default_ordering = ('-create_date',)
     template_name = 'user/tutorials/relations_index.html'
 
+    def get_queryset(self):
+        raise NotImplementedError('You should implement get_queryset()')
+
 
 class TutorialsViewedByOthersListView(TutorialRelationsAbstractTableView):
 
@@ -108,3 +111,10 @@ class TutorialsLikedByOthersListView(TutorialRelationsAbstractTableView):
     def get_queryset(self):
         return TutorialLike.objects.active_confirmed_tutorials().filter(
             tutorial__author=self.request.user).order_by(*self.default_ordering)
+
+
+class TutorialsLikedByMeListView(TutorialRelationsAbstractTableView):
+
+    def get_queryset(self):
+        return TutorialLike.objects.active_confirmed_tutorials().filter(
+            user=self.request.user).order_by(*self.default_ordering)

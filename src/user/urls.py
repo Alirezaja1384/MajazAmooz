@@ -31,4 +31,8 @@ urlpatterns = [
         extra_context={'title': 'لایک های دیگران برای آموزش های شما'}),
         name='tutorials_liked_by_others'),
 
+    path('tutorials/liked_by_me', views.TutorialsLikedByMeListView.as_view(
+        extra_context={'title': 'آموزش های لایک شده توسط شما'}),
+        name='tutorials_liked_by_me'),
+
 ]
