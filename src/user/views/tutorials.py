@@ -102,19 +102,19 @@ class TutorialRelationsAbstractTableView(SingleTableView):
 class TutorialsViewedByOthersListView(TutorialRelationsAbstractTableView):
 
     def get_queryset(self):
-        return TutorialView.objects.active_confirmed_tutorials().filter(
-            tutorial__author=self.request.user).order_by(*self.default_ordering)
+        return TutorialView.objects.filter(tutorial__author=self.request.user).order_by(
+            *self.default_ordering).select_related('user', 'tutorial').active_confirmed_tutorials()
 
 
 class TutorialsLikedByOthersListView(TutorialRelationsAbstractTableView):
 
     def get_queryset(self):
-        return TutorialLike.objects.active_confirmed_tutorials().filter(
-            tutorial__author=self.request.user).order_by(*self.default_ordering)
+        return TutorialLike.objects.filter(tutorial__author=self.request.user).order_by(
+            *self.default_ordering).select_related('user', 'tutorial').active_confirmed_tutorials()
 
 
 class TutorialsLikedByMeListView(TutorialRelationsAbstractTableView):
 
     def get_queryset(self):
-        return TutorialLike.objects.active_confirmed_tutorials().filter(
-            user=self.request.user).order_by(*self.default_ordering)
+        return TutorialLike.objects.filter(user=self.request.user).order_by(
+            *self.default_ordering).select_related('user', 'tutorial').active_confirmed_tutorials()
