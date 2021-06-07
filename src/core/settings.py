@@ -279,7 +279,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # django-tinymce settings
 # https://django-tinymce.readthedocs.io/en/latest/
-# For easier access to static files path
 TINYMCE_JS_ROOT = 'js/tinymce/'
 TINYMCE_JS_URL = os.path.join(STATIC_URL, 'js/tinymce/tinymce.min.js')
 
@@ -292,3 +291,7 @@ TINYMCE_DEFAULT_CONFIG = {
     alignright alignjustify | bold italic underline strikethrough \
     | fontselect fontsizeselect formatselect | table code searchreplace | preview fullscreen',
 }
+
+# django_tables2 settings
+#
+DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'

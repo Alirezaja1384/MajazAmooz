@@ -4,9 +4,9 @@ from django.views.generic import (CreateView, UpdateView)
 from django.shortcuts import (reverse, redirect)
 from django_tables2 import SingleTableView
 
-from user.tables import TutorialTable
+from user.tables import (TutorialTable, TutorialUserRelationsTable)
 from user.forms import TutorialForm
-from learning.models import Tutorial
+from learning.models import (Tutorial, TutorialView)
 from utilities.views.generic import (
     DynamicModelFieldDetailView, DeleteDeactivationView
 )
@@ -82,3 +82,15 @@ class TutorialDeleteDeactivateView(DeleteDeactivationView):
 
     def get_success_url(self):
         return reverse(SUCCESS_VIEW_NAME)
+
+
+
+class TutorialsViewedByOthersListView(SingleTableView):
+    table_class = TutorialUserRelationsTable
+
+    paginate_by = 10
+    template_name = 'user/tutorials/relations_index.html'
+
+    def get_queryset(self):
+        return TutorialView.objects.active_confirmed_tutorials().filter(
+            tutorial__author=self.request.user).order_by('-create_date')

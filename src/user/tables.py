@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from learning.models import Tutorial
+from learning.models.tutorial_user_relation_models import AbstractTutorialScoreCoinModel
 
 
 ACTION_TEMPLATE = '''
@@ -11,7 +12,7 @@ ACTION_TEMPLATE = '''
 
 class TutorialTable(tables.Table):
 
-    details = tables.TemplateColumn(
+    action = tables.TemplateColumn(
         ACTION_TEMPLATE, orderable=False,
         verbose_name='اقدام', extra_context={
             'details_url': 'user:tutorial_details',
@@ -21,6 +22,12 @@ class TutorialTable(tables.Table):
 
     class Meta:
         model = Tutorial
-        template_name = "django_tables2/bootstrap4.html"
         fields = ('title', 'slug', 'user_views_count', 'likes_count',
                   'create_date', 'confirm_status', 'is_edited', 'is_active',)
+
+
+class TutorialUserRelationsTable(tables.Table):
+
+    class Meta:
+        model = AbstractTutorialScoreCoinModel
+        fields = ('tutorial', 'user', 'score', 'coin', 'create_date',)
