@@ -26,11 +26,16 @@ def get_tutorials_queryset(user):
 class TutorialListView(SingleTableView):
     table_class = TutorialTable
 
-    paginate_by = 10
-    template_name = 'user/tutorials/index.html'
+    paginate_by = PAGINATE_BY
+    template_name = 'user/shared/list.html'
 
     def get_queryset(self):
         return get_tutorials_queryset(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create_url'] = 'user:tutorial_create'
+        return context
 
 
 class TutorialDetailView(DynamicModelFieldDetailView):
@@ -93,7 +98,7 @@ class TutorialRelationsAbstractTableView(SingleTableView):
 
     paginate_by = PAGINATE_BY
     default_ordering = ('-create_date',)
-    template_name = 'user/tutorials/relations_index.html'
+    template_name = 'user/shared/list.html'
 
     def get_queryset(self):
         raise NotImplementedError('You should implement get_queryset()')

@@ -23,16 +23,19 @@ urlpatterns = [
     path('tutorials/delete/<int:pk>', views.TutorialDeleteDeactivateView.as_view(
         extra_context={'title': 'حذف آموزش'}), name='tutorial_delete'),
 
-    path('tutorials/viewed_by_others', views.TutorialsViewedByOthersListView.as_view(
+    path('tutorials/tutorials_viewed_by_others', views.TutorialsViewedByOthersListView.as_view(
         extra_context={'title': 'بازدید های دیگران از آموزش های شما'}),
         name='tutorials_viewed_by_others'),
 
-    path('tutorials/liked_by_others', views.TutorialsLikedByOthersListView.as_view(
+    path('tutorials/tutorials_liked_by_others', views.TutorialsLikedByOthersListView.as_view(
         extra_context={'title': 'لایک های دیگران برای آموزش های شما'}),
         name='tutorials_liked_by_others'),
 
-    path('tutorials/liked_by_me', views.TutorialsLikedByMeListView.as_view(
+    path('tutorials/tutorials_liked_by_me', views.TutorialsLikedByMeListView.as_view(
         extra_context={'title': 'آموزش های لایک شده توسط شما'}),
         name='tutorials_liked_by_me'),
+
+    path('tutorial_comments/', views.TutorialCommentListView.as_view(
+        extra_context={'title': 'مدیریت دیدگاه آموزش ها'}), name='tutorial_comments'),
 
 ]
