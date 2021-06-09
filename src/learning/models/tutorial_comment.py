@@ -88,7 +88,7 @@ class TutorialComment(LifecycleModel):
 
     # Validate data (for admin panel)
     def clean(self):
-        if self.id == self.parent_comment_id:
+        if self.pk and self.pk == self.parent_comment_id:
             raise ValidationError('پاسخ نمی تواند با دیدگاه یکسان باشد')
 
     def __str__(self):
