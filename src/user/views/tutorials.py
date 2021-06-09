@@ -46,7 +46,7 @@ class TutorialDetailView(DynamicModelFieldDetailView):
 
 
 class TutorialCreateView(CreateView):
-    template_name = "user/tutorials/create_update.html"
+    template_name = "user/shared/create_update.html"
 
     form_class = TutorialForm
 
@@ -64,7 +64,7 @@ class TutorialCreateView(CreateView):
 
 
 class TutorialUpdateView(UpdateView):
-    template_name = "user/tutorials/create_update.html"
+    template_name = "user/shared/create_update.html"
 
     form_class = TutorialForm
 
