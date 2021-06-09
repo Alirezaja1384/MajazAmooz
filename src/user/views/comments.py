@@ -5,7 +5,7 @@ from django.views.generic import UpdateView
 from django_tables2 import SingleTableView
 from learning.models import TutorialComment
 from authentication.models import User
-from user.tables import TutorialCommentTable
+from user.tables import (TutorialCommentTable, RepliedTutorialCommentTable)
 from user.forms import TutorialCommentForm
 from utilities.views.generic import (
     DynamicModelFieldDetailView, DeleteDeactivationView
@@ -70,3 +70,16 @@ class TutorialCommentDeleteDeactivateView(DeleteDeactivationView):
 
     def get_success_url(self):
         return reverse(SUCCESS_VIEW_NAME)
+
+
+class RepliedToMyCommentsListView(SingleTableView):
+    table_class = RepliedTutorialCommentTable
+
+    paginate_by = PAGINATE_BY
+    template_name = 'user/shared/list.html'
+
+    def get_queryset(self):
+        return TutorialComment.objects.filter(
+            parent_comment__user=self.request.user).select_related(
+                'tutorial', 'parent_comment'
+        ).active_and_confirmed_comments().active_confirmed_tutorials()

@@ -56,7 +56,6 @@ class TutorialCommentTable(tables.Table):
                                      '#comment-{{record.parent_comment_id}}">'
                                      '{{record.parent_comment.title}}</a>')
 
-
     tutorial = tables.TemplateColumn(_tutorial_link_template)
     parent_comment = tables.TemplateColumn(_parent_comment_link_template)
 
@@ -73,3 +72,30 @@ class TutorialCommentTable(tables.Table):
         fields = ('title', 'tutorial', 'parent_comment', 'create_date', 'last_edit_date',
                   'up_votes_count', 'down_votes_count', 'likes_count', 'confirm_status',
                   'is_edited', 'allow_reply', 'notify_replies', 'is_active',)
+
+
+class RepliedTutorialCommentTable(tables.Table):
+
+    _replied_comment_btn_template = (
+        '<a href="{% url \'learning:tutorial\' record.tutorial.slug %}'
+        '#comment-{{record.id}}" class="btn btn-info btn-sm">رفتن به نظر</a>')
+
+    _tutorial_link_template = '<a href="{% url \'learning:tutorial\' record.tutorial.slug %}">\
+                              {{record.tutorial.title}}</a>'
+
+    _parent_comment_link_template = (
+        '<a href="{% url \'learning:tutorial\' record.tutorial.slug %}'
+        '#comment-{{record.parent_comment_id}}">{{record.parent_comment.title}}</a>')
+
+    tutorial = tables.TemplateColumn(_tutorial_link_template)
+    parent_comment = tables.TemplateColumn(_parent_comment_link_template)
+
+    actions = tables.TemplateColumn(
+        _replied_comment_btn_template,
+        orderable=False, verbose_name='اقدام')
+
+    class Meta:
+        model = TutorialComment
+        fields = ('title', 'tutorial', 'parent_comment', 'user', 'create_date',
+                  'last_edit_date','up_votes_count', 'down_votes_count', 'likes_count',
+                  'is_edited', 'allow_reply', 'notify_replies',)

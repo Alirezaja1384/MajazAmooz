@@ -47,4 +47,8 @@ urlpatterns = [
     path('tutorial_comments/delete/<int:pk>', views.TutorialCommentDeleteDeactivateView.as_view(
         extra_context={'title': 'حذف دیدگاه آموزش'}), name='tutorial_comment_delete'),
 
+    path('tutorial_comments/replied_to_my_comments', views.RepliedToMyCommentsListView.as_view(
+        extra_context={'title': 'پاسخ دیدگاه های من'}),
+        name='tutorial_comment_replied_to_my_comments'),
+
 ]
