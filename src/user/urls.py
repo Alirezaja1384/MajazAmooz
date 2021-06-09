@@ -38,4 +38,7 @@ urlpatterns = [
     path('tutorial_comments/', views.TutorialCommentListView.as_view(
         extra_context={'title': 'مدیریت دیدگاه آموزش ها'}), name='tutorial_comments'),
 
+    path('tutorial_comment_details/<int:pk>', views.TutorialCommentDetailsView.as_view(
+        extra_context={'title': 'اطلاعات دیدگاه آموزش'}), name='tutorial_comment_details'),
+
 ]

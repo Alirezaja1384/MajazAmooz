@@ -60,13 +60,13 @@ class TutorialCommentTable(tables.Table):
     tutorial = tables.TemplateColumn(_tutorial_link_template)
     parent_comment = tables.TemplateColumn(_parent_comment_link_template)
 
-    # actions = tables.TemplateColumn(
-    #     ACTION_TEMPLATE, orderable=False,
-    #     verbose_name='اقدام', extra_context={
-    #         'details_url': 'user:tutorial_comment_details',
-    #         'update_url': 'user:tutorial_comment_update',
-    #         'delete_url': 'user:tutorial_comment_delete',
-    #     })
+    actions = tables.TemplateColumn(
+        ACTION_TEMPLATE, orderable=False,
+        verbose_name='اقدام', extra_context={
+            'details_url': 'user:tutorial_comment_details',
+            # 'update_url': 'user:tutorial_comment_update',
+            # 'delete_url': 'user:tutorial_comment_delete',
+        })
 
     class Meta:
         model = TutorialComment

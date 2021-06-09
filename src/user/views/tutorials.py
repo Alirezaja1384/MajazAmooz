@@ -39,7 +39,7 @@ class TutorialListView(SingleTableView):
 
 
 class TutorialDetailView(DynamicModelFieldDetailView):
-    template_name = 'user/tutorials/details.html'
+    template_name = 'user/shared/details.html'
 
     def get_queryset(self):
         return get_tutorials_queryset(self.request.user)
