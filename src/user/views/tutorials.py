@@ -83,7 +83,7 @@ class TutorialUpdateView(UpdateView):
 
 
 class TutorialDeleteDeactivateView(DeleteDeactivationView):
-    template_name = 'user/tutorials/delete.html'
+    template_name = 'user/shared/delete.html'
     context_object_name = 'tutorial'
 
     def get_queryset(self):

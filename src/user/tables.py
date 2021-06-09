@@ -65,7 +65,7 @@ class TutorialCommentTable(tables.Table):
         verbose_name='اقدام', extra_context={
             'details_url': 'user:tutorial_comment_details',
             'update_url': 'user:tutorial_comment_update',
-            # 'delete_url': 'user:tutorial_comment_delete',
+            'delete_url': 'user:tutorial_comment_delete',
         })
 
     class Meta:

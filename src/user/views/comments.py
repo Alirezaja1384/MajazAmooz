@@ -7,7 +7,9 @@ from learning.models import TutorialComment
 from authentication.models import User
 from user.tables import TutorialCommentTable
 from user.forms import TutorialCommentForm
-from utilities.views.generic import DynamicModelFieldDetailView
+from utilities.views.generic import (
+    DynamicModelFieldDetailView, DeleteDeactivationView
+)
 
 
 # TODO: Make pagination dynamic
@@ -54,6 +56,17 @@ class TutorialCommentUpdateView(UpdateView):
             self.request, f'دیدگاه "{comment.title}" با موفقیت ویرایش شد')
 
         return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse(SUCCESS_VIEW_NAME)
+
+
+class TutorialCommentDeleteDeactivateView(DeleteDeactivationView):
+    template_name = 'user/shared/delete.html'
+    context_object_name = 'tutorial'
+
+    def get_queryset(self):
+        return get_tutorial_comments_queryset(self.request.user)
 
     def get_success_url(self):
         return reverse(SUCCESS_VIEW_NAME)
