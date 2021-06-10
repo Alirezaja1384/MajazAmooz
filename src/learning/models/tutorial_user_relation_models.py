@@ -7,8 +7,9 @@ from django_lifecycle import (
     hook, AFTER_CREATE, BEFORE_DELETE
 )
 
-from authentication.models import User
 from learning.models import Tutorial
+from learning.querysets import TutorialUserRelationQuerySet
+from authentication.models import User
 from utilities.models import AbstractScoreCoinModel
 
 
@@ -69,6 +70,8 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
                     current_count - 1)
             self.tutorial.save(
                 update_fields=[self.tutorial_object_count_field])
+
+    objects = TutorialUserRelationQuerySet.as_manager()
 
     class Meta:
         abstract = True

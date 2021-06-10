@@ -1,0 +1,357 @@
+{% extends 'user/shared/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+    <!-- Info boxes -->
+    <div class="row">
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"><i class="fa fa-book"></i></span>
+
+                <div class="info-box-content">
+                    <h4 class="info-box-text">آموزش ها</h4>
+                    <span class="info-box-number">
+                        <a href="#">مدیریت آموزش های شما</a>
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-danger elevation-1"><i class="fa fa-book"></i></span>
+
+                <div class="info-box-content">
+                    <h4 class="info-box-text">آزمون ها (به زودی)</h4>
+                    <span class="info-box-number">
+                        <a>مدیریت آزمون های شما</a>
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <!-- fix for small devices only -->
+        <div class="clearfix hidden-md-up"></div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fa fa-comment"></i></span>
+
+                <div class="info-box-content">
+                    <h4 class="info-box-text">دیدگاه های من</h4>
+                    <span class="info-box-number">
+                        <a href="#">مدیریت دیدگاه های شما</a>
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+
+        <!-- /.col -->
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-warning elevation-1"><i class="fa fa-users"></i></span>
+
+                <div class="info-box-content">
+                    <h4 class="info-box-text">دیدگاه های دیگران</h4>
+                    <span class="info-box-number">
+                        <a href="#">دیدگاه های دیگران برای آموزش های شما</a>
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">گزارش</h5>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-widget="remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                    <div class="col-md-8">
+                        <p class="text-center">
+                            <strong>بازدید ماه های اخیر</strong>
+                        </p>
+
+                        <div class="chart">
+                            <!-- Sales Chart Canvas -->
+                            <canvas id="viewsChart" height="180" style="height: 180px;"></canvas>
+                        </div>
+                        <!-- /.chart-responsive -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-md-4">
+                        <p class="text-center">
+                            <strong>میزان پیشرفت اهداف</strong>
+                        </p>
+
+                        <div class="progress-group">
+                            آموزش ها
+                            <span class="float-left"><b>{{statistics.tutorials_count}}</b>/{{statistics.tutorials_count_goal}}</span>
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-primary" style="width: {{statistics.tutorial_count_goal_percent}}%"></div>
+                            </div>
+                        </div>
+                        <!-- /.progress-group -->
+
+                        <div class="progress-group">
+                            دیدگاه ها
+                            <span class="float-left"><b>{{statistics.comments_count}}</b>/{{statistics.comments_count_goal}}</span>
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-info" style="width: {{statistics.comments_count_goal_percent}}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-group">
+                            لایک ها
+                            <span class="float-left"><b>{{statistics.likes_count}}</b>/{{statistics.likes_count_goal}}</span>
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-danger" style="width: {{statistics.likes_count_goal_percent}}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- /.progress-group -->
+                        <div class="progress-group">
+                            بازدید ها
+                            <span class="float-left"><b>{{statistics.views_count}}</b>/{{statistics.views_count_goal}}</span>
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-success" style="width: {{statistics.views_count_goal_percent}}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- /.progress-group -->
+                    </div>
+                    <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+
+        <!-- Left col -->
+        <div class="col-md-8">
+            
+
+            <!-- TABLE: LATEST ORDERS -->
+            <div class="card">
+                <div class="card-header border-transparent">
+                    <h3 class="card-title">آخرین آموزش های شما</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-widget="remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table m-0">
+                            <thead>
+                                <tr>
+                                    <th>آموزش</th>
+                                    <th>دسته بندی ها</th>
+                                    <th>زمان ایجاد</th>
+                                    <th>وضعیت</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for tutorial in latest_user_tutorials %}
+                                    <tr>
+                                        <td>
+                                            {% if tutorial.confirm_status == ConfirmStatusChoices.CONFIRMED %}
+                                                <a href="{% url 'learning:tutorial' slug=tutorial.slug %}">{{ tutorial.title }}</a>
+                                            {% else %}
+                                                <span>{{ tutorial.title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% for category in tutorial.categories.all %}
+                                                <a class="badge badge-info" href="{% url 'learning:tutorials_archive' %}?category={{category.slug}}">{{ category.name }}</a>
+                                            {% endfor %}
+                                        </td>
+                                        <td><span>{{ tutorial.create_date }}</span></td>
+                                        <td>
+                                            {% if tutorial.confirm_status == ConfirmStatusChoices.CONFIRMED %}
+                                                <span class="badge badge-success">{{ tutorial.get_confirm_status_display }}</span>
+                                            {% elif tutorial.confirm_status == ConfirmStatusChoices.DISPROVED %}
+                                                <span class="badge badge-danger">{{ tutorial.get_confirm_status_display }}</span>
+                                            {% else %}
+                                                <span class="badge badge-info">{{ tutorial.get_confirm_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer clearfix">
+                    <a href="{% url 'user:tutorials' %}" class="btn btn-sm btn-secondary float-right">مدیریت آموزش ها</a>
+                </div>
+                <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+
+        <div class="col-md-4">
+            <!-- Info Boxes Style 2 -->
+            <div class="info-box mb-3 bg-info">
+                <span class="info-box-icon"><i class="fa fa-book"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">آموزش ها</span>
+                    <span class="info-box-number">{{ statistics.tutorials_count }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+            <div class="info-box mb-3 bg-success">
+                    <span class="info-box-icon"><i class="fa fa-comments"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">دیدگاه ها</span>
+                        <span class="info-box-number">{{ statistics.comments_count }}</span>
+                    </div>
+                    <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+
+            <div class="info-box mb-3 bg-danger">
+                <span class="info-box-icon"><i class="fa fa-heart"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">لایک ها</span>
+                    <span class="info-box-number">{{ statistics.likes_count }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+
+            <div class="info-box mb-3 bg-warning">
+                <span class="info-box-icon"><i class="fa fa-eye"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">بازدید ها</span>
+                    <span class="info-box-number">{{ statistics.views_count }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+
+        </div>
+        <!-- /.col -->
+
+    </div>
+
+{% endblock content %}
+
+
+{% block extra_scripts %}
+  <script>
+
+    // Get context with jQuery - using jQuery's .get() method.
+    var viewsChartCanvas = $('#viewsChart').get(0).getContext('2d')
+    // This will get the first returned node in the jQuery collection.
+    var viewsChart = new Chart(viewsChartCanvas)
+
+    var viewsChartData = {
+        labels  : [{% for month in statistics.view_statistics %}'{{month.label}}',{% endfor %}],
+        datasets: [
+        {
+            label               : 'بازدید کاربران',
+            fillColor           : 'rgba(0, 123, 255, 0.9)',
+            strokeColor         : 'rgba(0, 123, 255, 1)',
+            pointColor          : '#3b8bba',
+            pointStrokeColor    : 'rgba(0, 123, 255, 1)',
+            pointHighlightFill  : '#fff',
+            pointHighlightStroke: 'rgba(0, 123, 255, 1)',
+            data                : [{% for month in statistics.view_statistics %}{{month.count}},{% endfor %}]
+        }
+        ]
+    }
+
+    var viewsChartOptions = {
+        //Boolean - If we should show the scale at all
+        showScale               : true,
+        //Boolean - Whether grid lines are shown across the chart
+        scaleShowGridLines      : false,
+        //String - Colour of the grid lines
+        scaleGridLineColor      : 'rgba(0,0,0,.05)',
+        //Number - Width of the grid lines
+        scaleGridLineWidth      : 1,
+        //Boolean - Whether to show horizontal lines (except X axis)
+        scaleShowHorizontalLines: true,
+        //Boolean - Whether to show vertical lines (except Y axis)
+        scaleShowVerticalLines  : true,
+        //Boolean - Whether the line is curved between points
+        bezierCurve             : true,
+        //Number - Tension of the bezier curve between points
+        bezierCurveTension      : 0.3,
+        //Boolean - Whether to show a dot for each point
+        pointDot                : false,
+        //Number - Radius of each point dot in pixels
+        pointDotRadius          : 4,
+        //Number - Pixel width of point dot stroke
+        pointDotStrokeWidth     : 1,
+        //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+        pointHitDetectionRadius : 20,
+        //Boolean - Whether to show a stroke for datasets
+        datasetStroke           : true,
+        //Number - Pixel width of dataset stroke
+        datasetStrokeWidth      : 2,
+        //Boolean - Whether to fill the dataset with a color
+        datasetFill             : true,
+        //String - A legend template
+        maintainAspectRatio     : false,
+        //Boolean - whether to make the chart responsive to window resizing
+        responsive              : true
+    }
+
+    //Create the line chart
+    viewsChart.Line(viewsChartData, viewsChartOptions)
+
+  </script>
+{% endblock extra_scripts %}

@@ -1,0 +1,20 @@
+{% extends 'user/shared/base.html' %}
+{% load crispy from crispy_forms_tags %}
+
+
+{% block breadcrumb %}
+    <ol class="breadcrumb float-sm-left">
+        <li class="breadcrumb-item"><a href="{% url 'user:home' %}">خانه</a></li>
+        <li class="breadcrumb-item active"><a href="{% url 'user:tutorials' %}">آموزش ها</a></li>
+        <li class="breadcrumb-item active">{{title}}</li>
+    </ol>
+{% endblock breadcrumb %}
+
+{% block content %}
+
+    <div class="col-12">
+        <strong class="text-danger">توجه: عملیات حذف قابل بازکشت نیست!</strong>
+
+        {% crispy form %}
+    </div>
+{% endblock content %}

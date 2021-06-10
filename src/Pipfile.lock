@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "09dcbe3e0d202d70ce028f0321e784a4aa7071c84e1ab410391b44d4bdd0bfcd"
+            "sha256": "9ab977d0520426cb02ec8f0541e88ec6fc91164148505fc50476f4c85fe7d195"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -48,6 +48,14 @@
             "index": "pypi",
             "version": "==0.6.1"
         },
+        "django-crispy-forms": {
+            "hashes": [
+                "sha256:3db71ab06d17ec9d0195c086d3ad454da300ac268752ac3a4f63d72f7a490254",
+                "sha256:88efa857ce6111bd696cc4f74057539a3456102fe9c3a3ece8868e1e4579e70a"
+            ],
+            "index": "pypi",
+            "version": "==1.11.2"
+        },
         "django-debug-toolbar": {
             "hashes": [
                 "sha256:a5ff2a54f24bf88286f9872836081078f4baa843dc3735ee88524e89f8821e33",
@@ -70,6 +78,29 @@
             ],
             "index": "pypi",
             "version": "==0.9.1"
+        },
+        "django-tables2": {
+            "hashes": [
+                "sha256:0f10ecef25708385a9d32d68d7c9478ca8dda31569410cb05a025be3f2c57593",
+                "sha256:4eb526464ee56a0b7d827d1da9a4f257e44edb5e1cbb6a0cfb6ca0fed70d8e4f"
+            ],
+            "index": "pypi",
+            "version": "==2.4.0"
+        },
+        "django-tinymce": {
+            "hashes": [
+                "sha256:3684d6611162cd3566b068cfeaf9309d415f1d415191a1f8a8c9140246774679",
+                "sha256:77cca137e97e92e43e42c98a232df3e66b80c987ad0f03709a4b73435f8e4060"
+            ],
+            "index": "pypi",
+            "version": "==3.3.0"
+        },
+        "jdatetime": {
+            "hashes": [
+                "sha256:a589e35f0dab89283c1a3de9d70ed6cf657932aaed8e8ce1b0e5801aaab1da67"
+            ],
+            "index": "pypi",
+            "version": "==3.6.2"
         },
         "packaging": {
             "hashes": [
@@ -99,6 +130,7 @@
                 "sha256:63728564c1410d99e6d1ae8e3b810fe012bc440952168af0a2877e8ff5ab96b9",
                 "sha256:66cc56579fd91f517290ab02c51e3a80f581aba45fd924fcdee01fa06e635812",
                 "sha256:6c32cc3145928c4305d142ebec682419a6c0a8ce9e33db900027ddca1ec39178",
+                "sha256:8b56553c0345ad6dcb2e9b433ae47d67f95fc23fe28a0bde15a120f25257e291",
                 "sha256:8bb1e155a74e1bfbacd84555ea62fa21c58e0b4e7e6b20e4447b8d07990ac78b",
                 "sha256:95d5ef984eff897850f3a83883363da64aae1000e79cb3c321915468e8c6add5",
                 "sha256:a013cbe25d20c2e0c4e85a9daf438f85121a4d0344ddc76e33fd7e3965d9af4b",

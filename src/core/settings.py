@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from decouple import config
 
@@ -27,10 +27,10 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS',
-                        default='127.0.0.1, localhost').replace(' ','').split(',')
+                       default='127.0.0.1, localhost').replace(' ', '').split(',')
 
 INTERNAL_IPS = config('INTERNAL_IPS',
-                      default='127.0.0.1, localhost').replace(' ','').split(',')
+                      default='127.0.0.1, localhost').replace(' ', '').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -46,11 +46,15 @@ INSTALLED_APPS = [
     'django_bleach',
     'debug_toolbar',
     'django_filters',
+    'django_tables2',
+    'crispy_forms',
+    'tinymce',
 
     # Project apps
     'authentication.apps.AuthenticationConfig',
     'learning.apps.LearningConfig',
     'ajax.apps.AjaxConfig',
+    'user.apps.UserConfig',
     'utilities'
 ]
 
@@ -68,6 +72,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Custom middlewares
+    'utilities.middleware.LoginRequiredMiddleware'
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -161,7 +168,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email settings
 EMAIL_BACKEND = config('EMAIL_BACKEND',
-                        default='django.core.mail.backends.console.EmailBackend')
+                       default='django.core.mail.backends.console.EmailBackend')
 
 EMAIL_FROM = config('EMAIL_FROM', default=None)
 EMAIL_HOST = config('EMAIL_HOST')
@@ -176,15 +183,15 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
 
 BLEACH_ALLOWED_TAGS = [
     'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'img',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span',
-    'sup', 'sub', 'code'
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'sup',
+    'sub', 'code', 'table', 'tbody', 'tr', 'th', 'td'
 ]
 
 BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src']
 
 BLEACH_ALLOWED_STYLES = [
     'font-family', 'font-weight', 'text-decoration', 'font-variant',
-    'color', 'background-color', 'direction', 'text-align'
+    'color', 'background-color', 'direction', 'text-align',
 ]
 
 BLEACH_ALLOWED_PROTOCOLS = ['http', 'https']
@@ -203,6 +210,12 @@ LOGIN_URL = '/auth/login'
 
 # Logout required url for LogoutRequiredMixin
 LOGOUT_REQUIRED_URL = '/auth/logout_required'
+
+# Login required by url pattern
+# Used for LoginRequiredMiddleware
+LOGIN_REQUIRED_URLS = [
+    r'^/user/(.*)$'
+]
 
 # Logging configuration
 # https://docs.djangoproject.com/en/3.2/topics/logging/
@@ -228,7 +241,7 @@ LOGGING = {
             'formatter': 'simple',
             'class': 'logging.StreamHandler',
         },
-        'verbose_console':{
+        'verbose_console': {
             'formatter': 'verbose',
             'class': 'logging.StreamHandler',
         },
@@ -257,3 +270,28 @@ LOGGING = {
         },
     },
 }
+
+
+# django-crispy-forms settings
+# https://django-crispy-forms.readthedocs.io/en/latest/
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+# django-tinymce settings
+# https://django-tinymce.readthedocs.io/en/latest/
+TINYMCE_JS_ROOT = 'js/tinymce/'
+TINYMCE_JS_URL = os.path.join(STATIC_URL, 'js/tinymce/tinymce.min.js')
+
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'silver',
+    'height': 500,
+    'menubar': False,
+    'plugins': 'link print preview searchreplace code fullscreen table wordcount',
+    'toolbar': 'undo redo | forecolor | bold italic | alignleft aligncenter \
+    alignright alignjustify | bold italic underline strikethrough \
+    | fontselect fontsizeselect formatselect | table code searchreplace | preview fullscreen',
+}
+
+# django_tables2 settings
+# https://django-tables2.readthedocs.io/en/latest/
+DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'
