@@ -113,10 +113,11 @@ class TutorialCommentUserRelationsTable(tables.Table):
 
     tutorial = tables.TemplateColumn(_tutorial_link_template, verbose_name='آموزش')
     comment = tables.TemplateColumn(_comment_link_template, verbose_name='دیدگاه')
-    user = tables.Column(verbose_name='کاربر')
+    user = tables.Column(verbose_name='توسط کاربر')
+    comment__user = tables.Column(verbose_name='کاربر صاحب نظر')
     score = tables.Column(verbose_name='امتیاز')
     coin = tables.Column(verbose_name='سکه')
     create_date = tables.Column(verbose_name='زمان')
 
     class Meta:
-        fields = ('tutorial', 'comment', 'user', 'score', 'coin', 'create_date',)
+        fields = ('tutorial', 'comment', 'user', 'comment__user','score', 'coin', 'create_date',)

@@ -29,7 +29,8 @@ def get_tutorial_comments_queryset(user: User) -> TutorialQuerySet:
 
 def get_tutorial_comment_like_queryset() -> TutorialCommentUserRelationQuerySet:
     return TutorialCommentLike.objects.select_related(
-        'user', 'comment', 'comment__tutorial').active_confirmed_comments()
+        'user', 'comment', 'comment__tutorial', 'comment__user'
+    ).active_confirmed_comments()
 
 
 class TutorialCommentListView(SingleTableView):
@@ -104,3 +105,13 @@ class TutorialCommentLikedByOthersListView(SingleTableView):
     def get_queryset(self):
         return get_tutorial_comment_like_queryset().filter(
             comment__user=self.request.user)
+
+
+class TutorialCommentLikedByMeListView(SingleTableView):
+    table_class = TutorialCommentUserRelationsTable
+
+    paginate_by = PAGINATE_BY
+    template_name = 'user/shared/list.html'
+
+    def get_queryset(self):
+        return get_tutorial_comment_like_queryset().filter(user=self.request.user)
