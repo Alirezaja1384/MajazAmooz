@@ -59,4 +59,7 @@ urlpatterns = [
         extra_context={'title': 'دیدگاه های آموزش لایک شده توسط شما'}),
         name='tutorial_comment_liked_by_me'),
 
+    path('profile_setting', views.UserProfileUpdateView.as_view(
+        extra_context={'title': 'تنظیمات پروفایل'}), name='profile_setting'),
+
 ]
