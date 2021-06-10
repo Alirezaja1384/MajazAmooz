@@ -3,9 +3,14 @@ from django.contrib import messages
 from django.shortcuts import (redirect, reverse)
 from django.views.generic import UpdateView
 from django_tables2 import SingleTableView
-from learning.models import TutorialComment
+from learning.models import (TutorialComment, TutorialCommentLike)
+from learning.querysets import (
+    TutorialQuerySet, TutorialCommentUserRelationQuerySet)
 from authentication.models import User
-from user.tables import (TutorialCommentTable, RepliedTutorialCommentTable)
+from user.tables import (
+    TutorialCommentTable, RepliedTutorialCommentTable,
+    TutorialCommentUserRelationsTable
+)
 from user.forms import TutorialCommentForm
 from utilities.views.generic import (
     DynamicModelFieldDetailView, DeleteDeactivationView
@@ -17,9 +22,14 @@ PAGINATE_BY = 10
 SUCCESS_VIEW_NAME = 'user:tutorial_comments'
 
 
-def get_tutorial_comments_queryset(user: User):
+def get_tutorial_comments_queryset(user: User) -> TutorialQuerySet:
     return TutorialComment.objects.filter(user=user).select_related(
         'tutorial', 'parent_comment').active_confirmed_tutorials()
+
+
+def get_tutorial_comment_like_queryset() -> TutorialCommentUserRelationQuerySet:
+    return TutorialCommentLike.objects.select_related(
+        'user', 'comment', 'comment__tutorial').active_confirmed_comments()
 
 
 class TutorialCommentListView(SingleTableView):
@@ -83,3 +93,14 @@ class RepliedToMyCommentsListView(SingleTableView):
             parent_comment__user=self.request.user).select_related(
                 'tutorial', 'parent_comment'
         ).active_and_confirmed_comments().active_confirmed_tutorials()
+
+
+class TutorialCommentLikedByOthersListView(SingleTableView):
+    table_class = TutorialCommentUserRelationsTable
+
+    paginate_by = PAGINATE_BY
+    template_name = 'user/shared/list.html'
+
+    def get_queryset(self):
+        return get_tutorial_comment_like_queryset().filter(
+            comment__user=self.request.user)

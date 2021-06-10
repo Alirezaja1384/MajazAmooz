@@ -87,8 +87,8 @@ class RepliedTutorialCommentTable(tables.Table):
         '<a href="{% url \'learning:tutorial\' record.tutorial.slug %}'
         '#comment-{{record.parent_comment_id}}">{{record.parent_comment.title}}</a>')
 
-    tutorial = tables.TemplateColumn(_tutorial_link_template)
-    parent_comment = tables.TemplateColumn(_parent_comment_link_template)
+    tutorial = tables.TemplateColumn(_tutorial_link_template, verbose_name='آموزش')
+    parent_comment = tables.TemplateColumn(_parent_comment_link_template, verbose_name='پاسخ به')
 
     actions = tables.TemplateColumn(
         _replied_comment_btn_template,
@@ -97,5 +97,26 @@ class RepliedTutorialCommentTable(tables.Table):
     class Meta:
         model = TutorialComment
         fields = ('title', 'tutorial', 'parent_comment', 'user', 'create_date',
-                  'last_edit_date','up_votes_count', 'down_votes_count', 'likes_count',
+                  'last_edit_date', 'up_votes_count', 'down_votes_count', 'likes_count',
                   'is_edited', 'allow_reply', 'notify_replies',)
+
+
+class TutorialCommentUserRelationsTable(tables.Table):
+
+    _tutorial_link_template = (
+        '<a href="{% url \'learning:tutorial\' record.comment.tutorial.slug %}">'
+        '{{record.comment.tutorial.title}}</a>')
+
+    _comment_link_template = (
+        '<a href="{% url \'learning:tutorial\' record.comment.tutorial.slug %}'
+        '#comment-{{record.comment_id}}">{{record.comment.title}}</a>')
+
+    tutorial = tables.TemplateColumn(_tutorial_link_template, verbose_name='آموزش')
+    comment = tables.TemplateColumn(_comment_link_template, verbose_name='دیدگاه')
+    user = tables.Column(verbose_name='کاربر')
+    score = tables.Column(verbose_name='امتیاز')
+    coin = tables.Column(verbose_name='سکه')
+    create_date = tables.Column(verbose_name='زمان')
+
+    class Meta:
+        fields = ('tutorial', 'comment', 'user', 'score', 'coin', 'create_date',)

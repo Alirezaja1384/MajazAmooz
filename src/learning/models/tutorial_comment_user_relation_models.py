@@ -9,6 +9,7 @@ from django_lifecycle import (
 
 from authentication.models import User
 from learning.models import TutorialComment
+from learning.querysets import TutorialCommentUserRelationQuerySet
 from utilities.models import AbstractScoreCoinModel
 
 
@@ -62,6 +63,9 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
             current_count = getattr(self.comment, self.comment_object_count_field)
             setattr(self.comment, self.comment_object_count_field, current_count - 1)
             self.comment.save(update_fields=[self.comment_object_count_field])
+
+    # Custom queryset
+    objects = TutorialCommentUserRelationQuerySet.as_manager()
 
     class Meta:
         abstract = True
