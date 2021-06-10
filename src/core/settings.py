@@ -293,5 +293,5 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 
 # django_tables2 settings
-#
+# https://django-tables2.readthedocs.io/en/latest/
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'
