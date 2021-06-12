@@ -2,7 +2,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from django_bleach.models import BleachField
+from utilities.models import BleachField
 from django_lifecycle import (
     hook, LifecycleModel,
     BEFORE_UPDATE, BEFORE_SAVE
