@@ -190,8 +190,9 @@ BLEACH_ALLOWED_TAGS = [
 BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src']
 
 BLEACH_ALLOWED_STYLES = [
-    'font-family', 'font-weight', 'text-decoration', 'font-variant',
-    'color', 'background-color', 'direction', 'text-align',
+    'font-family', 'font-weight', 'font-size', 'font-variant',
+    'text-decoration', 'color', 'background-color', 'direction',
+    'text-align',
 ]
 
 BLEACH_ALLOWED_PROTOCOLS = ['http', 'https']
