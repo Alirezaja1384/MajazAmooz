@@ -1,9 +1,11 @@
 from typing import TypedDict
+import bleach
 from django import forms
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.http import (HttpRequest, HttpResponseBadRequest)
 from django.views.generic import (DetailView, DeleteView)
+from django.utils.safestring import mark_safe
 from django.db.models import (
     Field, Model,
     CharField, TextField,
@@ -11,6 +13,8 @@ from django.db.models import (
 )
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
+from django_bleach.models import BleachField
+from django_bleach.utils import get_bleach_default_options
 
 
 class FieldNameValue(TypedDict):
@@ -65,6 +69,22 @@ class FieldValueHandlers:
         else:
             return str(getattr(obj, field.name, ''))
 
+    @staticmethod
+    def bleach_field_handler(obj: Model, field: BleachField) -> str:
+        """ Handles BleachField
+
+        Args:
+            obj (Model): Model object
+            field (BleachField): Model's field
+
+        Returns:
+            str: Allowed content as safe data
+        """
+        value = str(getattr(obj, field.name, ''))
+        bleach_options = get_bleach_default_options()
+        clean_value = bleach.clean(value, **bleach_options)
+        return mark_safe(clean_value)
+
 
 class DynamicModelFieldDetailView(DetailView):
 
@@ -72,6 +92,10 @@ class DynamicModelFieldDetailView(DetailView):
 
     exclude_fields = ['id']
     visible_field_types = [
+        {
+            'types': (BleachField,),
+            'handler': FieldValueHandlers.bleach_field_handler
+        },
         {
             'types': (CharField, TextField,),
             'handler': FieldValueHandlers.simple_field_handler
