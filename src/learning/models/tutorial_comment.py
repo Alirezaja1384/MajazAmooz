@@ -2,11 +2,11 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django_bleach.models import BleachField
 from django_lifecycle import (
     hook, LifecycleModel,
     BEFORE_UPDATE, BEFORE_SAVE
 )
-
 from learning.models import Tutorial
 from learning.querysets import TutorialCommentQueryset
 from authentication.models import User
@@ -18,7 +18,7 @@ class TutorialComment(LifecycleModel):
 
     title = models.CharField(max_length=30, verbose_name='عنوان')
 
-    body = models.TextField(max_length=500, verbose_name='بدنه')
+    body = BleachField(max_length=500, verbose_name='بدنه')
 
     up_votes_count = models.PositiveIntegerField(
         default=0, verbose_name='امتیاز مثبت')

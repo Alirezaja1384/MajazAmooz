@@ -2,12 +2,10 @@
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
-
 from django_lifecycle import LifecycleModel, hook, BEFORE_UPDATE, BEFORE_SAVE
-
 from authentication.models import User
+from utilities.models import BleachField
 from utilities.model_utils import ConfirmStatusChoices
-
 from learning.models import Category
 from learning.querysets import TutorialQuerySet
 
@@ -20,10 +18,10 @@ class Tutorial(LifecycleModel):
     slug = models.SlugField(max_length=50, allow_unicode=True,
                             unique=True, blank=True, verbose_name='اسلاگ')
 
-    short_description = models.TextField(
+    short_description = BleachField(
         max_length=250, verbose_name='توضیح کوتاه')
 
-    body = models.TextField(verbose_name='بدنه')
+    body = BleachField(verbose_name='بدنه')
 
     user_views_count = models.PositiveIntegerField(
         verbose_name='بازدید کاربران', default=0)
