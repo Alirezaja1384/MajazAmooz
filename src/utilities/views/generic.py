@@ -7,14 +7,14 @@ from django.http import (HttpRequest, HttpResponseBadRequest)
 from django.views.generic import (DetailView, DeleteView)
 from django.utils.safestring import mark_safe
 from django.db.models import (
-    Field, Model,
-    CharField, TextField,
-    BooleanField, IntegerField
+    Field, Model, CharField, TextField,
+    BooleanField, IntegerField, ImageField
 )
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
 from django_bleach.models import BleachField
 from django_bleach.utils import get_bleach_default_options
+from utilities.templatetags.image_utils import image_tag
 
 
 class FieldNameValue(TypedDict):
@@ -85,12 +85,29 @@ class FieldValueHandlers:
         clean_value = bleach.clean(value, **bleach_options)
         return mark_safe(clean_value)
 
+    @staticmethod
+    def image_field_handler(obj: Model, field: ImageField) -> str:
+        """ Handles ImageField (returns an img tag of the image)
+
+        Args:
+            obj (Model): Model object
+            field (ImageField): Model's field
+
+        Returns:
+            str: An img tag of the image
+        """
+        image: ImageField = getattr(obj, field.name)
+        return image_tag(image=image, alt=str(obj))
+
 
 class DynamicModelFieldDetailView(DetailView):
 
     context_fields_name = 'fields'
 
     exclude_fields = ['id']
+
+    # Note: each handler handle the type's children too!
+    # then their ordering is important. place children types first
     visible_field_types = [
         {
             'types': (BleachField,),
@@ -107,6 +124,10 @@ class DynamicModelFieldDetailView(DetailView):
         {
             'types': (IntegerField,),
             'handler': FieldValueHandlers.integer_field_handler
+        },
+        {
+            'types': (ImageField,),
+            'handler': FieldValueHandlers.image_field_handler
         },
     ]
 
