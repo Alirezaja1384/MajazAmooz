@@ -6,6 +6,7 @@ from django.db.models import Prefetch
 from django.http import HttpRequest
 
 from learning.models import (Tutorial, Category)
+from utilities.templatetags.image_utils import image_tag
 from . import actions
 
 
@@ -54,10 +55,24 @@ class TutorialAdmin(admin.ModelAdmin):
         return '، '.join(tags)
     get_tags.short_description = 'کلمات کلیدی'
 
-    list_display = ('title', 'slug', 'author', 'user_views_count',
-                    'likes_count', 'create_date', 'last_edit_date',
-                    'confirm_status', 'is_active', 'is_edited',
-                    'get_categories', 'get_tags')
+    def tutorial_image_tag(self, obj: Tutorial)->str:
+        """Tutorial image's img tag
+
+        Args:
+            obj (Tutorial): tutorial object
+
+        Returns:
+            str: safe-string contains img tag of tutorial image
+        """
+        return image_tag(obj.image, str(obj), 150, 150)
+    tutorial_image_tag.short_description = 'تصویر آموزش'
+
+
+    list_display_links = ('title',)
+    list_display = ('tutorial_image_tag', 'title', 'slug', 'author',
+                    'user_views_count', 'likes_count', 'create_date',
+                    'last_edit_date', 'confirm_status', 'is_active',
+                    'is_edited', 'get_categories', 'get_tags')
 
     list_filter = ('create_date', 'last_edit_date',
                    'confirm_status', 'is_active',)
