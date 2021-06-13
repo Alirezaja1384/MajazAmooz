@@ -15,8 +15,9 @@ class UserAdmin(BaseUserAdmin):
         return image_tag(obj.avatar, str(obj), 50, 50, additional_styles='border-radius:50%;')
     avatar_image_tag.short_description = 'تصویر پروفایل'
 
-    list_display = ('avatar_image_tag', 'username',
-                    'email', 'first_name', 'last_name',)
+    list_display_links = ('username',)
+    list_display = ('avatar_image_tag', 'username', 'email',
+                    'first_name', 'last_name', 'is_staff',)
 
     fieldsets = BaseUserAdmin.fieldsets + (
         ('سایر', {'fields': ('avatar', 'email_confirmed', )}),
