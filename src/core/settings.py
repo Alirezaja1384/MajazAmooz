@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django_tables2',
     'crispy_forms',
     'tinymce',
+    'django_resized',
 
     # Project apps
     'authentication.apps.AuthenticationConfig',
@@ -299,3 +300,13 @@ TINYMCE_DEFAULT_CONFIG = {
 # django_tables2 settings
 # https://django-tables2.readthedocs.io/en/latest/
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'
+
+
+# django-resized settings
+# https://github.com/un1t/django-resized
+DJANGORESIZED_DEFAULT_SIZE = [960, 540]
+DJANGORESIZED_DEFAULT_QUALITY = 72
+DJANGORESIZED_DEFAULT_KEEP_META = True
+DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
+DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
+DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
