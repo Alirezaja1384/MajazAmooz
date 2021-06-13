@@ -190,8 +190,9 @@ BLEACH_ALLOWED_TAGS = [
 BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src']
 
 BLEACH_ALLOWED_STYLES = [
-    'font-family', 'font-weight', 'text-decoration', 'font-variant',
-    'color', 'background-color', 'direction', 'text-align',
+    'font-family', 'font-weight', 'font-size', 'font-variant',
+    'text-decoration', 'color', 'background-color', 'direction',
+    'text-align',
 ]
 
 BLEACH_ALLOWED_PROTOCOLS = ['http', 'https']
@@ -201,6 +202,9 @@ BLEACH_STRIP_TAGS = True
 
 # Strip HTML comments, or leave them in.
 BLEACH_STRIP_COMMENTS = False
+
+# Deafult form widget
+BLEACH_DEFAULT_WIDGET = 'tinymce.widgets.TinyMCE'
 
 
 # Login url

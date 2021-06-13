@@ -2,8 +2,6 @@ from django import forms
 from django.contrib.auth import get_user_model
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from tinymce.widgets import TinyMCE
-
 from learning.models import (Tutorial, TutorialComment)
 
 
@@ -25,10 +23,6 @@ class TutorialForm(forms.ModelForm):
         fields = ('title', 'short_description', 'body',
                   'image', 'categories', 'is_active',)
 
-        widgets = {
-            'body': TinyMCE(),
-        }
-
 
 class TutorialCommentForm(forms.ModelForm):
 
@@ -44,10 +38,6 @@ class TutorialCommentForm(forms.ModelForm):
         model = TutorialComment
         fields = ('title', 'body', 'allow_reply',
                   'notify_replies', 'is_active',)
-
-        widgets = {
-            'body': TinyMCE(),
-        }
 
 
 class UserProfileForm(forms.ModelForm):
