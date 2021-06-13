@@ -1,7 +1,8 @@
-""" Tutorial model """
+''' Tutorial model '''
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
+from django_resized import ResizedImageField
 from django_lifecycle import LifecycleModel, hook, BEFORE_UPDATE, BEFORE_SAVE
 from authentication.models import User
 from utilities.models import BleachField
@@ -34,10 +35,9 @@ class Tutorial(LifecycleModel):
     likes_count = models.PositiveIntegerField(
         verbose_name='لایک ها', default=0)
 
-    image = models.ImageField(
-        upload_to="images/tutorial_thumbnails",
-        default='default/learning/tutorial-image.png',
-        verbose_name='تصویر')
+    image = ResizedImageField(
+        upload_to='images/tutorial_thumbnails', default='default/learning/tutorial-image.png',
+        size=[960, 540], crop=['middle', 'center'], verbose_name='تصویر')
 
     create_date = models.DateTimeField(
         auto_now_add=True, verbose_name='زمان انتشار')
@@ -104,7 +104,7 @@ class Tutorial(LifecycleModel):
 
 
 class TutorialTag(models.Model):
-    """ TutorialTag model """
+    ''' TutorialTag model '''
     title = models.CharField(max_length=20, verbose_name='عنوان')
 
     tutorial = models.ForeignKey(
