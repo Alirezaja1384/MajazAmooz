@@ -20,7 +20,8 @@ SUCCESS_VIEW_NAME = 'user:tutorials'
 
 
 def get_tutorials_queryset(user):
-    return Tutorial.objects.filter(author=user)
+    return Tutorial.objects.filter(author=user).select_related(
+        'author').prefetch_related('tags', 'categories')
 
 
 class TutorialListView(SingleTableView):
@@ -46,7 +47,7 @@ class TutorialDetailView(DynamicModelFieldDetailView):
 
 
 class TutorialCreateView(CreateView):
-    template_name = "user/shared/create_update.html"
+    template_name = 'user/shared/create_update.html'
 
     form_class = TutorialForm
 
@@ -61,6 +62,11 @@ class TutorialCreateView(CreateView):
 
     def get_success_url(self):
         return reverse(SUCCESS_VIEW_NAME)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tagsinput_required'] = True
+        return context
 
 
 class TutorialUpdateView(UpdateView):
