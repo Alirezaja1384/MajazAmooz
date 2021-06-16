@@ -7,8 +7,9 @@ from django.http import (HttpRequest, HttpResponseBadRequest)
 from django.views.generic import (DetailView, DeleteView)
 from django.utils.safestring import mark_safe
 from django.db.models import (
-    Field, Model, CharField, TextField,
-    BooleanField, IntegerField, ImageField
+    Field, Model, QuerySet, CharField, TextField,
+    BooleanField, IntegerField, ImageField,
+    ManyToManyField
 )
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
@@ -29,11 +30,11 @@ class FieldValueHandlers:
         """ handles BooleanField and its children
 
         Args:
-            obj (Model): Model object
-            field (IntegerField): Models's field
+            obj (Model): Model object.
+            field (IntegerField): Models's field.
 
         Returns:
-            str: String of field value
+            str: String of field value.
         """
         return str(getattr(obj, field.name, ''))
 
@@ -42,12 +43,12 @@ class FieldValueHandlers:
         """ handles BooleanField and its children
 
         Args:
-            obj (Model): Model object
-            field (IntegerField): Models's field
+            obj (Model): Model object.
+            field (IntegerField): Models's field.
 
         Returns:
             str: If field's value is True returns 'بله'
-                 else returns 'خیر'
+                 else returns 'خیر'.
         """
         value = getattr(obj, field.name)
         return 'بله' if value else 'خیر'
@@ -57,12 +58,12 @@ class FieldValueHandlers:
         """ handles IntegerField and its children
 
         Args:
-            obj (Model): Model object
-            field (IntegerField): Models's field
+            obj (Model): Model object.
+            field (IntegerField): Models's field.
 
         Returns:
             str: If field has choices returns choice display
-                 else returns field value
+                 else returns field value.
         """
         if field.choices:
             return getattr(obj, f'get_{field.name}_display')()
@@ -74,8 +75,8 @@ class FieldValueHandlers:
         """ Handles BleachField
 
         Args:
-            obj (Model): Model object
-            field (BleachField): Model's field
+            obj (Model): Model object.
+            field (BleachField): Model's field.
 
         Returns:
             str: Allowed content as safe data
@@ -90,14 +91,28 @@ class FieldValueHandlers:
         """ Handles ImageField (returns an img tag of the image)
 
         Args:
-            obj (Model): Model object
-            field (ImageField): Model's field
+            obj (Model): Model object.
+            field (ImageField): Model's field.
 
         Returns:
             str: An img tag of the image
         """
         image: ImageField = getattr(obj, field.name)
         return image_tag(image=image, alt=str(obj))
+
+    @staticmethod
+    def many_to_many_field_handler(obj: Model, field: ManyToManyField) -> str:
+        """ Handles ManyToManyField
+
+        Args:
+            obj (Model): Model object.
+            field (ManyToManyField): Model's field.
+
+        Returns:
+            str: str() related model objects
+        """
+        relation: QuerySet = getattr(obj, field.name).all()
+        return '، '.join([str(item) for item in relation])
 
 
 class DynamicModelFieldDetailView(DetailView):
@@ -128,6 +143,10 @@ class DynamicModelFieldDetailView(DetailView):
         {
             'types': (ImageField,),
             'handler': FieldValueHandlers.image_field_handler
+        },
+        {
+            'types': (ManyToManyField,),
+            'handler': FieldValueHandlers.many_to_many_field_handler
         },
     ]
 
