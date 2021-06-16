@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Union, Callable
 import bleach
 from django import forms
 from django.contrib import messages
@@ -118,8 +118,13 @@ class FieldValueHandlers:
 class DynamicModelFieldDetailView(DetailView):
 
     context_fields_name = 'fields'
+    unimplemented_types_use_simple_handler = False
 
-    exclude_fields = ['id']
+    # If fields set to '__all__' it will show fields that their type
+    # implemented otherwise will show fields in given tuple/list
+    fields: Union[str, tuple, list] = '__all__'
+    exclude_fields: Union[tuple, list] = ['id']
+    additional_content: Union[tuple[Callable], list[Callable]] = []
 
     # Note: each handler handle the type's children too!
     # then their ordering is important. place children types first
@@ -200,6 +205,14 @@ class DynamicModelFieldDetailView(DetailView):
             if isinstance(field, visible_type.get('types', None)):
                 return visible_type.get('handler', lambda: None)(obj, field)
 
+        if self.unimplemented_types_use_simple_handler:
+            return FieldValueHandlers.simple_field_handler(obj, field)
+        else:
+            raise NotImplementedError(
+                ('Unable to get value of \'{}\'. \'{}\' type handler has not been'
+                 ' implemented yet.').format(field.name, field.__class__.__name__)
+            )
+
     def get_visible_field_name_values(self) -> list[FieldNameValue]:
         """ Visible fields and value of view object
 
@@ -218,13 +231,46 @@ class DynamicModelFieldDetailView(DetailView):
             """
             return {'name': field.verbose_name, 'value': self.get_field_value(obj, field)}
 
-        obj = self.get_object()
-        visible_fields = self.get_visible_fields(obj._meta.get_fields())
-        return [_get_field_name_value_object(obj, v_field) for v_field in visible_fields]
+        model_fields: list[Field] = self.object._meta.get_fields()
+
+        if self.fields == '__all__':
+            # If fields set to '__all__' it will show fields that their type
+            visible_fields = self.get_visible_fields(model_fields)
+        else:
+            # otherwise will show fields in fields tuple/list
+            visible_fields = list(
+                filter(lambda f: f.name in self.fields, model_fields))
+
+        return [_get_field_name_value_object(self.object, v_field) for v_field in visible_fields]
+
+    def get_additional_name_values(self) -> list[FieldNameValue]:
+        """ Additional content's names and values.
+
+        Returns:
+            list[FieldNameValue]: Additional content's short_description(defaults to function name)
+                                  and its value as a list of dictionary(FieldNameValue).
+        """
+        def _get_additional_name_value(additional_content: Callable) -> FieldNameValue:
+            """ Returns additional conetent's name and its value.
+
+            Args:
+                additional_content (Callable): Additional content callable to call.
+
+            Returns:
+                FieldNameValue: short_description and value of additional content.
+            """
+            callable_name = getattr(
+                additional_content, 'short_description', additional_content.__name__)
+
+            return {'name': callable_name, 'value': additional_content(self)}
+
+        return [_get_additional_name_value(ac) for ac in self.additional_content]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context[self.context_fields_name] = self.get_visible_field_name_values()
+
+        context[self.context_fields_name] = self.get_visible_field_name_values(
+        ) + self.get_additional_name_values()
 
         return context
 
