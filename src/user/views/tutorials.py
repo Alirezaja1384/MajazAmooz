@@ -40,7 +40,17 @@ class TutorialListView(SingleTableView):
 
 
 class TutorialDetailView(DynamicModelFieldDetailView):
+
+    def get_tags(self):
+        return '، '.join([str(tag) for tag in self.object.tags.all()])
+    get_tags.short_description = 'کلمات کلیدی'
+
     template_name = 'user/shared/details.html'
+    additional_content = [get_tags]
+    fields = ('title', 'slug', 'short_description', 'body', 'create_date',
+              'last_edit_date', 'confirm_status', 'categories', get_tags, 'image',
+              'user_views_count', 'up_votes_count', 'down_votes_count', 'likes_count',
+              'is_edited', 'is_active',)
 
     def get_queryset(self):
         return get_tutorials_queryset(self.request.user)
