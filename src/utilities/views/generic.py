@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import (TypedDict, Union, Callable, Optional)
 import bleach
 from django import forms
 from django.contrib import messages
@@ -7,8 +7,9 @@ from django.http import (HttpRequest, HttpResponseBadRequest)
 from django.views.generic import (DetailView, DeleteView)
 from django.utils.safestring import mark_safe
 from django.db.models import (
-    Field, Model, CharField, TextField,
-    BooleanField, IntegerField, ImageField
+    Field, Model, QuerySet, CharField, TextField,
+    BooleanField, IntegerField, ImageField,
+    ManyToManyField, DateField, DateTimeField
 )
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
@@ -29,11 +30,11 @@ class FieldValueHandlers:
         """ handles BooleanField and its children
 
         Args:
-            obj (Model): Model object
-            field (IntegerField): Models's field
+            obj (Model): Model object.
+            field (IntegerField): Models's field.
 
         Returns:
-            str: String of field value
+            str: String of field value.
         """
         return str(getattr(obj, field.name, ''))
 
@@ -42,12 +43,12 @@ class FieldValueHandlers:
         """ handles BooleanField and its children
 
         Args:
-            obj (Model): Model object
-            field (IntegerField): Models's field
+            obj (Model): Model object.
+            field (IntegerField): Models's field.
 
         Returns:
             str: If field's value is True returns 'بله'
-                 else returns 'خیر'
+                 else returns 'خیر'.
         """
         value = getattr(obj, field.name)
         return 'بله' if value else 'خیر'
@@ -57,12 +58,12 @@ class FieldValueHandlers:
         """ handles IntegerField and its children
 
         Args:
-            obj (Model): Model object
-            field (IntegerField): Models's field
+            obj (Model): Model object.
+            field (IntegerField): Models's field.
 
         Returns:
             str: If field has choices returns choice display
-                 else returns field value
+                 else returns field value.
         """
         if field.choices:
             return getattr(obj, f'get_{field.name}_display')()
@@ -74,8 +75,8 @@ class FieldValueHandlers:
         """ Handles BleachField
 
         Args:
-            obj (Model): Model object
-            field (BleachField): Model's field
+            obj (Model): Model object.
+            field (BleachField): Model's field.
 
         Returns:
             str: Allowed content as safe data
@@ -90,8 +91,8 @@ class FieldValueHandlers:
         """ Handles ImageField (returns an img tag of the image)
 
         Args:
-            obj (Model): Model object
-            field (ImageField): Model's field
+            obj (Model): Model object.
+            field (ImageField): Model's field.
 
         Returns:
             str: An img tag of the image
@@ -99,18 +100,41 @@ class FieldValueHandlers:
         image: ImageField = getattr(obj, field.name)
         return image_tag(image=image, alt=str(obj))
 
+    @staticmethod
+    def many_to_many_field_handler(obj: Model, field: ManyToManyField) -> str:
+        """ Handles ManyToManyField
+
+        Args:
+            obj (Model): Model object.
+            field (ManyToManyField): Model's field.
+
+        Returns:
+            str: str() related model objects
+        """
+        relation: QuerySet = getattr(obj, field.name).all()
+        return '، '.join([str(item) for item in relation])
+
 
 class DynamicModelFieldDetailView(DetailView):
 
-    context_fields_name = 'fields'
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.object: Optional[Model] = None
 
-    exclude_fields = ['id']
+    context_fields_name = 'fields'
+    unimplemented_types_use_simple_handler = False
+
+    # If fields set to '__all__' it will show fields that their type
+    # implemented otherwise will show fields in given tuple/list
+    fields: Union[str, tuple, list] = '__all__'
+    exclude_fields: Union[tuple, list] = ['id']
+    additional_content: Union[tuple[Callable], list[Callable]] = []
 
     # Note: each handler handle the type's children too!
     # then their ordering is important. place children types first
     visible_field_types = [
         {
-            'types': (BleachField,),
+            'types': (BleachField, DateField, DateTimeField),
             'handler': FieldValueHandlers.bleach_field_handler
         },
         {
@@ -129,6 +153,10 @@ class DynamicModelFieldDetailView(DetailView):
             'types': (ImageField,),
             'handler': FieldValueHandlers.image_field_handler
         },
+        {
+            'types': (ManyToManyField,),
+            'handler': FieldValueHandlers.many_to_many_field_handler
+        },
     ]
 
     def _get_visible_types(self) -> tuple[Field]:
@@ -143,29 +171,29 @@ class DynamicModelFieldDetailView(DetailView):
 
         return v_field_types
 
-    def get_visible_fields(self, fields: list[Field]) -> tuple[Field]:
-        """ Filters visible fields of given fields except fields in exclude_fields
-
-        Args:
-            fields (list[Field]): Fields to check their visibility
+    def get_default_fields(self) -> list[str]:
+        """ Filters visible field names of model and additional_content
+            except fields in exclude_fields
 
         Returns:
-            tuple[Field]: Visible fields of given fields
+            list[str]: Visible field names of model and additional_content
         """
         def _is_visible(field) -> bool:
-            """ Checks field's visibility and exclusion
+            """ Checks model field's visibility and exclusion
 
             Args:
                 field ([type]): Field to check its visibility
 
             Returns:
-                bool: True if field's type is visible and didn't excluded
+                bool: True if model field's type is visible and didn't excluded
                       else returns False
             """
             return (field.name not in self.exclude_fields
                     ) and isinstance(field, self._get_visible_types())
 
-        return tuple(filter(_is_visible, fields))
+        model_fields: list[Field] = self.object._meta.get_fields()
+        visible_model_field_names = [field.name for field in filter(_is_visible, model_fields)]
+        return visible_model_field_names + self.additional_content
 
     def get_field_value(self, obj: Model, field: Field) -> str:
         """ Finds given field in given object and handles its value by its handler
@@ -181,32 +209,60 @@ class DynamicModelFieldDetailView(DetailView):
             if isinstance(field, visible_type.get('types', None)):
                 return visible_type.get('handler', lambda: None)(obj, field)
 
-    def get_visible_field_name_values(self) -> list[FieldNameValue]:
-        """ Visible fields and value of view object
+        if self.unimplemented_types_use_simple_handler:
+            return FieldValueHandlers.simple_field_handler(obj, field)
+        else:
+            raise NotImplementedError(
+                ('Unable to get value of \'{}\'. \'{}\' type handler has not been'
+                 ' implemented yet.').format(field.name, field.__class__.__name__)
+            )
+
+    def get_name_values(self) -> list[FieldNameValue]:
+        """ Gets name and value of fields in self.fields from
+            additional_content or from model.
 
         Returns:
-            list[FieldNameValue]: Field names and their value
+            list[FieldNameValue]: Field names and their value.
         """
-        def _get_field_name_value_object(obj: Model, field: Field) -> FieldNameValue:
-            """ Returns field's verbose name and its value
+        def _get_model_field_name_value(obj: Model, field: Field) -> FieldNameValue:
+            """ Returns field's verbose name and its value.
 
             Args:
-                obj (Model): Model object
-                field (Field): Field of model
+                obj (Model): Model object.
+                field (Field): Field of model.
 
             Returns:
-                FieldNameValue: Field's verbose_name and it's value
+                FieldNameValue: Field's verbose_name and it's value.
             """
             return {'name': field.verbose_name, 'value': self.get_field_value(obj, field)}
 
-        obj = self.get_object()
-        visible_fields = self.get_visible_fields(obj._meta.get_fields())
-        return [_get_field_name_value_object(obj, v_field) for v_field in visible_fields]
+        def _get_additional_name_value(additional_content: Callable) -> FieldNameValue:
+            """ Returns additional conetent's name and its value.
+
+            Args:
+                additional_content (Callable): Additional content callable to call.
+
+            Returns:
+                FieldNameValue: short_description and value of additional content.
+            """
+            callable_name = getattr(
+                additional_content, 'short_description', additional_content.__name__)
+
+            return {'name': callable_name, 'value': additional_content(self)}
+
+        if self.fields == '__all__':
+            # If fields set to '__all__' set fields to default visible fields
+            self.fields = self.get_default_fields()
+
+        # If field is in additional_content get field name and value by _get_additional_name_value
+        # otherwise try to get get field name and value by _get_model_field_name_value
+        return [_get_additional_name_value(field) if (field in self.additional_content) else
+                _get_model_field_name_value(self.object, self.object._meta.get_field(field)
+                                            ) for field in self.fields]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context[self.context_fields_name] = self.get_visible_field_name_values()
-
+        context[self.context_fields_name] = self.get_name_values()
         return context
 
 
