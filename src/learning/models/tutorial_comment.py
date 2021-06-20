@@ -31,8 +31,8 @@ class TutorialComment(LifecycleModel):
     create_date = models.DateTimeField(
         auto_now_add=True, verbose_name='زمان انتشار')
 
-    last_edit_date = models.DateField(blank=True, null=True,
-                                      verbose_name='زمان آخرین ویرایش')
+    last_edit_date = models.DateTimeField(blank=True, null=True,
+                                          verbose_name='زمان آخرین ویرایش')
 
     confirm_status = models.IntegerField(
         choices=ConfirmStatusChoices.choices, null=False, blank=False,

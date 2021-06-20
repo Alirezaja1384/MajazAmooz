@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from django_lifecycle import LifecycleModel
 
 
@@ -11,8 +10,8 @@ class AbstractScoreCoinModel(LifecycleModel):
     score = models.IntegerField(verbose_name='امتیاز', default=0)
     coin = models.IntegerField(verbose_name='سکه', default=0)
 
-    create_date = models.DateField(
-        default=timezone.now, verbose_name='زمان ایجاد')
+    create_date = models.DateTimeField(
+        auto_now_add=True, null=True, verbose_name='زمان ایجاد')
 
     class Meta:
         abstract = True
