@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from typing import (TypedDict, Union, Callable, Optional)
 import bleach
 from django import forms
@@ -6,6 +7,7 @@ from django.shortcuts import redirect
 from django.http import (HttpRequest, HttpResponseBadRequest)
 from django.views.generic import (DetailView, DeleteView)
 from django.utils.safestring import mark_safe
+from django.utils.timezone import localdate, localtime
 from django.db.models import (
     Field, Model, QuerySet, CharField, TextField,
     BooleanField, IntegerField, ImageField,
@@ -114,6 +116,36 @@ class FieldValueHandlers:
         relation: QuerySet = getattr(obj, field.name).all()
         return '، '.join([str(item) for item in relation])
 
+    @staticmethod
+    def date_field_handler(obj: Model, field: DateField) -> date:
+        """ Handles DateField
+
+        Args:
+            obj (Model): Model object.
+            field (DateField): Model's date field.
+
+        Returns:
+            date: localized date.
+        """
+        original: date = getattr(obj, field.name)
+        localized : date = localdate(original)
+        return localized
+
+    @staticmethod
+    def datetime_field_handler(obj: Model, field: DateTimeField) -> datetime:
+        """ Handles DateTimeField
+
+        Args:
+            obj (Model): Model object.
+            field (DateField): Model's datetime field.
+
+        Returns:
+            date: localized datetime.
+        """
+        original: datetime = getattr(obj, field.name)
+        localized : datetime = localtime(original)
+        return localized
+
 
 class DynamicModelFieldDetailView(DetailView):
 
@@ -134,7 +166,7 @@ class DynamicModelFieldDetailView(DetailView):
     # then their ordering is important. place children types first
     visible_field_types = [
         {
-            'types': (BleachField, DateField, DateTimeField),
+            'types': (BleachField,),
             'handler': FieldValueHandlers.bleach_field_handler
         },
         {
@@ -156,6 +188,14 @@ class DynamicModelFieldDetailView(DetailView):
         {
             'types': (ManyToManyField,),
             'handler': FieldValueHandlers.many_to_many_field_handler
+        },
+        {
+            'types': (DateTimeField,),
+            'handler': FieldValueHandlers.datetime_field_handler,
+        },
+        {
+            'types': (DateField,),
+            'handler': FieldValueHandlers.date_field_handler,
         },
     ]
 
