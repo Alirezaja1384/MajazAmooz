@@ -1,1 +1,2 @@
 from .authentication import LoginRequiredMiddleware
+from .timezone import TimezoneMiddleware

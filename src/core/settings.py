@@ -75,7 +75,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # Custom middlewares
-    'utilities.middleware.LoginRequiredMiddleware'
+    'utilities.middleware.LoginRequiredMiddleware',
+    'utilities.middleware.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -140,7 +141,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'fa'
 
-TIME_ZONE = 'Asia/Tehran'
+TIME_ZONE = 'UTC'
+
+# Used in TimezoneMiddleware
+DEFAULT_USER_TZ = 'Asia/Tehran'
 
 USE_I18N = True
 
