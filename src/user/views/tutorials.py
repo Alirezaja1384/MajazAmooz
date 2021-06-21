@@ -63,8 +63,12 @@ class TutorialCreateView(CreateView):
 
     def form_valid(self, form: ModelForm):
         tutorial: Tutorial = form.save(commit=False)
+        # Set tutorial author
         tutorial.author = self.request.user
+        # Save tutorial
         tutorial.save()
+        # Save tutorial tags
+        form.save_tags()
 
         messages.success(
             self.request, f'آموزش "{tutorial.title}" با موفقیت افزوده شد')

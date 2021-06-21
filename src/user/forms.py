@@ -13,7 +13,7 @@ UserModel = get_user_model()
 class TutorialTagForm(forms.ModelForm):
     class Meta:
         model = TutorialTag
-        fields = ('title', 'tutorial')
+        fields = ('title',)
 
 
 class TutorialForm(forms.ModelForm):
@@ -55,7 +55,7 @@ class TutorialForm(forms.ModelForm):
         for tag_title in tag_titles:
             # create form to validate tutorial tag
             tag_form = TutorialTagForm(
-                {'title': tag_title, 'tutorial': self.instance})
+                {'title': tag_title})
 
             # Validate form
             if not tag_form.is_valid():
@@ -63,6 +63,8 @@ class TutorialForm(forms.ModelForm):
                 raise ValidationError([tag_form.errors[field]
                                       for field in tag_form.errors])
             else:
+                # Set tag's tutorial
+                tag_form.instance.tutorial = self.instance
                 # Add to tags list
                 tag_instances.append(tag_form.instance)
 
