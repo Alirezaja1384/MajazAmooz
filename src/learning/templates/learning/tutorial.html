@@ -188,7 +188,7 @@
 
                                         <!-- Carousel content description -->
                                         <p class="text-muted mb-0">
-                                            {{ related_tutorial.short_description|truncatewords:5 }}
+                                            {{ related_tutorial.short_description|truncatewords:5|safe }}
                                         </p>
                                         <!-- End Carousel content description -->
 
@@ -378,7 +378,7 @@
                                     <a href="{% url 'learning:tutorial' tutorial_item.slug %}">{{ tutorial_item.title }}</a>
                                 </h5>
                                 <p class="mb-1">
-                                    {{ tutorial_item.short_description|truncatewords:5 }}
+                                    {{ tutorial_item.short_description|truncatewords:5|safe }}
                                 </p>
                             </section>
                         </article>
@@ -416,7 +416,7 @@
                                     <a href="{% url 'learning:tutorial' tutorial_item.slug %}">{{ tutorial_item.title }}</a>
                                 </h5>
                                 <p class="mb-1">
-                                    {{ tutorial_item.short_description|truncatewords:5 }}
+                                    {{ tutorial_item.short_description|truncatewords:5|safe }}
                                 </p>
                             </section>
                         </article>
