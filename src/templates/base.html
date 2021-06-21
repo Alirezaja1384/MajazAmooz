@@ -1,6 +1,7 @@
 {% load static %}
 {% load base_tmplatetags %}
 {% load website_configs %}
+{% load image_utils %}
 
 <!DOCTYPE HTML>
 <html lang="fa">
@@ -256,7 +257,7 @@
 
 
                     <a href="#" data-toggle="tooltip" data-placement="bottom" title="ناحیه کابری">
-                        <i class="fa fa-2x fa-user-circle-o" aria-hidden="true"></i>
+                        <img src="{{ user.avatar|image_url }}" class="rounded-circle" style="height: 45px; width=45px;">
                     </a>
 
 
