@@ -62,4 +62,6 @@ urlpatterns = [
     path('profile_setting', views.UserProfileUpdateView.as_view(
         extra_context={'title': 'تنظیمات پروفایل'}), name='profile_setting'),
 
+    path('change_password/', views.PasswordChangeView.as_view(), name='change_password'),
+
 ]

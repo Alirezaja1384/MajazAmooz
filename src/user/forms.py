@@ -1,13 +1,13 @@
 from typing import Optional
 from django import forms
-from django.contrib.auth import get_user_model
+from django.contrib import auth
 from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from learning.models import (Tutorial, TutorialComment, TutorialTag)
 
 
-UserModel = get_user_model()
+UserModel = auth.get_user_model()
 
 
 class TutorialTagForm(forms.ModelForm):
@@ -166,3 +166,14 @@ class UserProfileForm(forms.ModelForm):
             'first_name',
             'last_name',
         )
+
+
+class PasswordChangeForm(auth.forms.PasswordChangeForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Add submit button
+        self.helper = FormHelper()
+        self.helper.add_input(
+            Submit('create_update', 'تغییر گذرواژه', css_class='btn-success'))
