@@ -110,11 +110,11 @@
                     <section>
                         <section class="jumbotron">
                             <h4>
-                                {{ tutorial.short_description|bleach }}
+                                {{ tutorial.short_description|safe }}
                             </h4>
                         </section>
                         <p>
-                            {{ tutorial.body|bleach }}
+                            {{ tutorial.body|safe }}
                         </p>
                     </section>
                     <!-- End Tutorial text -->
