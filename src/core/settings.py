@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'tinymce',
     'django_resized',
+    'constance',
 
     # Project apps
     'authentication.apps.AuthenticationConfig',
@@ -314,3 +315,9 @@ DJANGORESIZED_DEFAULT_KEEP_META = True
 DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
 DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
+
+# django-constance settings
+# https://django-constance.readthedocs.io/en/latest/
+CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
+CONSTANCE_REDIS_PREFIX = 'constance:majazamooz:'
+CONSTANCE_REDIS_CONNECTION = config('CONSTANCE_REDIS_CONNECTION')
