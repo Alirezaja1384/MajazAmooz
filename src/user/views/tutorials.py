@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.views.generic import (CreateView, UpdateView)
 from django.shortcuts import (reverse, redirect)
 from django_tables2 import SingleTableView
-
+from constance import config
 from user.tables import (TutorialTable, TutorialUserRelationsTable)
 from user.forms import TutorialForm
 from learning.models import (
@@ -15,8 +15,13 @@ from utilities.views.generic import (
 )
 
 
-PAGINATE_BY = 10
 SUCCESS_VIEW_NAME = 'user:tutorials'
+
+
+def get_paginate_by():
+    """ Note: defining paginate_by as a function is necessary to ensure it changes immediately.
+    """
+    return config.USER_PANEL_PAGINATE_BY
 
 
 def get_tutorials_queryset(user):
@@ -26,9 +31,14 @@ def get_tutorials_queryset(user):
 
 class TutorialListView(SingleTableView):
     table_class = TutorialTable
-
-    paginate_by = PAGINATE_BY
     template_name = 'user/shared/list.html'
+
+    @property
+    def paginate_by(self):
+        """ Note: SingleTableView doesn't use get_paginate_by() currently, then
+            defining paginate_by as a property is necessary to ensure it changes immediately.
+        """
+        return get_paginate_by()
 
     def get_queryset(self):
         return get_tutorials_queryset(user=self.request.user)
@@ -116,9 +126,15 @@ class TutorialDeleteDeactivateView(DeleteDeactivationView):
 class TutorialRelationsAbstractTableView(SingleTableView):
     table_class = TutorialUserRelationsTable
 
-    paginate_by = PAGINATE_BY
     default_ordering = ('-create_date',)
     template_name = 'user/shared/list.html'
+
+    @property
+    def paginate_by(self):
+        """ Note: SingleTableView doesn't use get_paginate_by() currently, then
+            defining paginate_by as a property is necessary to ensure it changes immediately.
+        """
+        return get_paginate_by()
 
     def get_queryset(self):
         raise NotImplementedError('You should implement get_queryset()')
