@@ -5,7 +5,7 @@ from django.db.models import Prefetch
 from django.shortcuts import (
     render, get_object_or_404
 )
-
+from constance import config
 from authentication.models import User
 from learning.models import (
     Tutorial, Category,
@@ -72,8 +72,8 @@ def record_tutorial_view(tutorial: Tutorial, user: User):
         tutorial (Tutorial): visited tutorial
         user (User): user that visited the tutorial
     """
-    tutorial_view_score = 1
-    tutorial_view_coin = 1
+    tutorial_view_score = config.TUTORIAL_VIEW_SCORE
+    tutorial_view_coin = config.TUTORIAL_VIEW_COIN
 
     if user.is_authenticated and not tutorial.views.filter(user=user).exists():
 

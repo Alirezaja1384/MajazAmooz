@@ -349,6 +349,8 @@ CONSTANCE_CONFIG = OrderedDict([
     # Tutorial relations
     ('TUTORIAL_LIKE_SCORE', (5, 'آموزش - امتباز لایک', int),),
     ('TUTORIAL_LIKE_COIN', (5, 'آموزش - سکه لایک', int),),
+    ('TUTORIAL_VIEW_SCORE', (1, 'آموزش - امتباز بازدید کاربران', int),),
+    ('TUTORIAL_VIEW_COIN', (1, 'آموزش - سکه بازدید کاربران', int),),
     ('TUTORIAL_UPVOTE_SCORE', (0, 'آموزش - امتباز رای موافق', int),),
     ('TUTORIAL_UPVOTE_COIN', (0, 'آموزش - سکه رای موافق', int),),
     ('TUTORIAL_DOWNVOTE_SCORE', (0, 'آموزش - امتباز رای مخالف', int),),
