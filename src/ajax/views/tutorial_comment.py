@@ -4,7 +4,7 @@ from django.http import HttpRequest, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import (DatabaseError, transaction)
-
+from constance import config
 from ajax.forms import TutorialCommentForm
 from learning.models import (
     TutorialComment, TutorialCommentUpVote,
@@ -51,8 +51,8 @@ def tutorial_comment_create_view(request: HttpRequest):
 @login_required
 def tutorial_comment_like_view(request: HttpRequest):
 
-    tutorial_comment_like_score = 3
-    tutorial_comment_like_coin = 3
+    tutorial_comment_like_score = config.TUTORIAL_COMMENT_LIKE_SCORE
+    tutorial_comment_like_coin = config.TUTORIAL_COMMENT_LIKE_COIN
 
     # If request is ajax and tutorial_comment_id sent by client
     if request.method == 'POST' and request.is_ajax():
@@ -112,8 +112,8 @@ def tutorial_comment_like_view(request: HttpRequest):
 @login_required
 def tutorial_comment_upvote_view(request: HttpRequest):
 
-    tutorial_comment_upvote_score = 0
-    tutorial_comment_upvote_coin = 0
+    tutorial_comment_upvote_score = config.TUTORIAL_COMMENT_UPVOTE_SCORE
+    tutorial_comment_upvote_coin = config.TUTORIAL_COMMENT_UPVOTE_COIN
 
     # If request is ajax and tutorial_comment_id sent by client
     if request.method == 'POST' and request.is_ajax():
@@ -173,8 +173,8 @@ def tutorial_comment_upvote_view(request: HttpRequest):
 @login_required
 def tutorial_comment_downvote_view(request: HttpRequest):
 
-    tutorial_comment_downvote_score = 0
-    tutorial_comment_downvote_coin = 0
+    tutorial_comment_downvote_score = config.TUTORIAL_COMMENT_DOWNVOTE_SCORE
+    tutorial_comment_downvote_coin = config.TUTORIAL_COMMENT_DOWNVOTE_COIN
 
     # If request is ajax and tutorial_comment_id sent by client
     if request.method == 'POST' and request.is_ajax():
