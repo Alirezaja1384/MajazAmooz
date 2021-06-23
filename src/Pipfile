@@ -19,6 +19,7 @@ django-tables2 = ">=2.4.0"
 django-crispy-forms = ">=1.11.2"
 django-tinymce = ">=3.3.0"
 django-resized = ">=0.3.11"
+django-constance = {version = ">=2.8.0", extras = ["redis"]}
 
 [dev-packages]
 autopep8 = "*"

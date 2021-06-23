@@ -3,7 +3,7 @@ from math import ceil
 from django.shortcuts import render
 from django.http import HttpRequest
 from django.db.models import Prefetch, Sum, Count
-
+from constance import config
 from authentication.models import User
 from utilities.model_utils import ConfirmStatusChoices
 from utilities.date_time import get_last_months
@@ -51,10 +51,9 @@ class UserStatistics:
         return self.__goal_completion_percent(self.views_count, self.views_count_goal)
 
 
-# TODO: Make last_months_count dynamic
 # TODO: Improve performance by reducing query count
 def get_view_statistics(user: User):
-    last_months_count = 5
+    last_months_count = config.USER_PANEL_STATISTICS_LAST_MONTH_COUNT
 
     all_views = TutorialView.objects.filter(
         tutorial__author=user).active_confirmed_tutorials()

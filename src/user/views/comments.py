@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.shortcuts import (redirect, reverse)
 from django.views.generic import UpdateView
 from django_tables2 import SingleTableView
+from constance import config
 from learning.models import (TutorialComment, TutorialCommentLike)
 from learning.querysets import (
     TutorialQuerySet, TutorialCommentUserRelationQuerySet)
@@ -17,9 +18,13 @@ from utilities.views.generic import (
 )
 
 
-# TODO: Make pagination dynamic
-PAGINATE_BY = 10
 SUCCESS_VIEW_NAME = 'user:tutorial_comments'
+
+
+def get_paginate_by():
+    """ Note: defining paginate_by as a function is necessary to ensure it changes immediately.
+    """
+    return config.USER_PANEL_PAGINATE_BY
 
 
 def get_tutorial_comments_queryset(user: User) -> TutorialQuerySet:
@@ -36,8 +41,14 @@ def get_tutorial_comment_like_queryset() -> TutorialCommentUserRelationQuerySet:
 class TutorialCommentListView(SingleTableView):
     table_class = TutorialCommentTable
 
-    paginate_by = PAGINATE_BY
     template_name = 'user/shared/list.html'
+
+    @property
+    def paginate_by(self):
+        """ Note: SingleTableView doesn't use get_paginate_by() currently, then
+            defining paginate_by as a property is necessary to ensure it changes immediately.
+        """
+        return get_paginate_by()
 
     def get_queryset(self):
         return get_tutorial_comments_queryset(self.request.user)
@@ -85,9 +96,14 @@ class TutorialCommentDeleteDeactivateView(DeleteDeactivationView):
 
 class RepliedToMyCommentsListView(SingleTableView):
     table_class = RepliedTutorialCommentTable
-
-    paginate_by = PAGINATE_BY
     template_name = 'user/shared/list.html'
+
+    @property
+    def paginate_by(self):
+        """ Note: SingleTableView doesn't use get_paginate_by() currently, then
+            defining paginate_by as a property is necessary to ensure it changes immediately.
+        """
+        return get_paginate_by()
 
     def get_queryset(self):
         return TutorialComment.objects.filter(
@@ -98,9 +114,14 @@ class RepliedToMyCommentsListView(SingleTableView):
 
 class TutorialCommentLikedByOthersListView(SingleTableView):
     table_class = TutorialCommentUserRelationsTable
-
-    paginate_by = PAGINATE_BY
     template_name = 'user/shared/list.html'
+
+    @property
+    def paginate_by(self):
+        """ Note: SingleTableView doesn't use get_paginate_by() currently, then
+            defining paginate_by as a property is necessary to ensure it changes immediately.
+        """
+        return get_paginate_by()
 
     def get_queryset(self):
         return get_tutorial_comment_like_queryset().filter(
@@ -109,9 +130,14 @@ class TutorialCommentLikedByOthersListView(SingleTableView):
 
 class TutorialCommentLikedByMeListView(SingleTableView):
     table_class = TutorialCommentUserRelationsTable
-
-    paginate_by = PAGINATE_BY
     template_name = 'user/shared/list.html'
+
+    @property
+    def paginate_by(self):
+        """ Note: SingleTableView doesn't use get_paginate_by() currently, then
+            defining paginate_by as a property is necessary to ensure it changes immediately.
+        """
+        return get_paginate_by()
 
     def get_queryset(self):
         return get_tutorial_comment_like_queryset().filter(user=self.request.user)

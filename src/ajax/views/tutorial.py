@@ -4,6 +4,7 @@ from django.http import HttpRequest, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import (DatabaseError, transaction)
+from constance import config
 from learning.models import (
     Tutorial, TutorialLike,
     TutorialUpVote, TutorialDownVote
@@ -19,8 +20,8 @@ class InsertOrDeleteStatus:
 @login_required
 def tutorial_like_view(request: HttpRequest):
 
-    tutorial_like_score = 5
-    tutorial_like_coin = 5
+    tutorial_like_score = config.TUTORIAL_LIKE_SCORE
+    tutorial_like_coin = config.TUTORIAL_LIKE_COIN
 
     # If request is ajax and tutorial_id sent by client
     if request.method == 'POST' and request.is_ajax():
@@ -76,8 +77,8 @@ def tutorial_like_view(request: HttpRequest):
 @login_required
 def tutorial_upvote_view(request: HttpRequest):
 
-    tutorial_upvote_score = 0
-    tutorial_upvote_coin = 0
+    tutorial_upvote_score = config.TUTORIAL_UPVOTE_SCORE
+    tutorial_upvote_coin = config.TUTORIAL_UPVOTE_COIN
 
     # If request is ajax and tutorial_id sent by client
     if request.method == 'POST' and request.is_ajax():
@@ -132,8 +133,8 @@ def tutorial_upvote_view(request: HttpRequest):
 @login_required
 def tutorial_downvote_view(request: HttpRequest):
 
-    tutorial_downvote_score = 0
-    tutorial_downvote_coin = 0
+    tutorial_downvote_score = config.TUTORIAL_DOWNVOTE_SCORE
+    tutorial_downvote_coin = config.TUTORIAL_DOWNVOTE_COIN
 
     # If request is ajax and tutorial_id sent by client
     if request.method == 'POST' and request.is_ajax():

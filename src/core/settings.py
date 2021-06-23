@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
+from collections import OrderedDict
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'tinymce',
     'django_resized',
+    'constance',
 
     # Project apps
     'authentication.apps.AuthenticationConfig',
@@ -314,3 +316,52 @@ DJANGORESIZED_DEFAULT_KEEP_META = True
 DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
 DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
+
+# django-constance settings
+# https://django-constance.readthedocs.io/en/latest/
+CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
+CONSTANCE_REDIS_PREFIX = 'constance:majazamooz:'
+CONSTANCE_REDIS_CONNECTION = config('CONSTANCE_REDIS_CONNECTION')
+
+CONSTANCE_CONFIG = OrderedDict([
+
+    # Website settings
+    ('WEBSITE_KEYWORDS', (
+        'آموزش,درسنامه,آزمون,آموزش مجازی,آزمون آنلاین',
+        'وبسایت - کلمات کلیدی', str),
+     ),
+
+    ('WEBSITE_DESCRIPTION', (
+        ('با هم مجازی می آموزیم! مجاز آموز، جامعه ای از دانش آموزان سراسر ایران است که با استفاده'
+         ' از فضای آنلاین در هر مکان و زمان به آموزش دسترسی دارند و به یکدیگر آموزش می دهند.'),
+        'وبسایت - توضیحات', str),
+     ),
+
+    # Learning
+    ('LEARNING_TUTORIAL_ARCHIVE_PAGINATE_BY',
+     (30, 'آرشیو آموزش ها - تعداد آموزش هر صفحه', int),),
+
+    # User panel
+    ('USER_PANEL_PAGINATE_BY', (15, 'پنل کاربری - تعداد آیتم هر صفحه', int),),
+    ('USER_PANEL_STATISTICS_LAST_MONTH_COUNT',
+     (5, 'پنل کاربری - تعداد ماه های اخیر آمار', int),),
+
+    # Tutorial relations
+    ('TUTORIAL_LIKE_SCORE', (5, 'آموزش - امتباز لایک', int),),
+    ('TUTORIAL_LIKE_COIN', (5, 'آموزش - سکه لایک', int),),
+    ('TUTORIAL_VIEW_SCORE', (1, 'آموزش - امتباز بازدید کاربران', int),),
+    ('TUTORIAL_VIEW_COIN', (1, 'آموزش - سکه بازدید کاربران', int),),
+    ('TUTORIAL_UPVOTE_SCORE', (0, 'آموزش - امتباز رای موافق', int),),
+    ('TUTORIAL_UPVOTE_COIN', (0, 'آموزش - سکه رای موافق', int),),
+    ('TUTORIAL_DOWNVOTE_SCORE', (0, 'آموزش - امتباز رای مخالف', int),),
+    ('TUTORIAL_DOWNVOTE_COIN', (0, 'آموزش - سکه رای مخالف', int),),
+
+    # Tutorial comment relations
+    ('TUTORIAL_COMMENT_LIKE_SCORE', (3, 'دیدگاه آموزش - امتباز لایک', int),),
+    ('TUTORIAL_COMMENT_LIKE_COIN', (3, 'دیدگاه آموزش - سکه لایک', int),),
+    ('TUTORIAL_COMMENT_UPVOTE_SCORE', (0, 'دیدگاه آموزش - امتباز رای موافق', int),),
+    ('TUTORIAL_COMMENT_UPVOTE_COIN', (0, 'دیدگاه آموزش - سکه رای موافق', int),),
+    ('TUTORIAL_COMMENT_DOWNVOTE_SCORE', (0, 'دیدگاه آموزش - امتباز رای مخالف', int),),
+    ('TUTORIAL_COMMENT_DOWNVOTE_COIN', (0, 'دیدگاه آموزش - سکه رای مخالف', int),),
+
+])

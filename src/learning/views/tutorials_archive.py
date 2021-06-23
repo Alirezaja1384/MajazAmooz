@@ -1,7 +1,7 @@
 from django.views.generic import ListView
 from django.db.models import (Count, Q)
 from django.http import QueryDict
-
+from constance import config
 from learning.models import (Tutorial, Category)
 from learning.filters import TutorialArchiveFilterSet
 from utilities.model_utils import ConfirmStatusChoices
@@ -11,9 +11,11 @@ class TutorialListView(ListView):
     model = Tutorial
     template_name = "learning/tutorials_archive.html"
 
-    paginate_by = 15
     page_kwarg = 'page'
     context_object_name = 'tutorials'
+
+    def get_paginate_by(self, queryset):
+        return config.LEARNING_TUTORIAL_ARCHIVE_PAGINATE_BY
 
     def get_queryset(self):
         # All confirmed and active tutorials
