@@ -4,7 +4,7 @@ from django.http import QueryDict
 from constance import config
 from learning.models import (Tutorial, Category)
 from learning.filters import TutorialArchiveFilterSet
-from utilities.model_utils import ConfirmStatusChoices
+from utilities.models import ConfirmStatusChoices
 
 
 class TutorialListView(ListView):

@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 
 from authentication.forms import RegisterForm
-from utilities.view_utilities import LogoutRequiredMixin
+from utilities.views import LogoutRequiredMixin
 from utilities.auth_utils import EmailConfirmationManager
 
 

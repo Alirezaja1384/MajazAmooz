@@ -1,1 +1,0 @@
-from .choices import ConfirmStatusChoices

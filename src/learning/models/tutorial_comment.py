@@ -10,7 +10,7 @@ from django_lifecycle import (
 from learning.models import Tutorial
 from learning.querysets import TutorialCommentQueryset
 from authentication.models import User
-from utilities.model_utils import ConfirmStatusChoices
+from utilities.models import ConfirmStatusChoices
 
 
 class TutorialComment(LifecycleModel):

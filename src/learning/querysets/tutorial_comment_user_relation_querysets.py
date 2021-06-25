@@ -1,6 +1,6 @@
 from django.db.models import QuerySet
 
-from utilities.model_utils import ConfirmStatusChoices
+from utilities.models import ConfirmStatusChoices
 
 
 class TutorialCommentUserRelationQuerySet(QuerySet):

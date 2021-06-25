@@ -6,7 +6,7 @@ from django_resized import ResizedImageField
 from django_lifecycle import LifecycleModel, hook, BEFORE_UPDATE, BEFORE_SAVE
 from authentication.models import User
 from utilities.models import BleachField
-from utilities.model_utils import ConfirmStatusChoices
+from utilities.models import ConfirmStatusChoices
 from learning.models import Category
 from learning.querysets import TutorialQuerySet
 

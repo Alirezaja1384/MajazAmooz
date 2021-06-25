@@ -8,7 +8,7 @@ from django.contrib.auth import (
 )
 
 from authentication.forms import LoginForm
-from utilities.view_utilities import LogoutRequiredMixin
+from utilities.views import LogoutRequiredMixin
 
 
 UserModel = get_user_model()

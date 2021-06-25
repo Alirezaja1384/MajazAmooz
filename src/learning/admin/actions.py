@@ -3,7 +3,7 @@ from django.contrib import (admin, messages)
 from django.contrib.admin import ModelAdmin
 from django.db.models import QuerySet
 
-from utilities.model_utils import ConfirmStatusChoices
+from utilities.models import ConfirmStatusChoices
 from learning.emails import (
     EmailsResult,
     notify_tutorial_comments_reply,

@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.shortcuts import render
 
 
-from utilities.model_utils import ConfirmStatusChoices
+from utilities.models import ConfirmStatusChoices
 
 from learning.models import Tutorial
 
