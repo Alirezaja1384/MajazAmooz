@@ -2,7 +2,7 @@ from django.contrib.admin.decorators import register
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
 from authentication.models import User
-from utilities.templatetags.image_utils import image_tag
+from shared.templatetags.image_utils import image_tag
 
 
 UserModel = get_user_model()

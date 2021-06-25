@@ -1,7 +1,7 @@
 """ QuerySet for tutorial model """
 from django.db.models import QuerySet
 
-from utilities.models import ConfirmStatusChoices
+from shared.models import ConfirmStatusChoices
 
 
 class TutorialQuerySet(QuerySet):

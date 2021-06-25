@@ -2,7 +2,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from utilities.models import BleachField
+from shared.models import BleachField
 from django_lifecycle import (
     hook, LifecycleModel,
     BEFORE_UPDATE, BEFORE_SAVE
@@ -10,7 +10,7 @@ from django_lifecycle import (
 from learning.models import Tutorial
 from learning.querysets import TutorialCommentQueryset
 from authentication.models import User
-from utilities.models import ConfirmStatusChoices
+from shared.models import ConfirmStatusChoices
 
 
 class TutorialComment(LifecycleModel):

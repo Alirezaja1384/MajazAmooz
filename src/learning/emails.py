@@ -7,7 +7,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.db.models import QuerySet
 
-from utilities.models import ConfirmStatusChoices
+from shared.models import ConfirmStatusChoices
 from learning.models import (TutorialComment, Tutorial)
 
 

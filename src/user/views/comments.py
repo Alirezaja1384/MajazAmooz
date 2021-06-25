@@ -13,7 +13,7 @@ from user.tables import (
     TutorialCommentUserRelationsTable
 )
 from user.forms import TutorialCommentForm
-from utilities.views.generic import (
+from shared.views.generic import (
     DynamicModelFieldDetailView, DeleteDeactivationView
 )
 

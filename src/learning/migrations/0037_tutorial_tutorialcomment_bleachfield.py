@@ -2,7 +2,7 @@
 
 from django.db import migrations
 import django_bleach.models
-import utilities.models.fields
+import shared.models.fields
 
 
 class Migration(migrations.Migration):
@@ -15,12 +15,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tutorial',
             name='body',
-            field=utilities.models.fields.BleachField(verbose_name='بدنه'),
+            field=shared.models.fields.BleachField(verbose_name='بدنه'),
         ),
         migrations.AlterField(
             model_name='tutorial',
             name='short_description',
-            field=utilities.models.fields.BleachField(max_length=250, verbose_name='توضیح کوتاه'),
+            field=shared.models.fields.BleachField(max_length=250, verbose_name='توضیح کوتاه'),
         ),
         migrations.AlterField(
             model_name='tutorialcomment',

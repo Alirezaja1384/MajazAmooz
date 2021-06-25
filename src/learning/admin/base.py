@@ -6,7 +6,7 @@ from django.db.models import Prefetch
 from django.http import HttpRequest
 
 from learning.models import (Tutorial, Category)
-from utilities.templatetags.image_utils import image_tag
+from shared.templatetags.image_utils import image_tag
 from . import actions
 
 

@@ -5,8 +5,8 @@ from django.utils.text import slugify
 from django_resized import ResizedImageField
 from django_lifecycle import LifecycleModel, hook, BEFORE_UPDATE, BEFORE_SAVE
 from authentication.models import User
-from utilities.models import BleachField
-from utilities.models import ConfirmStatusChoices
+from shared.models import BleachField
+from shared.models import ConfirmStatusChoices
 from learning.models import Category
 from learning.querysets import TutorialQuerySet
 

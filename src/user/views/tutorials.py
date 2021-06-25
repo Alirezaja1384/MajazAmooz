@@ -11,7 +11,7 @@ from learning.models import (
     Tutorial, TutorialView,
     TutorialLike
 )
-from utilities.views.generic import (
+from shared.views.generic import (
     DynamicModelFieldDetailView, DeleteDeactivationView
 )
 

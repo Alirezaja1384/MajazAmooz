@@ -4,7 +4,7 @@ from django.views.generic import View
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib import messages
-from utilities.views import LogoutRequiredMixin
+from shared.views import LogoutRequiredMixin
 from authentication.forms import RegisterForm
 from authentication.email_confirmation import EmailConfirmationManager
 

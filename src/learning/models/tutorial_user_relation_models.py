@@ -9,7 +9,7 @@ from django_lifecycle import (
 from learning.models import Tutorial
 from learning.querysets import TutorialUserRelationQuerySet
 from authentication.models import User
-from utilities.models import AbstractScoreCoinModel
+from shared.models import AbstractScoreCoinModel
 
 
 class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):

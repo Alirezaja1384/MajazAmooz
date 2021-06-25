@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'learning.apps.LearningConfig',
     'ajax.apps.AjaxConfig',
     'user.apps.UserConfig',
-    'utilities'
+    'shared.apps.SharedConfig',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +77,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # Custom middlewares
-    'utilities.middleware.LoginRequiredMiddleware',
-    'utilities.middleware.TimezoneMiddleware',
+    'shared.middleware.LoginRequiredMiddleware',
+    'shared.middleware.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'

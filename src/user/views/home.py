@@ -5,8 +5,8 @@ from django.http import HttpRequest
 from django.db.models import Prefetch, Sum, Count
 from constance import config
 from authentication.models import User
-from utilities.models import ConfirmStatusChoices
-from utilities.date_time import get_last_months
+from shared.models import ConfirmStatusChoices
+from shared.date_time import get_last_months
 from learning.models import (
     Tutorial, Category, TutorialComment,
     TutorialView
