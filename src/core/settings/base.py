@@ -15,7 +15,7 @@ from collections import OrderedDict
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -157,16 +157,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
+# Other configurations in production.py/development.py
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
-# Media files
-MEDIA_ROOT = BASE_DIR / 'media/'
 MEDIA_URL = '/media/'
+
 
 # Custom uSer model
 AUTH_USER_MODEL = 'authentication.User'
