@@ -55,7 +55,7 @@ class RegisterView(LogoutRequiredMixin, View):
         )
 
         send_email_result = confirm_manager.send_mail('mails/email_confirmation.html',
-                                                      confirm_url, settings.EMAIL_FROM)
+                                                      confirm_url, settings.DEFAULT_FROM_EMAIL)
 
         messages.success(request, 'ثبت نام با موفقیت انجام شد')
         if send_email_result:

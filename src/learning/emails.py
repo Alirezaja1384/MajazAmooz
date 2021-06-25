@@ -13,7 +13,7 @@ from learning.models import (TutorialComment, Tutorial)
 
 logger = logging.getLogger('emails')
 
-FROM_EMAIL = getattr(settings, 'EMAIL_FROM', None)
+FROM_EMAIL = getattr(settings, 'DEFAULT_FROM_EMAIL', None)
 
 
 class EmailsResult:
