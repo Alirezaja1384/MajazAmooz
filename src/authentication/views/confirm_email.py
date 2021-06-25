@@ -1,7 +1,6 @@
 from django.http import HttpRequest
 from django.shortcuts import render
-
-from utilities.auth_utils import EmailConfirmationManager
+from authentication.email_confirmation import EmailConfirmationManager
 
 
 def confirm_email(request: HttpRequest, uid_base64, token):

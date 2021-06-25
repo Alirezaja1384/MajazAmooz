@@ -4,10 +4,9 @@ from django.views.generic import View
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib import messages
-
-from authentication.forms import RegisterForm
 from utilities.views import LogoutRequiredMixin
-from utilities.auth_utils import EmailConfirmationManager
+from authentication.forms import RegisterForm
+from authentication.email_confirmation import EmailConfirmationManager
 
 
 UserModel = get_user_model()
