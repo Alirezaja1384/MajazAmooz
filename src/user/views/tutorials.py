@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from django.contrib import messages
 from django.views.generic import (CreateView, UpdateView)
 from django.shortcuts import (reverse, redirect)
+from django.core.exceptions import ImproperlyConfigured
 from django_tables2 import SingleTableView
 from constance import config
 from user.tables import (TutorialTable, TutorialUserRelationsTable)
@@ -137,7 +138,8 @@ class TutorialRelationsAbstractTableView(SingleTableView):
         return get_paginate_by()
 
     def get_queryset(self):
-        raise NotImplementedError('You should implement get_queryset()')
+        raise ImproperlyConfigured(
+            'You should implement get_queryset() to use TutorialRelationsAbstractTableView')
 
 
 class TutorialsViewedByOthersListView(TutorialRelationsAbstractTableView):

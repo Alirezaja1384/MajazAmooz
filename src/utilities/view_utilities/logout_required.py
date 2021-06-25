@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from django.http import HttpRequest
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 
 class LogoutRequiredMixin():
@@ -20,7 +21,7 @@ class LogoutRequiredMixin():
             msg = ("You must specify LOGOUT_REQUIRED_URL in your "
                    "settings module to use LogoutRequiredMixin")
 
-            raise AttributeError(msg) from ex
+            raise ImproperlyConfigured(msg) from ex
 
 
         if request.user.is_authenticated and not request.GET.get('next'):

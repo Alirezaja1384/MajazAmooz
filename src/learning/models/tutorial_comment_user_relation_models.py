@@ -2,7 +2,7 @@
     TutorialComment-User many to many relation models
 """
 from django.db import models
-
+from django.core.exceptions import ImproperlyConfigured
 from django_lifecycle import (
     hook, AFTER_CREATE, BEFORE_DELETE
 )
@@ -36,7 +36,8 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
 
     @property
     def comment(self):
-        raise NotImplementedError
+        raise ImproperlyConfigured(
+            'You should implement comment field to use AbstractCommentScoreCoinModel')
 
     @hook(AFTER_CREATE)
     def on_create(self):
@@ -45,10 +46,12 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
         self.comment.user.coins += self.coin
         self.comment.user.save(update_fields=['scores', 'coins'])
 
-        if self.comment_object_count_field :
+        if self.comment_object_count_field:
             # Increase comment.{comment_object_count_field}
-            current_count = getattr(self.comment, self.comment_object_count_field)
-            setattr(self.comment, self.comment_object_count_field, current_count + 1)
+            current_count = getattr(
+                self.comment, self.comment_object_count_field)
+            setattr(self.comment, self.comment_object_count_field,
+                    current_count + 1)
             self.comment.save(update_fields=[self.comment_object_count_field])
 
     @hook(BEFORE_DELETE)
@@ -60,8 +63,10 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
 
         if self.comment_object_count_field and self.comment:
             # Decrease comment.{comment_object_count_field}
-            current_count = getattr(self.comment, self.comment_object_count_field)
-            setattr(self.comment, self.comment_object_count_field, current_count - 1)
+            current_count = getattr(
+                self.comment, self.comment_object_count_field)
+            setattr(self.comment, self.comment_object_count_field,
+                    current_count - 1)
             self.comment.save(update_fields=[self.comment_object_count_field])
 
     # Custom queryset

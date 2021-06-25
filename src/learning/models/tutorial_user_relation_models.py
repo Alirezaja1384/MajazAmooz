@@ -2,11 +2,10 @@
     Tutorial-User many to many relation models
 """
 from django.db import models
-
+from django.core.exceptions import ImproperlyConfigured
 from django_lifecycle import (
     hook, AFTER_CREATE, BEFORE_DELETE
 )
-
 from learning.models import Tutorial
 from learning.querysets import TutorialUserRelationQuerySet
 from authentication.models import User
@@ -37,7 +36,8 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
 
     @property
     def tutorial(self):
-        raise NotImplementedError
+        raise ImproperlyConfigured(
+            'You should implement tutorial field to use AbstractTutorialScoreCoinModel')
 
     @hook(AFTER_CREATE)
     def on_create(self):

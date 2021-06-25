@@ -8,6 +8,7 @@ from django.http import (HttpRequest, HttpResponseBadRequest)
 from django.views.generic import (DetailView, DeleteView)
 from django.utils.safestring import mark_safe
 from django.utils.timezone import localdate, localtime
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models import (
     Field, Model, QuerySet, CharField, TextField,
     BooleanField, IntegerField, ImageField,
@@ -128,7 +129,7 @@ class FieldValueHandlers:
             date: localized date.
         """
         original: date = getattr(obj, field.name)
-        localized : date = localdate(original)
+        localized: date = localdate(original)
         return localized
 
     @staticmethod
@@ -143,7 +144,7 @@ class FieldValueHandlers:
             date: localized datetime.
         """
         original: datetime = getattr(obj, field.name)
-        localized : datetime = localtime(original)
+        localized: datetime = localtime(original)
         return localized
 
 
@@ -232,7 +233,8 @@ class DynamicModelFieldDetailView(DetailView):
                     ) and isinstance(field, self._get_visible_types())
 
         model_fields: list[Field] = self.object._meta.get_fields()
-        visible_model_field_names = [field.name for field in filter(_is_visible, model_fields)]
+        visible_model_field_names = [
+            field.name for field in filter(_is_visible, model_fields)]
         return visible_model_field_names + self.additional_content
 
     def get_field_value(self, obj: Model, field: Field) -> str:
@@ -252,9 +254,10 @@ class DynamicModelFieldDetailView(DetailView):
         if self.unimplemented_types_use_simple_handler:
             return FieldValueHandlers.simple_field_handler(obj, field)
         else:
-            raise NotImplementedError(
-                ('Unable to get value of \'{}\'. \'{}\' type handler has not been'
-                 ' implemented yet.').format(field.name, field.__class__.__name__)
+            raise ImproperlyConfigured(
+                ('Unable to get value of \'{}\'. \'{}\' type handler not found. Hint: You '
+                 'should implement it or set unimplemented_types_use_simple_handler = True'
+                 ).format(field.name, field.__class__.__name__)
             )
 
     def get_name_values(self) -> list[FieldNameValue]:
