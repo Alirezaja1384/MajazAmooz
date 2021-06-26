@@ -1,11 +1,13 @@
-from datetime import date
+from datetime import datetime
+from django.utils import timezone
 import jdatetime
 from jdatetime.jalali import j_days_in_month
 
 
 class PersiamMonth:
-
-    def __init__(self, gregorian_start: date, gregorian_end: date, label: str):
+    def __init__(
+        self, gregorian_start: datetime, gregorian_end: datetime, label: str
+    ):
         self.gregorian_start = gregorian_start
         self.gregorian_end = gregorian_end
         self.label = label
@@ -24,8 +26,8 @@ def get_month(month: int):
 
 def get_last_months(count: int = 1):
 
-    jdatetime.set_locale('fa_IR')
-    today_jalali = jdatetime.date.today()
+    today = timezone.now().date()
+    today_jalali = jdatetime.date.fromgregorian(date=today)
 
     # for each past month
     for i in range(count):
@@ -34,21 +36,24 @@ def get_last_months(count: int = 1):
         left_years = ((i - today_jalali.month) // 12) + 1
 
         j_year_month = {
-            'year': today_jalali.year - left_years,
-            'month': get_month(today_jalali.month - i)
+            "year": today_jalali.year - left_years,
+            "month": get_month(today_jalali.month - i),
         }
 
         # month 1st
-        start_date = jdatetime.date(j_year_month['year'],
-                                    j_year_month['month'], 1,
-                                    locale='fa_IR')
+        start_date = timezone.make_aware(jdatetime.datetime(
+            j_year_month["year"], j_year_month["month"], 1
+        ))
 
         # Last day of month
-        end_date = jdatetime.date(
-            j_year_month['year'],
-            j_year_month['month'],
-            j_days_in_month[j_year_month['month'] - 1],
-            locale='fa_IR')
+        end_date = timezone.make_aware(jdatetime.datetime(
+            j_year_month["year"],
+            j_year_month["month"],
+            j_days_in_month[j_year_month["month"] - 1]
+        ))
 
-        yield PersiamMonth(start_date.togregorian(), end_date.togregorian(),
-                           start_date.strftime('%b %Y'))
+        yield PersiamMonth(
+            start_date.togregorian(),
+            end_date.togregorian(),
+            start_date.strftime("%b %Y"),
+        )
