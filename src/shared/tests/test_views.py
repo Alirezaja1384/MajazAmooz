@@ -5,7 +5,11 @@ from django.db.models import CharField
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
-from shared.views import LogoutRequiredMixin, DynamicModelFieldDetailView
+from shared.views import (
+    LogoutRequiredMixin,
+    DynamicModelFieldDetailView,
+    DeleteDeactivationView,
+)
 
 User = get_user_model()
 
@@ -299,3 +303,107 @@ class DynamicModelFieldDetailViewTest(TestCase):
         ]
 
         self.assertEqual(result, expected_result)
+
+
+class DeleteDeactivationViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create(username="testuser")
+
+    class DeleteDeactivateUser(DeleteDeactivationView):
+        model = User
+        send_message = False
+        success_url = "/successful_delete/"
+        context_action_form_name = "available_actions"
+
+    def test_context_form(self):
+        """view's context_action_form_name should be a key in context
+        and form should be an instance of view's form.
+        """
+        view = self.DeleteDeactivateUser.as_view()
+        request = self.factory.get("/delete_user/")
+        context = view(request, pk=self.user.pk).context_data
+
+        self.assertIn(
+            self.DeleteDeactivateUser.context_action_form_name, context
+        )
+        self.assertIsInstance(
+            context[self.DeleteDeactivateUser.context_action_form_name],
+            self.DeleteDeactivateUser.form,
+        )
+
+    def test_deactivate_object(self):
+        """DeleteDeactivationView should redirect to success url
+        and deactivate user
+        """
+        view = self.DeleteDeactivateUser.as_view()
+
+        action = self.DeleteDeactivateUser.form.DEACTIVATE
+        request = self.factory.post(
+            "/delete_user/?id={self.user.pk}",
+            data={"action": action},
+        )
+        response = view(request, pk=self.user.pk)
+
+        # Update user from db
+        self.user = User.objects.get(pk=self.user.pk)
+
+        self.assertRedirects(
+            response,
+            self.DeleteDeactivateUser.success_url,
+            fetch_redirect_response=False,
+        )
+
+        self.assertEqual(self.user.is_active, False)
+
+    def test_delete_object(self):
+        """DeleteDeactivationView should redirect to success url
+        and user should not exist in database (should be deleted).
+        """
+        view = self.DeleteDeactivateUser.as_view()
+
+        action = self.DeleteDeactivateUser.form.DELETE
+        request = self.factory.post(
+            "/delete_user/?id={self.user.pk}",
+            data={"action": action},
+        )
+        response = view(request, pk=self.user.pk)
+
+        self.assertRedirects(
+            response,
+            self.DeleteDeactivateUser.success_url,
+            fetch_redirect_response=False,
+        )
+
+        self.assertFalse(User.objects.filter(pk=self.user.pk).exists())
+
+    def test_custom_deactivation_field_value(self):
+        """DeleteDeactivationView should use model_deactivation_value
+        as model_deactivation_field's value on deactivation.
+        """
+
+        class CustomDeactivationFieldNameValue(DeleteDeactivationView):
+            model = User
+            send_message = False
+            success_url = "/successful_delete/"
+
+            model_deactivation_field = "first_name"
+            model_deactivation_value = "DEACTIVATE_USER"
+
+        action = CustomDeactivationFieldNameValue.form.DEACTIVATE
+        request = self.factory.post(
+            "/delete_user/?id={self.user.pk}",
+            data={"action": action},
+        )
+        CustomDeactivationFieldNameValue.as_view()(request, pk=self.user.pk)
+
+        # Update user from db
+        self.user = User.objects.get(pk=self.user.pk)
+
+        self.assertEqual(
+            getattr(
+                self.user,
+                CustomDeactivationFieldNameValue.model_deactivation_field,
+            ),
+            CustomDeactivationFieldNameValue.model_deactivation_value,
+        )
