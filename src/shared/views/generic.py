@@ -393,6 +393,9 @@ class DeleteDeactivationForm(forms.Form):
 
 class DeleteDeactivationView(DeleteView):
 
+    # Send message after successful deactivation/delete
+    send_message = True
+
     # Delate/Deactivation form
     form = DeleteDeactivationForm
     # Field to choose action by its value
@@ -454,11 +457,12 @@ class DeleteDeactivationView(DeleteView):
             # Delete model object
             self.delete_object(self.object)
 
-        # Message user
-        messages.success(
-            request,
-            f'{form.action_display} "{self.object.title}" با موفقیت انجام شد',
-        )
+        if self.send_message:
+            # Message user
+            messages.success(
+                request,
+                f'{form.action_display} "{self.object}" با موفقیت انجام شد',
+            )
 
         return redirect(success_url)
 
