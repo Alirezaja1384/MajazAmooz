@@ -1,3 +1,4 @@
+import inspect
 from datetime import date, datetime
 from typing import TypedDict, Union, Callable, Optional
 import bleach
@@ -244,12 +245,17 @@ class DynamicModelFieldDetailView(DetailView):
             )
 
         model_fields: list[Field] = self.object._meta.get_fields()
-        visible_model_field_names = [
-            field.name for field in filter(_is_visible, model_fields)
-        ]
+
+        if self.unimplemented_types_use_simple_handler:
+            visible_model_field_names = [field.name for field in model_fields]
+        else:
+            visible_model_field_names = [
+                field.name for field in filter(_is_visible, model_fields)
+            ]
+
         return visible_model_field_names + self.additional_content
 
-    def get_field_value(self, obj: Model, field: Field) -> str:
+    def get_model_field_value(self, obj: Model, field: Field) -> str:
         """Finds given field in given object and handles its value by its handler
 
         Args:
@@ -274,6 +280,14 @@ class DynamicModelFieldDetailView(DetailView):
                 ).format(field.name, field.__class__.__name__)
             )
 
+    def get_additional_field_value(self, field: Callable):
+        if inspect.ismethod(field):
+            # If callable is a bound method
+            return field()
+        else:
+            # If callable is an unbound method
+            return field(self)
+
     def get_name_values(self) -> list[FieldNameValue]:
         """Gets name and value of fields in self.fields from
             additional_content or from model.
@@ -295,8 +309,8 @@ class DynamicModelFieldDetailView(DetailView):
                 FieldNameValue: Field's verbose_name and it's value.
             """
             return {
-                "name": field.verbose_name,
-                "value": self.get_field_value(obj, field),
+                "name": getattr(field, "verbose_name", field.name),
+                "value": self.get_model_field_value(obj, field),
             }
 
         def _get_additional_name_value(
@@ -312,13 +326,14 @@ class DynamicModelFieldDetailView(DetailView):
                 FieldNameValue: short_description and value of
                                 additional content.
             """
-            callable_name = getattr(
-                additional_content,
-                "short_description",
-                additional_content.__name__,
-            )
-
-            return {"name": callable_name, "value": additional_content(self)}
+            return {
+                "name": getattr(
+                    additional_content,
+                    "short_description",
+                    additional_content.__name__,
+                ),
+                "value": self.get_additional_field_value(additional_content),
+            }
 
         if self.fields == "__all__":
             # If fields set to '__all__' set fields to default visible fields
@@ -377,6 +392,9 @@ class DeleteDeactivationForm(forms.Form):
 
 
 class DeleteDeactivationView(DeleteView):
+
+    # Send message after successful deactivation/delete
+    send_message = True
 
     # Delate/Deactivation form
     form = DeleteDeactivationForm
@@ -439,11 +457,12 @@ class DeleteDeactivationView(DeleteView):
             # Delete model object
             self.delete_object(self.object)
 
-        # Message user
-        messages.success(
-            request,
-            f'{form.action_display} "{self.object.title}" با موفقیت انجام شد',
-        )
+        if self.send_message:
+            # Message user
+            messages.success(
+                request,
+                f'{form.action_display} "{self.object}" با موفقیت انجام شد',
+            )
 
         return redirect(success_url)
 
