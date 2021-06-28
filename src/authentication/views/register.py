@@ -1,5 +1,5 @@
 from django.http import HttpRequest
-from django.shortcuts import (render, redirect, reverse, resolve_url)
+from django.shortcuts import render, redirect, reverse, resolve_url
 from django.views.generic import View
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -13,22 +13,22 @@ UserModel = get_user_model()
 
 
 class RegisterView(LogoutRequiredMixin, View):
-
     def get(self, request: HttpRequest):
-        return render(request, 'authentication/register.html', {
-            'form': RegisterForm(),
-            'next': request.GET.get('next', '')
-        })
+        return render(
+            request,
+            "authentication/register.html",
+            {"form": RegisterForm(), "next": request.GET.get("next", "")},
+        )
 
     def post(self, request: HttpRequest):
-
         def _render_template(form, next_url):
-            return render(request, 'authentication/register.html', {
-                'form': form,
-                'next': next_url
-            })
+            return render(
+                request,
+                "authentication/register.html",
+                {"form": form, "next": next_url},
+            )
 
-        next_url = request.POST.get('next')
+        next_url = request.POST.get("next", "")
         form = RegisterForm(request.POST)
 
         if not form.is_valid():
@@ -39,7 +39,7 @@ class RegisterView(LogoutRequiredMixin, View):
             assert user is not None
         # If any unique field's value wasn't unique
         except AssertionError:
-            form.add_error('', 'ثبت کاربر با مشکل مواجه شد')
+            form.add_error("", "ثبت کاربر با مشکل مواجه شد")
             return _render_template(form, next_url)
 
         # Send confirmation uel
@@ -49,19 +49,29 @@ class RegisterView(LogoutRequiredMixin, View):
         token = confirm_manager.get_token()
 
         confirm_url = request.build_absolute_uri(
-            resolve_url('authentication:confirm_email',
-                        uid_base64=uid_base64, token=token)
+            resolve_url(
+                "authentication:confirm_email",
+                uid_base64=uid_base64,
+                token=token,
+            )
         )
 
-        send_email_result = confirm_manager.send_mail('mails/email_confirmation.html',
-                                                      confirm_url, settings.DEFAULT_FROM_EMAIL)
+        send_email_result = confirm_manager.send_mail(
+            "mails/email_confirmation.html",
+            confirm_url,
+            settings.DEFAULT_FROM_EMAIL,
+        )
 
-        messages.success(request, 'ثبت نام با موفقیت انجام شد')
+        messages.success(request, "ثبت نام با موفقیت انجام شد")
         if send_email_result:
-            messages.success(request, 'ارسال ایمیل تایید حساب کاربری با موفقیت انجام شد')
+            messages.success(
+                request, "ارسال ایمیل تایید حساب کاربری با موفقیت انجام شد"
+            )
         else:
-            messages.error(request, 'ارسال ایمیل تایید حساب کاربری موفقیت آمیز نبود')
+            messages.error(
+                request, "ارسال ایمیل تایید حساب کاربری موفقیت آمیز نبود"
+            )
 
         # Redirect to login page
-        login_url = reverse('authentication:login') + "?next=" + next_url
+        login_url = reverse("authentication:login") + "?next=" + next_url
         return redirect(login_url)

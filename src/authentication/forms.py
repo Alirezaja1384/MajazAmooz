@@ -8,19 +8,18 @@ UserModel = get_user_model()
 
 class LoginForm(forms.Form):
 
-    username_email = forms.CharField(max_length=254, label='نام کاربری یا ایمیل')
-
-    password = forms.CharField(
-        label="کلمه عبور",
-        strip=False,
-        widget=forms.PasswordInput
+    username_email = forms.CharField(
+        max_length=254, label="نام کاربری یا ایمیل"
     )
 
-    remember_me = forms.BooleanField(required=False, label='مرا به خاطر بسپار')
+    password = forms.CharField(
+        label="کلمه عبور", strip=False, widget=forms.PasswordInput
+    )
+
+    remember_me = forms.BooleanField(required=False, label="مرا به خاطر بسپار")
 
 
 class RegisterForm(UserCreationForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -28,8 +27,12 @@ class RegisterForm(UserCreationForm):
         for key in self.fields:
             self.fields[key].required = True
 
-
     class Meta:
         model = UserModel
-        fields = ('username', 'email', 'first_name', 'last_name',)
-        required_fields = '__all__'
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+        )
+        required_fields = "__all__"
