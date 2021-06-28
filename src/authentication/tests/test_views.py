@@ -1,3 +1,4 @@
+from django.core import mail
 from django.test import TestCase
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
@@ -17,6 +18,7 @@ class RegisterTest(TestCase):
         self.redirect_url = (
             reverse("authentication:login") + "?next=" + self.next_url
         )
+        self.invalid_data = {"username": "", "email": "invalid email"}
         self.valid_data = {
             "next": self.next_url,
             "username": "username",
@@ -28,36 +30,64 @@ class RegisterTest(TestCase):
         }
 
     def test_next_url_parameter(self):
+        """Should pass a 'next' parameter in context with value of
+        next url parameter.
+        """
         response = self.client.get(self.url)
         context = response.context
 
         self.assertIn("next", context)
         self.assertEqual(context["next"], self.next_url)
 
-    def test_register_form(self):
+    def test_form_type(self):
+        """Should pass a RegisterForm as context form."""
         response = self.client.get(self.url)
         context = response.context
 
         self.assertIn("form", context)
         self.assertIsInstance(context["form"], RegisterForm)
 
-    def test_register_invalid_data(self):
-        invalid_data = {"username": "", "email": "invalid email"}
-        response = self.client.post(self.url, data=invalid_data)
+    def test_invalid_data_form_error(self):
+        """Should add form error when sent data is invalid."""
+        response = self.client.post(self.url, data=self.invalid_data)
         context = response.context
 
+        # Should add form errors
         self.assertIn("form", context)
         self.assertIsNotNone(context["form"].errors)
 
-    def test_register_valid_data(self):
-        response = self.client.post(self.url, data=self.valid_data)
+    def test_invalid_data_not_create_user(self):
+        """Should not create user when sent data is invalid."""
+        self.client.post(self.url, data=self.invalid_data)
+        # Should not create user
+        self.assertFalse(
+            User.objects.filter(username=self.valid_data["username"]).exists()
+        )
 
-        # Check redirects to expected url
-        self.assertEqual(response.status_code, 302)
+    def test_valid_data_create_user(self):
+        """Should create user when sent data is valid."""
+        self.client.post(self.url, data=self.valid_data)
+        # Should create user
+        self.assertTrue(
+            User.objects.filter(username=self.valid_data["username"]).exists()
+        )
+
+    def test_valid_data_message(self):
+        """Should send message when sent data is valid."""
+        response = self.client.post(self.url, data=self.valid_data)
+        # Should send message
+        self.assertTrue(len(get_messages(response.wsgi_request)) > 0)
+
+    def test_valid_data_redirect(self):
+        """Should redirect user to 'next' when sent data is valid."""
+        response = self.client.post(self.url, data=self.valid_data)
+        # Should redirect to expected url
         self.assertRedirects(response, self.redirect_url)
 
-        # Check sends message
-        self.assertTrue(len(get_messages(response.wsgi_request)) > 0)
+    def test_send_confirmaton_email(self):
+        """Should send email confirmation email when sent data is valid."""
+        self.client.post(self.url, data=self.valid_data)
+        self.assertTrue(len(mail.outbox) > 0)
 
 
 class LoginTest(TestCase):
