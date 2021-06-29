@@ -73,7 +73,7 @@ class EmailConfirmationManager:
         self,
         template: str,
         confirm_url: str,
-        from_email: str,
+        from_email: str = "",
         subject: Optional[str] = "تایید ایمیل",
         plain_message: Optional[str] = None,
     ) -> bool:
