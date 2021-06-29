@@ -165,3 +165,31 @@ class LoginTest(TestCase):
         response = self.client.post(self.url, data=self.valid_data_email)
         # Check redirects to expected url
         self.assertRedirects(response, self.next_url, target_status_code=200)
+
+
+class LogoutTest(TestCase):
+    def setUp(self):
+        self.next_url = reverse("authentication:login")
+        self.url = reverse("authentication:logout")
+
+        self.user = baker.make(User)
+        self.user.save()
+
+    def test_logout(self):
+        # Login
+        self.client.force_login(self.user)
+        # Try to logout by logout view
+        response = self.client.post(self.url)
+
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    def test_context_next(self):
+        # Login
+        self.client.force_login(self.user)
+        # Try to logout by logout view and get context
+        context = self.client.post(
+            self.url, data={"next": self.next_url}
+        ).context
+
+        self.assertIn("next", context)
+        self.assertEqual(context["next"], self.next_url)
