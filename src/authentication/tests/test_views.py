@@ -1,6 +1,7 @@
+import re
 from django.core import mail
 from django.test import TestCase
-from django.shortcuts import reverse
+from django.shortcuts import reverse, resolve_url
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from model_bakery import baker
@@ -193,3 +194,51 @@ class LogoutTest(TestCase):
 
         self.assertIn("next", context)
         self.assertEqual(context["next"], self.next_url)
+
+
+class ConfirmEmailTest(TestCase):
+    def setUp(self):
+        self.user_pk = self.register_user().pk
+
+    def register_user(self):
+        url = reverse("authentication:register")
+        valid_data = {
+            "username": "username",
+            "email": "user@email.com",
+            "first_name": "Test",
+            "last_name": "User",
+            "password1": "str0ngP@ss",
+            "password2": "str0ngP@ss",
+        }
+        self.client.post(url, data=valid_data)
+        return User.objects.get(username=valid_data["username"])
+
+    def test_invalid_data(self):
+        url = resolve_url(
+            "authentication:confirm_email",
+            uid_base64="invalid_uuid",
+            token="invalid_token",
+        )
+        result = self.client.get(url).context["result"]
+
+        # Context's result should be false
+        self.assertFalse(result)
+        # Should not confirm user email
+        self.assertFalse(User.objects.get(pk=self.user_pk).email_confirmed)
+
+    def test_valid_data(self):
+        confirm_url_regex = r"/auth/confirm_email/.+/.+"
+        # Search url regex in first email's body
+        search = re.search(confirm_url_regex, mail.outbox[0].body)
+
+        # Should find url
+        self.assertIsNotNone(search)
+
+        # Get matched url and call it
+        confirm_url = search.group(0)
+        result = self.client.get(confirm_url).context["result"]
+
+        # Context's result should be true
+        self.assertTrue(result)
+        # Should confirm user email
+        self.assertTrue(User.objects.get(pk=self.user_pk).email_confirmed)

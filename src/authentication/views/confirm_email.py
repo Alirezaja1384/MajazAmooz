@@ -11,6 +11,6 @@ def confirm_email(request: HttpRequest, uid_base64, token):
         confirm_manager = EmailConfirmationManager(user)
         result = confirm_manager.confirm()
 
-    return render(request, 'authentication/email_confirmation.html',
-        {'result': result}
+    return render(
+        request, "authentication/email_confirmation.html", {"result": result}
     )
