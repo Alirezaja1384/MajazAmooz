@@ -7,7 +7,7 @@ from django_lifecycle import hook, AFTER_CREATE, BEFORE_DELETE
 
 from authentication.models import User
 from learning.models import TutorialComment
-from learning.querysets import TutorialCommentUserRelationQuerySet
+from learning.querysets import TutorialCommentUserRelationQueryset
 from shared.models import AbstractScoreCoinModel
 
 
@@ -79,7 +79,7 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
             self.comment.save(update_fields=[self.comment_object_count_field])
 
     # Custom queryset
-    objects = TutorialCommentUserRelationQuerySet.as_manager()
+    objects = TutorialCommentUserRelationQueryset.as_manager()
 
     class Meta:
         abstract = True

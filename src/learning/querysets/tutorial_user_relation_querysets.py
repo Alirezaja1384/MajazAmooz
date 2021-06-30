@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from shared.models import ConfirmStatusChoices
 
 
-class TutorialUserRelationQuerySet(QuerySet):
+class TutorialUserRelationQueryset(QuerySet):
     def active_confirmed_tutorials(self) -> QuerySet:
         """
         Returns:

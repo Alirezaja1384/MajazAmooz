@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from shared.models import ConfirmStatusChoices
 
 
-class TutorialQuerySet(QuerySet):
+class TutorialQueryset(QuerySet):
     """Tutorial queryset"""
 
     def active_and_confirmed_tutorials(self) -> QuerySet:

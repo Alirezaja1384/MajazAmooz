@@ -5,7 +5,7 @@ from django.db import models
 from django.core.exceptions import ImproperlyConfigured
 from django_lifecycle import hook, AFTER_CREATE, BEFORE_DELETE
 from learning.models import Tutorial
-from learning.querysets import TutorialUserRelationQuerySet
+from learning.querysets import TutorialUserRelationQueryset
 from authentication.models import User
 from shared.models import AbstractScoreCoinModel
 
@@ -80,7 +80,7 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
                 update_fields=[self.tutorial_object_count_field]
             )
 
-    objects = TutorialUserRelationQuerySet.as_manager()
+    objects = TutorialUserRelationQueryset.as_manager()
 
     class Meta:
         abstract = True

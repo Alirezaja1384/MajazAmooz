@@ -16,7 +16,7 @@ def get_tutorials(ordering: tuple, count: int):
         count (int): count of tutorials
 
     Returns:
-        [TutorialQuerySet]: tutorials ordered by given ordering and
+        [TutorialQueryset]: tutorials ordered by given ordering and
         sliced by given count
     """
     tutorials = (

@@ -1,15 +1,15 @@
 from .category_queryset import CategoryQueryset
-from .tutorial_queryset import TutorialQuerySet
+from .tutorial_queryset import TutorialQueryset
 from .tutorial_comment_queryset import TutorialCommentQueryset
-from .tutorial_user_relation_querysets import TutorialUserRelationQuerySet
+from .tutorial_user_relation_querysets import TutorialUserRelationQueryset
 from .tutorial_comment_user_relation_querysets import (
-    TutorialCommentUserRelationQuerySet,
+    TutorialCommentUserRelationQueryset,
 )
 
 __all__ = [
     "CategoryQueryset",
-    "TutorialQuerySet",
+    "TutorialQueryset",
     "TutorialCommentQueryset",
-    "TutorialUserRelationQuerySet",
-    "TutorialCommentUserRelationQuerySet",
+    "TutorialUserRelationQueryset",
+    "TutorialCommentUserRelationQueryset",
 ]

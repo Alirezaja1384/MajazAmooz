@@ -8,7 +8,7 @@ from authentication.models import User
 from shared.models import BleachField
 from shared.models import ConfirmStatusChoices
 from learning.models import Category
-from learning.querysets import TutorialQuerySet
+from learning.querysets import TutorialQueryset
 
 
 class Tutorial(LifecycleModel):
@@ -140,7 +140,7 @@ class Tutorial(LifecycleModel):
         return self.title
 
     # Custom manager
-    objects = TutorialQuerySet.as_manager()
+    objects = TutorialQueryset.as_manager()
 
 
 class TutorialTag(models.Model):
