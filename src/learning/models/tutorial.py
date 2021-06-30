@@ -116,6 +116,9 @@ class Tutorial(LifecycleModel):
         verbose_name="امتیاز های منفی",
     )
 
+    # Custom manager
+    objects = TutorialQueryset.as_manager()
+
     @hook(
         BEFORE_UPDATE,
         when_any=["title", "slug", "short_description", "body", "image"],
@@ -139,8 +142,46 @@ class Tutorial(LifecycleModel):
     def __str__(self):
         return self.title
 
-    # Custom manager
-    objects = TutorialQueryset.as_manager()
+    def get_related_tutorials(
+        self, tutorial_count: int = 5
+    ) -> TutorialQueryset:
+        """Related tutorials to this tutorial (by joint categories).
+
+        Args:
+            tutorial_count (int, optional): Expected count of tutorial.
+                Defaults to 5.
+
+        Returns:
+            TutorialQueryset: Related tutorials to this one.
+        """
+
+        def _flat_categories_parents(categories: list[Category]):
+            """Returns list of categories and their parents"""
+            result = categories
+
+            for category in categories:
+                while category.parent_category:
+                    category = category.parent_category
+                    result.append(category)
+
+            # Distinct result
+            return list(dict.fromkeys(result))
+
+        categories_and_parents = list(self.categories.all())
+        # If tutorial doesn't have any active category return empty
+        if len(categories_and_parents) == 0:
+            return Tutorial.objects.none()
+
+        categories = _flat_categories_parents(categories_and_parents)
+
+        # Get tutorials with joint categories
+        # Note: use self.__class__.objects because
+        # objects is not accessible by model instance
+        related_tutorials = self.__class__.objects.exclude(
+            pk=self.pk
+        ).filter_by_categories(categories, tutorial_count)
+
+        return related_tutorials
 
 
 class TutorialTag(models.Model):

@@ -1,10 +1,8 @@
 from django.views.generic import ListView
-from django.db.models import Count, Q
 from django.http import QueryDict
 from constance import config
 from learning.models import Tutorial, Category
 from learning.filters import TutorialArchiveFilterSet
-from shared.models import ConfirmStatusChoices
 
 
 class TutorialListView(ListView):
@@ -21,7 +19,7 @@ class TutorialListView(ListView):
         # All confirmed and active tutorials
         tutorials = (
             Tutorial.objects.order_by("-create_date")
-            .only("title", "slug", "short_description", "likes_count", "image")
+            .only_main_fields()
             .active_and_confirmed_tutorials()
         )
 
@@ -30,20 +28,10 @@ class TutorialListView(ListView):
         filters = QueryDict("order_by=create_date", mutable=True)
         filters.update(self.request.GET)
 
-        # Filter and order tutorials
-        tutorials = TutorialArchiveFilterSet(filters, tutorials).qs
-
-        # Annonate comments_count
-        # Note: if distinct=False it will count comments
-        #       multiple times then count will go wrong
-        tutorials = tutorials.annotate(
-            comments_count=Count(
-                "comments",
-                distinct=True,
-                filter=Q(comments__is_active=True)
-                & Q(comments__confirm_status=ConfirmStatusChoices.CONFIRMED),
-            )
-        )
+        # Filter and order tutorials, then annonate comments_count
+        tutorials = TutorialArchiveFilterSet(
+            filters, tutorials
+        ).qs.annonate_comments_count()
 
         return tutorials
 
@@ -52,8 +40,10 @@ class TutorialListView(ListView):
 
         category_slug = self.request.GET.get("category")
         if category_slug:
-            context["category"] = Category.objects.filter(
-                slug=category_slug, is_active=True
-            ).first()
+            context["category"] = (
+                Category.objects.active_categories()
+                .filter(slug=category_slug)
+                .first()
+            )
 
         return context
