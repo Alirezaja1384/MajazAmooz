@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class LearningConfig(AppConfig):
-    name = 'learning'
-    verbose_name = 'آموزش'
+    name = "learning"
+    verbose_name = "آموزش"

@@ -5,11 +5,13 @@ from shared.models import ConfirmStatusChoices
 
 
 class TutorialQuerySet(QuerySet):
-    """ Tutorial queryset """
+    """Tutorial queryset"""
 
     def active_and_confirmed_tutorials(self) -> QuerySet:
         """
         Returns:
             [QuerySet]: Confirmed tutorials
         """
-        return self.filter(is_active=True, confirm_status=ConfirmStatusChoices.CONFIRMED)
+        return self.filter(
+            is_active=True, confirm_status=ConfirmStatusChoices.CONFIRMED
+        )

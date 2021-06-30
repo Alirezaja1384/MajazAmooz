@@ -1,6 +1,6 @@
 from django.conf import settings
 
 if settings.DEBUG:
-    from .development import *
+    from .development import *  # noqa
 else:
-    from .production import *
+    from .production import *  # noqa

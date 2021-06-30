@@ -1,4 +1,4 @@
-''' Tutorial model '''
+""" Tutorial model """
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
@@ -12,73 +12,115 @@ from learning.querysets import TutorialQuerySet
 
 
 class Tutorial(LifecycleModel):
-    """ Tutorial model """
+    """Tutorial model"""
 
-    title = models.CharField(max_length=30, unique=True, verbose_name='عنوان')
+    title = models.CharField(max_length=30, unique=True, verbose_name="عنوان")
 
-    slug = models.SlugField(max_length=50, allow_unicode=True,
-                            unique=True, blank=True, verbose_name='اسلاگ')
+    slug = models.SlugField(
+        max_length=50,
+        allow_unicode=True,
+        unique=True,
+        blank=True,
+        verbose_name="اسلاگ",
+    )
 
-    short_description = BleachField(
-        max_length=250, verbose_name='توضیح کوتاه')
+    short_description = BleachField(max_length=250, verbose_name="توضیح کوتاه")
 
-    body = BleachField(verbose_name='بدنه')
+    body = BleachField(verbose_name="بدنه")
 
     user_views_count = models.PositiveIntegerField(
-        verbose_name='بازدید کاربران', default=0)
+        verbose_name="بازدید کاربران", default=0
+    )
 
     up_votes_count = models.PositiveIntegerField(
-        verbose_name='امتیاز مثبت', default=0)
+        verbose_name="امتیاز مثبت", default=0
+    )
     down_votes_count = models.PositiveIntegerField(
-        verbose_name='امتیاز منفی', default=0)
+        verbose_name="امتیاز منفی", default=0
+    )
 
     likes_count = models.PositiveIntegerField(
-        verbose_name='لایک ها', default=0)
+        verbose_name="لایک ها", default=0
+    )
 
     image = ResizedImageField(
-        upload_to='images/tutorial_thumbnails', default='default/learning/tutorial-image.png',
-        size=[960, 540], crop=['middle', 'center'], verbose_name='تصویر')
+        upload_to="images/tutorial_thumbnails",
+        default="default/learning/tutorial-image.png",
+        size=[960, 540],
+        crop=["middle", "center"],
+        verbose_name="تصویر",
+    )
 
     create_date = models.DateTimeField(
-        auto_now_add=True, verbose_name='زمان انتشار')
+        auto_now_add=True, verbose_name="زمان انتشار"
+    )
 
     last_edit_date = models.DateTimeField(
-        blank=True, null=True, verbose_name='زمان آخرین ویرایش')
+        blank=True, null=True, verbose_name="زمان آخرین ویرایش"
+    )
 
     confirm_status = models.IntegerField(
-        choices=ConfirmStatusChoices.choices, null=False, blank=False,
-        default=ConfirmStatusChoices.WAITING_FOR_CONFIRM, verbose_name='وضعیت تایید')
+        choices=ConfirmStatusChoices.choices,
+        null=False,
+        blank=False,
+        default=ConfirmStatusChoices.WAITING_FOR_CONFIRM,
+        verbose_name="وضعیت تایید",
+    )
 
-    is_edited = models.BooleanField(default=False, verbose_name='ویرایش شده')
+    is_edited = models.BooleanField(default=False, verbose_name="ویرایش شده")
 
-    is_active = models.BooleanField(default=True, verbose_name='فعال')
+    is_active = models.BooleanField(default=True, verbose_name="فعال")
 
     # Relations
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, blank=False,
-        related_name='tutorials', verbose_name='نویسنده')
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=False,
+        related_name="tutorials",
+        verbose_name="نویسنده",
+    )
 
     categories = models.ManyToManyField(
-        Category, related_name='tutorials', blank=True, verbose_name='دسته بندی ها')
+        Category,
+        related_name="tutorials",
+        blank=True,
+        verbose_name="دسته بندی ها",
+    )
 
     viewers = models.ManyToManyField(
-        User, through='TutorialView', related_name='viewed_tutorials',
-        verbose_name='بازدید ها')
+        User,
+        through="TutorialView",
+        related_name="viewed_tutorials",
+        verbose_name="بازدید ها",
+    )
 
     likers = models.ManyToManyField(
-        User, through='TutorialLike', related_name='liked_tutorials',
-        verbose_name='لایک ها')
+        User,
+        through="TutorialLike",
+        related_name="liked_tutorials",
+        verbose_name="لایک ها",
+    )
 
     up_voters = models.ManyToManyField(
-        User, through='TutorialUpVote', related_name='up_voted_tutorials',
-        verbose_name='امتیاز های مثبت')
+        User,
+        through="TutorialUpVote",
+        related_name="up_voted_tutorials",
+        verbose_name="امتیاز های مثبت",
+    )
 
     down_voters = models.ManyToManyField(
-        User, through='TutorialDownVote', related_name='down_voted_tutorials',
-        verbose_name='امتیاز های منفی')
+        User,
+        through="TutorialDownVote",
+        related_name="down_voted_tutorials",
+        verbose_name="امتیاز های منفی",
+    )
 
-    @hook(BEFORE_UPDATE, when_any=['title', 'slug', 'short_description', 'body', 'image'],
-          has_changed=True)
+    @hook(
+        BEFORE_UPDATE,
+        when_any=["title", "slug", "short_description", "body", "image"],
+        has_changed=True,
+    )
     def on_edit(self):
         self.is_edited = True
         self.last_edit_date = timezone.now()
@@ -89,12 +131,10 @@ class Tutorial(LifecycleModel):
         self.slug = slugify(self.title, allow_unicode=True)
 
     class Meta:
-        verbose_name = 'آموزش'
-        verbose_name_plural = 'آموزش ها'
-        ordering = ('-create_date', )
-        permissions = (
-            ('confirm_disprove_tutorial', 'تایید/رد آموزش ها'),
-        )
+        verbose_name = "آموزش"
+        verbose_name_plural = "آموزش ها"
+        ordering = ("-create_date",)
+        permissions = (("confirm_disprove_tutorial", "تایید/رد آموزش ها"),)
 
     def __str__(self):
         return self.title
@@ -104,15 +144,20 @@ class Tutorial(LifecycleModel):
 
 
 class TutorialTag(models.Model):
-    ''' TutorialTag model '''
-    title = models.CharField(max_length=20, verbose_name='عنوان')
+    """TutorialTag model"""
+
+    title = models.CharField(max_length=20, verbose_name="عنوان")
 
     tutorial = models.ForeignKey(
-        Tutorial, on_delete=models.CASCADE, related_name='tags', verbose_name='آموزش')
+        Tutorial,
+        on_delete=models.CASCADE,
+        related_name="tags",
+        verbose_name="آموزش",
+    )
 
     class Meta:
-        verbose_name = 'کلیدواژه'
-        verbose_name_plural = 'کلیدواژه ها'
+        verbose_name = "کلیدواژه"
+        verbose_name_plural = "کلیدواژه ها"
 
     def __str__(self):
         return self.title

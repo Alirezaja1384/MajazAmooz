@@ -9,5 +9,7 @@ class TutorialUserRelationQuerySet(QuerySet):
         Returns:
             [QuerySet]: objects with active and confirmed tutorial
         """
-        return self.filter(tutorial__is_active=True,
-                           tutorial__confirm_status=ConfirmStatusChoices.CONFIRMED)
+        return self.filter(
+            tutorial__is_active=True,
+            tutorial__confirm_status=ConfirmStatusChoices.CONFIRMED,
+        )
