@@ -11,3 +11,8 @@ class TutorialStatistics(TypedDict):
     likes_count: int
     views_count: int
     comments_count: int
+
+
+class MonthlyCountStatistics(TypedDict):
+    label: str
+    count: int

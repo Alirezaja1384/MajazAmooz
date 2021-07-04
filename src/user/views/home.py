@@ -4,7 +4,6 @@ from django.http import HttpRequest
 from constance import config
 from authentication.models import User
 from shared.models import ConfirmStatusChoices
-from shared.date_time import get_last_months
 from shared.typed_dicts import TutorialStatistics
 from learning.models import Tutorial, TutorialView
 
@@ -59,29 +58,14 @@ class UserPanelStatistics:
         )
 
 
-# TODO: Improve performance by reducing query count
 def get_view_statistics(user: User):
     last_months_count = config.USER_PANEL_STATISTICS_LAST_MONTH_COUNT
 
     all_views = TutorialView.objects.filter(
         tutorial__author=user
     ).active_confirmed_tutorials()
-    last_months = get_last_months(last_months_count)
 
-    result = []
-    for month in last_months:
-        result.append(
-            {
-                "label": month.label,
-                "count": all_views.filter(
-                    create_date__gte=month.gregorian_start,
-                    create_date__lte=month.gregorian_end,
-                ).count(),
-            }
-        )
-
-    # Convert descending months data to ascending
-    return result[::-1]
+    return list(all_views.get_last_months_count_statistics(last_months_count))
 
 
 def get_statistics(user: User):
