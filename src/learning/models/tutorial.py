@@ -4,11 +4,9 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django_resized import ResizedImageField
 from django_lifecycle import LifecycleModel, hook, BEFORE_UPDATE, BEFORE_SAVE
-from authentication.models import User
 from shared.models import BleachField
 from shared.models import ConfirmStatusChoices
-from learning.models import Category
-from learning.querysets import TutorialQueryset
+from learning.querysets.tutorial_queryset import TutorialQueryset
 
 
 class Tutorial(LifecycleModel):
@@ -73,7 +71,7 @@ class Tutorial(LifecycleModel):
 
     # Relations
     author = models.ForeignKey(
-        User,
+        "authentication.User",
         on_delete=models.CASCADE,
         null=True,
         blank=False,
@@ -82,35 +80,35 @@ class Tutorial(LifecycleModel):
     )
 
     categories = models.ManyToManyField(
-        Category,
+        to="learning.Category",
         related_name="tutorials",
         blank=True,
         verbose_name="دسته بندی ها",
     )
 
     viewers = models.ManyToManyField(
-        User,
+        "authentication.User",
         through="TutorialView",
         related_name="viewed_tutorials",
         verbose_name="بازدید ها",
     )
 
     likers = models.ManyToManyField(
-        User,
+        "authentication.User",
         through="TutorialLike",
         related_name="liked_tutorials",
         verbose_name="لایک ها",
     )
 
     up_voters = models.ManyToManyField(
-        User,
+        "authentication.User",
         through="TutorialUpVote",
         related_name="up_voted_tutorials",
         verbose_name="امتیاز های مثبت",
     )
 
     down_voters = models.ManyToManyField(
-        User,
+        "authentication.User",
         through="TutorialDownVote",
         related_name="down_voted_tutorials",
         verbose_name="امتیاز های منفی",
@@ -155,7 +153,7 @@ class Tutorial(LifecycleModel):
             TutorialQueryset: Related tutorials to this one.
         """
 
-        def _flat_categories_parents(categories: list[Category]):
+        def _flat_categories_parents(categories: list):
             """Returns list of categories and their parents"""
             result = categories
 

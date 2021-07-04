@@ -2,12 +2,12 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from shared.models import BleachField
 from django_lifecycle import hook, LifecycleModel, BEFORE_UPDATE, BEFORE_SAVE
-from learning.models import Tutorial
-from learning.querysets import TutorialCommentQueryset
-from authentication.models import User
+from shared.models import BleachField
 from shared.models import ConfirmStatusChoices
+from learning.querysets.tutorial_comment_queryset import (
+    TutorialCommentQueryset,
+)
 
 
 class TutorialComment(LifecycleModel):
@@ -55,7 +55,7 @@ class TutorialComment(LifecycleModel):
 
     # Relations
     user = models.ForeignKey(
-        User,
+        to="authentication.User",
         on_delete=models.CASCADE,
         null=True,
         blank=False,
@@ -64,7 +64,7 @@ class TutorialComment(LifecycleModel):
     )
 
     tutorial = models.ForeignKey(
-        Tutorial,
+        to="learning.Tutorial",
         on_delete=models.CASCADE,
         null=True,
         blank=False,
@@ -73,7 +73,7 @@ class TutorialComment(LifecycleModel):
     )
 
     parent_comment = models.ForeignKey(
-        "self",
+        to="self",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -82,21 +82,21 @@ class TutorialComment(LifecycleModel):
     )
 
     likers = models.ManyToManyField(
-        User,
+        to="authentication.User",
         through="TutorialCommentLike",
         related_name="liked_tutorial_comments",
         verbose_name="لایک دیدگاه ها",
     )
 
     up_voters = models.ManyToManyField(
-        User,
+        to="authentication.User",
         through="TutorialCommentUpVote",
         related_name="up_voted_tutorial_comments",
         verbose_name="امتیاز مثبت دیدگاه ها",
     )
 
     down_voters = models.ManyToManyField(
-        User,
+        to="authentication.User",
         through="TutorialCommentDownVote",
         related_name="down_voted_tutorial_commens",
         verbose_name="امتیاز منفی دیدگاه ها",

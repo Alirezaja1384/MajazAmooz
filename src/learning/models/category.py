@@ -2,10 +2,8 @@
 from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
-
 from django_lifecycle import LifecycleModel, hook, BEFORE_SAVE
-
-from learning.querysets import CategoryQueryset
+from learning.querysets.category_queryset import CategoryQueryset
 
 
 class Category(LifecycleModel):

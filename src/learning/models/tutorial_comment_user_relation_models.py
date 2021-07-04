@@ -4,11 +4,10 @@
 from django.db import models
 from django.core.exceptions import ImproperlyConfigured
 from django_lifecycle import hook, AFTER_CREATE, BEFORE_DELETE
-
-from authentication.models import User
-from learning.models import TutorialComment
-from learning.querysets import TutorialCommentUserRelationQueryset
 from shared.models import AbstractScoreCoinModel
+from learning.querysets.tutorial_comment_user_relation_querysets import (
+    TutorialCommentUserRelationQueryset,
+)
 
 
 class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
@@ -91,14 +90,14 @@ class TutorialCommentLike(AbstractCommentScoreCoinModel):
     comment_object_count_field = "likes_count"
 
     user = models.ForeignKey(
-        User,
+        to="authentication.User",
         on_delete=models.CASCADE,
         related_name="tutorial_comment_likes",
         verbose_name="کاربر",
     )
 
     comment = models.ForeignKey(
-        TutorialComment,
+        to="learning.TutorialComment",
         on_delete=models.CASCADE,
         related_name="likes",
         verbose_name="نظر آموزش",
@@ -111,14 +110,14 @@ class TutorialCommentUpVote(AbstractCommentScoreCoinModel):
     comment_object_count_field = "up_votes_count"
 
     user = models.ForeignKey(
-        User,
+        to="authentication.User",
         on_delete=models.CASCADE,
         related_name="tutorial_comment_up_votes",
         verbose_name="کاربر",
     )
 
     comment = models.ForeignKey(
-        TutorialComment,
+        to="learning.TutorialComment",
         on_delete=models.CASCADE,
         related_name="up_votes",
         verbose_name="نظر آموزش",
@@ -131,14 +130,14 @@ class TutorialCommentDownVote(AbstractCommentScoreCoinModel):
     comment_object_count_field = "down_votes_count"
 
     user = models.ForeignKey(
-        User,
+        to="authentication.User",
         on_delete=models.CASCADE,
         related_name="tutorial_comment_down_votes",
         verbose_name="کاربر",
     )
 
     comment = models.ForeignKey(
-        TutorialComment,
+        to="learning.TutorialComment",
         on_delete=models.CASCADE,
         related_name="down_votes",
         verbose_name="نظر آموزش",

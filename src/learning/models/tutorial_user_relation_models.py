@@ -4,10 +4,10 @@
 from django.db import models
 from django.core.exceptions import ImproperlyConfigured
 from django_lifecycle import hook, AFTER_CREATE, BEFORE_DELETE
-from learning.models import Tutorial
-from learning.querysets import TutorialUserRelationQueryset
-from authentication.models import User
 from shared.models import AbstractScoreCoinModel
+from learning.querysets.tutorial_user_relation_querysets import (
+    TutorialUserRelationQueryset,
+)
 
 
 class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
@@ -92,14 +92,14 @@ class TutorialView(AbstractTutorialScoreCoinModel):
     tutorial_object_count_field = "user_views_count"
 
     user = models.ForeignKey(
-        User,
+        to="authentication.User",
         on_delete=models.CASCADE,
         related_name="tutorial_views",
         verbose_name="کاربر",
     )
 
     tutorial = models.ForeignKey(
-        Tutorial,
+        to="learning.Tutorial",
         on_delete=models.CASCADE,
         related_name="views",
         verbose_name="آموزش",
@@ -112,14 +112,14 @@ class TutorialLike(AbstractTutorialScoreCoinModel):
     tutorial_object_count_field = "likes_count"
 
     user = models.ForeignKey(
-        User,
+        to="authentication.User",
         on_delete=models.CASCADE,
         related_name="tutorial_likes",
         verbose_name="کاربر",
     )
 
     tutorial = models.ForeignKey(
-        Tutorial,
+        to="learning.Tutorial",
         on_delete=models.CASCADE,
         related_name="likes",
         verbose_name="آموزش",
@@ -132,14 +132,14 @@ class TutorialUpVote(AbstractTutorialScoreCoinModel):
     tutorial_object_count_field = "up_votes_count"
 
     user = models.ForeignKey(
-        User,
+        to="authentication.User",
         on_delete=models.CASCADE,
         related_name="tutorial_up_votes",
         verbose_name="کاربر",
     )
 
     tutorial = models.ForeignKey(
-        Tutorial,
+        to="learning.Tutorial",
         on_delete=models.CASCADE,
         related_name="up_votes",
         verbose_name="آموزش",
@@ -152,14 +152,14 @@ class TutorialDownVote(AbstractTutorialScoreCoinModel):
     tutorial_object_count_field = "down_votes_count"
 
     user = models.ForeignKey(
-        User,
+        to="authentication.User",
         on_delete=models.CASCADE,
         related_name="tutorial_down_votes",
         verbose_name="کاربر",
     )
 
     tutorial = models.ForeignKey(
-        Tutorial,
+        to="learning.Tutorial",
         on_delete=models.CASCADE,
         related_name="down_votes",
         verbose_name="آموزش",
