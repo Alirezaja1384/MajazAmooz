@@ -1,14 +1,11 @@
 from django.forms import ModelForm
 from django.contrib import messages
+from django.db.models import QuerySet
 from django.shortcuts import redirect, reverse
 from django.views.generic import UpdateView
 from django_tables2 import SingleTableView
 from constance import config
 from learning.models import TutorialComment, TutorialCommentLike
-from learning.querysets import (
-    TutorialQueryset,
-    TutorialCommentUserRelationQueryset,
-)
 from authentication.models import User
 from user.tables import (
     TutorialCommentTable,
@@ -26,11 +23,13 @@ SUCCESS_VIEW_NAME = "user:tutorial_comments"
 
 
 def get_paginate_by():
-    """Note: defining paginate_by as a function is necessary to ensure it changes immediately."""
+    """Note: defining paginate_by as a function is necessary to ensure it
+    changes immediately.
+    """
     return config.USER_PANEL_PAGINATE_BY
 
 
-def get_tutorial_comments_queryset(user: User) -> TutorialQueryset:
+def get_tutorial_comments_queryset(user: User) -> QuerySet:
     return (
         TutorialComment.objects.filter(user=user)
         .select_related("tutorial", "parent_comment")
@@ -38,7 +37,7 @@ def get_tutorial_comments_queryset(user: User) -> TutorialQueryset:
     )
 
 
-def get_tutorial_comment_like_queryset() -> TutorialCommentUserRelationQueryset:
+def get_tutorial_comment_like_queryset() -> QuerySet:
     return TutorialCommentLike.objects.select_related(
         "user", "comment", "comment__tutorial", "comment__user"
     ).active_confirmed_comments()
@@ -51,8 +50,9 @@ class TutorialCommentListView(SingleTableView):
 
     @property
     def paginate_by(self):
-        """Note: SingleTableView doesn't use get_paginate_by() currently, then
-        defining paginate_by as a property is necessary to ensure it changes immediately.
+        """Note: SingleTableView doesn't use get_paginate_by() currently,
+        then defining paginate_by as a property is necessary to ensure
+        it changes immediately.
         """
         return get_paginate_by()
 
@@ -107,8 +107,9 @@ class RepliedToMyCommentsListView(SingleTableView):
 
     @property
     def paginate_by(self):
-        """Note: SingleTableView doesn't use get_paginate_by() currently, then
-        defining paginate_by as a property is necessary to ensure it changes immediately.
+        """Note: SingleTableView doesn't use get_paginate_by() currently,
+        then defining paginate_by as a property is necessary to ensure
+        it changes immediately.
         """
         return get_paginate_by()
 
@@ -129,8 +130,9 @@ class TutorialCommentLikedByOthersListView(SingleTableView):
 
     @property
     def paginate_by(self):
-        """Note: SingleTableView doesn't use get_paginate_by() currently, then
-        defining paginate_by as a property is necessary to ensure it changes immediately.
+        """Note: SingleTableView doesn't use get_paginate_by() currently,
+        then defining paginate_by as a property is necessary to ensure
+        it changes immediately.
         """
         return get_paginate_by()
 
@@ -146,8 +148,9 @@ class TutorialCommentLikedByMeListView(SingleTableView):
 
     @property
     def paginate_by(self):
-        """Note: SingleTableView doesn't use get_paginate_by() currently, then
-        defining paginate_by as a property is necessary to ensure it changes immediately.
+        """Note: SingleTableView doesn't use get_paginate_by() currently,
+        then defining paginate_by as a property is necessary to ensure
+        it changes immediately.
         """
         return get_paginate_by()
 

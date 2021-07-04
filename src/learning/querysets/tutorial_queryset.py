@@ -1,7 +1,9 @@
 """ QuerySet for tutorial model """
 from __future__ import annotations
-from django.db.models import QuerySet, Count, Q
+from django.db.models import QuerySet, Prefetch, Count, Q
 from shared.models import ConfirmStatusChoices
+from learning.models.category import Category
+from learning.models.tutorial_comment import TutorialComment
 
 
 class TutorialQueryset(QuerySet):
@@ -65,4 +67,34 @@ class TutorialQueryset(QuerySet):
             .active_and_confirmed_tutorials()
             .only_main_fields()
             .distinct()[:tutorial_count]
+        )
+
+    def prefetch_active_categories(self) -> TutorialQueryset:
+        """Prefetches active categories
+
+        Returns:
+            TutorialQueryset: Original queryset + prefetched categories
+        """
+        return self.prefetch_related(
+            Prefetch(
+                "categories",
+                queryset=Category.objects.active_categories().select_related(
+                    "parent_category"
+                ),
+            ),
+        )
+
+    def prefetch_active_confirmed_comments(self) -> TutorialQueryset:
+        """Prefetches active and confirmed comments
+
+        Returns:
+            TutorialQueryset: Original queryset + prefetched comments
+        """
+        return self.prefetch_related(
+            Prefetch(
+                "comments",
+                queryset=TutorialComment.objects.select_related(
+                    "parent_comment", "user"
+                ).active_and_confirmed_comments(),
+            ),
         )

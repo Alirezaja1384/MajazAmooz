@@ -1,11 +1,10 @@
 """ Tutorial view """
 from django.http import HttpRequest
 from django.views.decorators.csrf import requires_csrf_token
-from django.db.models import Prefetch
 from django.shortcuts import render, get_object_or_404
 from constance import config
 from authentication.models import User
-from learning.models import Tutorial, TutorialComment, Category, TutorialView
+from learning.models import Tutorial, TutorialView
 
 
 def record_tutorial_view(tutorial: Tutorial, user: User):
@@ -33,22 +32,8 @@ def tutorial_details_view(request: HttpRequest, slug: str):
     """Tutorial details view"""
     tutorial: Tutorial = get_object_or_404(
         Tutorial.objects.select_related("author")
-        .prefetch_related(
-            # Prefetch active categories
-            Prefetch(
-                "categories",
-                queryset=Category.objects.active_categories().select_related(
-                    "parent_category"
-                ),
-            ),
-            # Prefetch active and confirmed comments
-            Prefetch(
-                "comments",
-                queryset=TutorialComment.objects.select_related(
-                    "parent_comment", "user"
-                ).active_and_confirmed_comments(),
-            ),
-        )
+        .prefetch_active_categories()
+        .prefetch_active_confirmed_comments()
         .active_and_confirmed_tutorials(),
         slug=slug,
     )
