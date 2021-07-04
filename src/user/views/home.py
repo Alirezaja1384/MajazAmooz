@@ -1,35 +1,28 @@
 from math import ceil
-
 from django.shortcuts import render
 from django.http import HttpRequest
-from django.db.models import Prefetch, Sum, Count
-from django.db.models.functions import Coalesce
 from constance import config
 from authentication.models import User
 from shared.models import ConfirmStatusChoices
 from shared.date_time import get_last_months
-from learning.models import (Tutorial, Category, TutorialComment, TutorialView)
+from shared.typed_dicts import TutorialStatistics
+from learning.models import Tutorial, TutorialView
 
 
-class UserStatistics:
+class UserPanelStatistics:
     def __init__(
         self,
         user: User,
         view_statistics: list[dict],
-        tutorials_count: int,
-        comments_count: int,
-        likes_count: int,
-        views_count: int,
+        tutorials_statistics: TutorialStatistics,
     ):
-        self.tutorials_count = tutorials_count
-        self.comments_count = comments_count
-        self.likes_count = likes_count
-        self.views_count = views_count
+        # TODO: Make user goal statistics
         self.tutorials_count_goal = user.tutorials_count_goal
         self.comments_count_goal = user.comments_count_goal
         self.likes_count_goal = user.likes_count_goal
         self.views_count_goal = user.views_count_goal
 
+        self.tutorials_statistics = tutorials_statistics
         self.view_statistics = view_statistics
 
     @staticmethod
@@ -42,25 +35,27 @@ class UserStatistics:
     @property
     def tutorial_count_goal_percent(self):
         return self.__goal_completion_percent(
-            self.tutorials_count, self.tutorials_count_goal
+            self.tutorials_statistics["tutorials_count"],
+            self.tutorials_count_goal,
         )
 
     @property
     def comments_count_goal_percent(self):
         return self.__goal_completion_percent(
-            self.comments_count, self.comments_count_goal
+            self.tutorials_statistics["comments_count"],
+            self.comments_count_goal,
         )
 
     @property
     def likes_count_goal_percent(self):
         return self.__goal_completion_percent(
-            self.likes_count, self.likes_count_goal
+            self.tutorials_statistics["likes_count"], self.likes_count_goal
         )
 
     @property
     def views_count_goal_percent(self):
         return self.__goal_completion_percent(
-            self.views_count, self.views_count_goal
+            self.tutorials_statistics["views_count"], self.views_count_goal
         )
 
 
@@ -89,27 +84,15 @@ def get_view_statistics(user: User):
     return result[::-1]
 
 
-def get_user_statistics(user: User):
-
+def get_statistics(user: User):
+    view_statistics = get_view_statistics(user)
     tutorial_statistics = (
-        Tutorial.objects.active_and_confirmed_tutorials()
-        .filter(author=user)
-        .aggregate(
-            tutorials_count=Count("pk"),
-            # Use Coalesce to ensure aggregation result won't be None
-            likes_count=Coalesce(Sum("likes_count"), 0),
-            views_count=Coalesce(Sum("user_views_count"), 0),
-        )
-    )
-    tutorial_statistics["comments_count"] = (
-        TutorialComment.objects.filter(tutorial__author=user)
-        .active_and_confirmed_comments()
-        .count()
+        Tutorial.objects.filter(author=user)
+        .active_and_confirmed_tutorials()
+        .aggregate_statistics()
     )
 
-    return UserStatistics(
-        user, get_view_statistics(user), **tutorial_statistics
-    )
+    return UserPanelStatistics(user, view_statistics, tutorial_statistics)
 
 
 def home_view(request: HttpRequest):
@@ -117,17 +100,13 @@ def home_view(request: HttpRequest):
 
     latest_user_tutorials = (
         Tutorial.objects.filter(author=request.user)
-        .prefetch_related(
-            Prefetch(
-                "categories", queryset=Category.objects.active_categories()
-            )
-        )
+        .prefetch_active_categories()
         .order_by("-create_date")[:latest_user_tutorials_count]
     )
 
     context = {
         "ConfirmStatusChoices": ConfirmStatusChoices,
-        "statistics": get_user_statistics(request.user),
+        "statistics": get_statistics(request.user),
         "latest_user_tutorials": latest_user_tutorials,
     }
 

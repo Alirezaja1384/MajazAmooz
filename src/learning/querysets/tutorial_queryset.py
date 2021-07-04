@@ -1,7 +1,9 @@
 """ QuerySet for tutorial model """
 from __future__ import annotations
-from django.db.models import QuerySet, Prefetch, Count, Q
+from django.db.models import QuerySet, Prefetch, Count, Sum, Q
+from django.db.models.functions import Coalesce
 from shared.models import ConfirmStatusChoices
+from shared.typed_dicts import TutorialStatistics
 from learning.models.category import Category
 from learning.models.tutorial_comment import TutorialComment
 
@@ -70,10 +72,10 @@ class TutorialQueryset(QuerySet):
         )
 
     def prefetch_active_categories(self) -> TutorialQueryset:
-        """Prefetches active categories
+        """Prefetches active categories.
 
         Returns:
-            TutorialQueryset: Original queryset + prefetched categories
+            TutorialQueryset: Original queryset + prefetched categories.
         """
         return self.prefetch_related(
             Prefetch(
@@ -85,10 +87,10 @@ class TutorialQueryset(QuerySet):
         )
 
     def prefetch_active_confirmed_comments(self) -> TutorialQueryset:
-        """Prefetches active and confirmed comments
+        """Prefetches active and confirmed comments.
 
         Returns:
-            TutorialQueryset: Original queryset + prefetched comments
+            TutorialQueryset: Original queryset + prefetched comments.
         """
         return self.prefetch_related(
             Prefetch(
@@ -98,3 +100,26 @@ class TutorialQueryset(QuerySet):
                 ).active_and_confirmed_comments(),
             ),
         )
+
+    def aggregate_statistics(self) -> TutorialStatistics:
+        """Aggregates statistics contining tutorials_count,
+        likes_count, views_count and comments_count.
+
+        Returns:
+            TutorialStatistics: Queryset's statistics.
+        """
+        statistics = self.aggregate(
+            tutorials_count=Count("pk"),
+            # Use Coalesce to ensure aggregation result won't be None
+            likes_count=Coalesce(Sum("likes_count"), 0),
+            views_count=Coalesce(Sum("user_views_count"), 0),
+        )
+
+        # TODO: change comments_count calcultion method
+        statistics["comments_count"] = (
+            TutorialComment.objects.filter(tutorial__in=self)
+            .active_and_confirmed_comments()
+            .count()
+        )
+
+        return TutorialStatistics(statistics)
