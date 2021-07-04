@@ -115,7 +115,7 @@ class Tutorial(LifecycleModel):
     )
 
     # Custom manager
-    objects = TutorialQueryset.as_manager()
+    objects: TutorialQueryset = TutorialQueryset.as_manager()
 
     @hook(
         BEFORE_UPDATE,

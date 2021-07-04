@@ -80,7 +80,9 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
                 update_fields=[self.tutorial_object_count_field]
             )
 
-    objects = TutorialUserRelationQueryset.as_manager()
+    objects: TutorialUserRelationQueryset = (
+        TutorialUserRelationQueryset.as_manager()
+    )
 
     class Meta:
         abstract = True

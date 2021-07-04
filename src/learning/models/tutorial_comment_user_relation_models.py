@@ -78,7 +78,9 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
             self.comment.save(update_fields=[self.comment_object_count_field])
 
     # Custom queryset
-    objects = TutorialCommentUserRelationQueryset.as_manager()
+    objects: TutorialCommentUserRelationQueryset = (
+        TutorialCommentUserRelationQueryset.as_manager()
+    )
 
     class Meta:
         abstract = True

@@ -129,4 +129,4 @@ class TutorialComment(LifecycleModel):
         permissions = (("confirm_disprove_tutorialcomment", "تایید/رد نظرات"),)
 
     # Custom manager
-    objects = TutorialCommentQueryset.as_manager()
+    objects: TutorialCommentQueryset = TutorialCommentQueryset.as_manager()

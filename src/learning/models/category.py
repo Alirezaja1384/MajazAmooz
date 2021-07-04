@@ -45,4 +45,4 @@ class Category(LifecycleModel):
         verbose_name_plural = "دسته بندی ها"
 
     # Custom queryset
-    objects = CategoryQueryset.as_manager()
+    objects: CategoryQueryset = CategoryQueryset.as_manager()
