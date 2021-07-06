@@ -2,7 +2,7 @@ from typing import Generator
 from django.db.models import QuerySet
 from shared.models import ConfirmStatusChoices
 from shared.date_time import get_last_months
-from shared.typed_dicts import MonthlyCountStatistics
+from shared.statistics import MonthlyCountStatistics
 
 
 class TutorialUserRelationQueryset(QuerySet):

@@ -3,7 +3,7 @@ from __future__ import annotations
 from django.db.models import QuerySet, Prefetch, Count, Sum, Q
 from django.db.models.functions import Coalesce
 from shared.models import ConfirmStatusChoices
-from shared.typed_dicts import TutorialStatistics
+from shared.statistics import TutorialStatistics
 from learning.models.category import Category
 from learning.models.tutorial_comment import TutorialComment
 
