@@ -2,6 +2,7 @@
     Tutorial-User many to many relation models
 """
 from django.db import models
+from django.db.models import F
 from django.core.exceptions import ImproperlyConfigured
 from django_lifecycle import hook, AFTER_CREATE, BEFORE_DELETE
 from shared.models import AbstractScoreCoinModel
@@ -40,20 +41,19 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
 
     @hook(AFTER_CREATE)
     def on_create(self):
+        author = self.tutorial.author
+
         # Increase author's scores and coins
-        self.tutorial.author.scores += self.score
-        self.tutorial.author.coins += self.coin
-        self.tutorial.author.save(update_fields=["scores", "coins"])
+        author.scores = F("scores") + self.score
+        author.coins = F("coins") + self.coin
+        author.save(update_fields=["scores", "coins"])
 
         if self.tutorial_object_count_field:
             # Increase tutorial.{tutorial_object_count_field}
-            current_count = getattr(
-                self.tutorial, self.tutorial_object_count_field
-            )
             setattr(
                 self.tutorial,
                 self.tutorial_object_count_field,
-                current_count + 1,
+                F(self.tutorial_object_count_field) + 1,
             )
             self.tutorial.save(
                 update_fields=[self.tutorial_object_count_field]
@@ -61,20 +61,19 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
 
     @hook(BEFORE_DELETE)
     def on_delete(self):
+        author = self.tutorial.author
+
         # Decrease author's scores and coins
-        self.tutorial.author.scores -= self.score
-        self.tutorial.author.coins -= self.coin
-        self.tutorial.author.save(update_fields=["scores", "coins"])
+        author.scores = F("scores") - self.score
+        author.coins = F("coins") - self.coin
+        author.save(update_fields=["scores", "coins"])
 
         if self.tutorial_object_count_field:
             # Increase tutorial.{tutorial_object_count_field}
-            current_count = getattr(
-                self.tutorial, self.tutorial_object_count_field
-            )
             setattr(
                 self.tutorial,
                 self.tutorial_object_count_field,
-                current_count - 1,
+                F(self.tutorial_object_count_field) - 1,
             )
             self.tutorial.save(
                 update_fields=[self.tutorial_object_count_field]

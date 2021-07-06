@@ -2,6 +2,7 @@
     TutorialComment-User many to many relation models
 """
 from django.db import models
+from django.db.models import F
 from django.core.exceptions import ImproperlyConfigured
 from django_lifecycle import hook, AFTER_CREATE, BEFORE_DELETE
 from shared.models import AbstractScoreCoinModel
@@ -41,39 +42,37 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
 
     @hook(AFTER_CREATE)
     def on_create(self):
+        user = self.comment.user
+
         # Increase commnet.user's scores and coins
-        self.comment.user.scores += self.score
-        self.comment.user.coins += self.coin
-        self.comment.user.save(update_fields=["scores", "coins"])
+        user.scores = F("scores") + self.score
+        user.coins = F("coins") + self.coin
+        user.save(update_fields=["scores", "coins"])
 
         if self.comment_object_count_field:
             # Increase comment.{comment_object_count_field}
-            current_count = getattr(
-                self.comment, self.comment_object_count_field
-            )
             setattr(
                 self.comment,
                 self.comment_object_count_field,
-                current_count + 1,
+                F(self.comment_object_count_field) + 1,
             )
             self.comment.save(update_fields=[self.comment_object_count_field])
 
     @hook(BEFORE_DELETE)
     def on_delete(self):
+        user = self.comment.user
+
         # Decrease commnet.user's scores and coins
-        self.comment.user.scores -= self.score
-        self.comment.user.coins -= self.coin
-        self.comment.user.save(update_fields=["scores", "coins"])
+        user.scores = F("scores") - self.score
+        user.coins = F("coins") - self.coin
+        user.save(update_fields=["scores", "coins"])
 
         if self.comment_object_count_field and self.comment:
             # Decrease comment.{comment_object_count_field}
-            current_count = getattr(
-                self.comment, self.comment_object_count_field
-            )
             setattr(
                 self.comment,
                 self.comment_object_count_field,
-                current_count - 1,
+                F(self.comment_object_count_field) - 1,
             )
             self.comment.save(update_fields=[self.comment_object_count_field])
 
