@@ -101,7 +101,7 @@ class TutorialCommentDeleteDeactivateView(DeleteDeactivationView):
         return reverse(SUCCESS_VIEW_NAME)
 
 
-class RepliedToMyCommentsListView(SingleTableView):
+class TutorialCommentRepliedToMyCommentsListView(SingleTableView):
     table_class = RepliedTutorialCommentTable
     template_name = "user/shared/list.html"
 

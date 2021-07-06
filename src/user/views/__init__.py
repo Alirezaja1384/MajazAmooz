@@ -14,7 +14,7 @@ from .comments import (
     TutorialCommentDetailsView,
     TutorialCommentUpdateView,
     TutorialCommentDeleteDeactivateView,
-    RepliedToMyCommentsListView,
+    TutorialCommentRepliedToMyCommentsListView,
     TutorialCommentLikedByOthersListView,
     TutorialCommentLikedByMeListView,
 )
@@ -37,7 +37,7 @@ __all__ = [
     "TutorialCommentDetailsView",
     "TutorialCommentUpdateView",
     "TutorialCommentDeleteDeactivateView",
-    "RepliedToMyCommentsListView",
+    "TutorialCommentRepliedToMyCommentsListView",
     "TutorialCommentLikedByOthersListView",
     "TutorialCommentLikedByMeListView",
     "UserProfileUpdateView",

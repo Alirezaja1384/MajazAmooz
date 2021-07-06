@@ -92,7 +92,7 @@ urlpatterns = [
     ),
     path(
         "tutorial_comments/replied_to_my_comments",
-        views.RepliedToMyCommentsListView.as_view(
+        views.TutorialCommentRepliedToMyCommentsListView.as_view(
             extra_context={"title": "پاسخ دیدگاه های من"}
         ),
         name="tutorial_comment_replied_to_my_comments",
