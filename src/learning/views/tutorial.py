@@ -38,8 +38,8 @@ def tutorial_details_view(request: HttpRequest, slug: str):
         slug=slug,
     )
 
-    related_tutorials = tutorial.get_related_tutorials()
     all_tutorials = Tutorial.objects.active_and_confirmed_tutorials()
+    related_tutorials = all_tutorials.get_related_tutorials(tutorial)
 
     # Check is user logged in and liked this tutorial
     liked_by_current_user = (

@@ -123,3 +123,45 @@ class TutorialQueryset(QuerySet):
         )
 
         return TutorialStatistics(statistics)
+
+    def get_related_tutorials(
+        self, tutorial, tutorial_count: int = 5
+    ) -> TutorialQueryset:
+        """Finds related tutorials to given tutorial (by joint categories).
+
+        Args:
+            tutorial (Tutorial): Base tutorial to find related tutorials
+                by its categories.
+
+            tutorial_count (int, optional): Expected max count of tutorial.
+                Defaults to 5.
+
+        Returns:
+            TutorialQueryset: Related tutorials to given one.
+        """
+
+        def _flat_categories_parents(categories: list):
+            """Returns list of categories and their parents"""
+            result = categories
+
+            for category in categories:
+                while category.parent_category:
+                    category = category.parent_category
+                    result.append(category)
+
+            # Distinct result
+            return list(dict.fromkeys(result))
+
+        categories_and_parents = list(tutorial.categories.all())
+        # If tutorial doesn't have any active category return empty
+        if len(categories_and_parents) == 0:
+            return self.none()
+
+        categories = _flat_categories_parents(categories_and_parents)
+
+        # Get tutorials with joint categories
+        related_tutorials = self.exclude(pk=tutorial.pk).filter_by_categories(
+            categories, tutorial_count
+        )
+
+        return related_tutorials
