@@ -126,16 +126,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation"
+        ".UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": "django.contrib.auth.password_validation"
+        ".MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation"
+        ".CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation"
+        ".NumericPasswordValidator",
     },
 ]
 
@@ -321,10 +325,12 @@ TINYMCE_DEFAULT_CONFIG = {
     "theme": "silver",
     "height": 500,
     "menubar": False,
-    "plugins": "link print preview searchreplace code fullscreen table wordcount",
-    "toolbar": "undo redo | forecolor | bold italic | alignleft aligncenter \
-    alignright alignjustify | bold italic underline strikethrough \
-    | fontselect fontsizeselect formatselect | table code searchreplace | preview fullscreen",
+    "plugins": "link print preview searchreplace code"
+    "fullscreen table wordcount",
+    "toolbar": "undo redo | forecolor | bold italic | alignleft"
+    "aligncenter alignright alignjustify | bold italic underline"
+    "strikethrough | fontselect fontsizeselect formatselect | "
+    "table code searchreplace | preview fullscreen",
 }
 
 # django_tables2 settings
@@ -362,8 +368,9 @@ CONSTANCE_CONFIG = OrderedDict(
             "WEBSITE_DESCRIPTION",
             (
                 (
-                    "با هم مجازی می آموزیم! مجاز آموز، جامعه ای از دانش آموزان سراسر ایران است که با استفاده"
-                    " از فضای آنلاین در هر مکان و زمان به آموزش دسترسی دارند و به یکدیگر آموزش می دهند."
+                    "با هم مجازی می آموزیم! مجاز آموز، جامعه ای از دانش آموزان"
+                    " سراسر ایران است که با استفاده از فضای آنلاین در هر مکان"
+                    " و زمان به آموزش دسترسی دارند و به یکدیگر آموزش می دهند."
                 ),
                 "وبسایت - توضیحات",
                 str,
