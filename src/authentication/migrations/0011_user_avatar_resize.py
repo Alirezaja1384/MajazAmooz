@@ -7,13 +7,22 @@ import django_resized.forms
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0010_user_goals'),
+        ("authentication", "0010_user_goals"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='avatar',
-            field=django_resized.forms.ResizedImageField(crop=['middle', 'center'], default='default/authentication/user-avatar.png', force_format='JPEG', keep_meta=True, quality=72, size=[300, 300], upload_to='images/avatars', verbose_name='تصویر پروفایل'),
+            model_name="user",
+            name="avatar",
+            field=django_resized.forms.ResizedImageField(
+                crop=["middle", "center"],
+                default="default/authentication/user-avatar.png",
+                force_format="JPEG",
+                keep_meta=True,
+                quality=72,
+                size=[300, 300],
+                upload_to="images/avatars",
+                verbose_name="تصویر پروفایل",
+            ),
         ),
     ]

@@ -6,28 +6,36 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0009_user_email_confirmed'),
+        ("authentication", "0009_user_email_confirmed"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='comments_count_goal',
-            field=models.PositiveIntegerField(default=50, verbose_name='تعداد دیدگاه هدف'),
+            model_name="user",
+            name="comments_count_goal",
+            field=models.PositiveIntegerField(
+                default=50, verbose_name="تعداد دیدگاه هدف"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='likes_count_goal',
-            field=models.PositiveIntegerField(default=200, verbose_name='تعداد لایک هدف'),
+            model_name="user",
+            name="likes_count_goal",
+            field=models.PositiveIntegerField(
+                default=200, verbose_name="تعداد لایک هدف"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='tutorials_count_goal',
-            field=models.PositiveIntegerField(default=20, verbose_name='تعداد آموزش هدف'),
+            model_name="user",
+            name="tutorials_count_goal",
+            field=models.PositiveIntegerField(
+                default=20, verbose_name="تعداد آموزش هدف"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='views_count_goal',
-            field=models.PositiveIntegerField(default=200, verbose_name='تعداد بازدید هدف'),
+            model_name="user",
+            name="views_count_goal",
+            field=models.PositiveIntegerField(
+                default=200, verbose_name="تعداد بازدید هدف"
+            ),
         ),
     ]

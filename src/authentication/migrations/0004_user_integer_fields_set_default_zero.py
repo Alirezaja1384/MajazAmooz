@@ -6,23 +6,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0003_user_additional_fiels_nullable'),
+        ("authentication", "0003_user_additional_fiels_nullable"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='coins',
-            field=models.PositiveIntegerField(default=0, verbose_name='سکه ها'),
+            model_name="user",
+            name="coins",
+            field=models.PositiveIntegerField(
+                default=0, verbose_name="سکه ها"
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='diamonds',
-            field=models.PositiveIntegerField(default=0, verbose_name='الماس ها'),
+            model_name="user",
+            name="diamonds",
+            field=models.PositiveIntegerField(
+                default=0, verbose_name="الماس ها"
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='scores',
-            field=models.PositiveIntegerField(default=0, verbose_name='امتیاز'),
+            model_name="user",
+            name="scores",
+            field=models.PositiveIntegerField(
+                default=0, verbose_name="امتیاز"
+            ),
         ),
     ]

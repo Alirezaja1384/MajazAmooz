@@ -6,28 +6,38 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0002_auto_20210326_1814'),
+        ("authentication", "0002_auto_20210326_1814"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='avatar',
-            field=models.ImageField(blank=True, upload_to='images/avatars', verbose_name='تصویر پروفایل'),
+            model_name="user",
+            name="avatar",
+            field=models.ImageField(
+                blank=True,
+                upload_to="images/avatars",
+                verbose_name="تصویر پروفایل",
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='coins',
-            field=models.PositiveIntegerField(blank=True, null=True, verbose_name='سکه ها'),
+            model_name="user",
+            name="coins",
+            field=models.PositiveIntegerField(
+                blank=True, null=True, verbose_name="سکه ها"
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='diamonds',
-            field=models.PositiveIntegerField(blank=True, null=True, verbose_name='الماس ها'),
+            model_name="user",
+            name="diamonds",
+            field=models.PositiveIntegerField(
+                blank=True, null=True, verbose_name="الماس ها"
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='scores',
-            field=models.PositiveIntegerField(blank=True, null=True, verbose_name='امتیاز'),
+            model_name="user",
+            name="scores",
+            field=models.PositiveIntegerField(
+                blank=True, null=True, verbose_name="امتیاز"
+            ),
         ),
     ]

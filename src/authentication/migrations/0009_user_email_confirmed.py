@@ -6,17 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0008_autofield_bigautofield'),
+        ("authentication", "0008_autofield_bigautofield"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='user',
-            options={'permissions': (('email_confirmed', 'ایمیل تایید شده'),), 'verbose_name': 'user', 'verbose_name_plural': 'users'},
+            name="user",
+            options={
+                "permissions": (("email_confirmed", "ایمیل تایید شده"),),
+                "verbose_name": "user",
+                "verbose_name_plural": "users",
+            },
         ),
         migrations.AddField(
-            model_name='user',
-            name='email_confirmed',
-            field=models.BooleanField(default=False, verbose_name='تایید ایمیل'),
+            model_name="user",
+            name="email_confirmed",
+            field=models.BooleanField(
+                default=False, verbose_name="تایید ایمیل"
+            ),
         ),
     ]
