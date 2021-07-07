@@ -14,22 +14,14 @@ class InsertOrDeleteStatus:
     ERROR = 0
 
 
-class AjaxScoreCoinCreateDeleteView(LoginRequiredMixin, View):
-    model = None
-    http_method_names = ["post"]
-
-    score: Optional[int] = None
-    coin: Optional[int] = None
-
+class AjaxView(View):
     def post(self, request: HttpRequest, *args, **kwargs):
         if request.is_ajax():
             try:
-                # Set patent objects like tutorial, tutorial_comment
-                self.set_parent_objects()
                 # Create a db savepoint
                 before_operation = transaction.savepoint()
                 # Create/Delete object
-                return self.create_delete_object()
+                return self.db_operation()
 
             except TypeError:
                 return HttpResponseBadRequest()
@@ -50,7 +42,24 @@ class AjaxScoreCoinCreateDeleteView(LoginRequiredMixin, View):
                     }
                 )
 
-        return HttpResponseBadRequest
+        return HttpResponseBadRequest()
+
+    def db_operation(self):
+        raise ImproperlyConfigured("You should configure db_actions first.")
+
+
+class AjaxScoreCoinCreateDeleteView(LoginRequiredMixin, AjaxView):
+    model = None
+    http_method_names = ["post"]
+
+    score: Optional[int] = None
+    coin: Optional[int] = None
+
+    def db_operation(self):
+        # Set patent objects like tutorial, tutorial_comment
+        self.set_parent_objects()
+        # Create/Delete object
+        return self.create_delete_object()
 
     def set_parent_objects(self):
         pass
@@ -77,6 +86,8 @@ class AjaxScoreCoinCreateDeleteView(LoginRequiredMixin, View):
 
     def delete_object(self, objs: QuerySet):
         obj = objs.first()
+        # Call object's delete to ensure does
+        # before_delete operations
         obj.delete()
 
     def create_object(self):

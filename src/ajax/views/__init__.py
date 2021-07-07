@@ -4,18 +4,18 @@ from .tutorial import (
     TutorialDownVoteView,
 )
 from .tutorial_comment import (
+    TutorialCommentCreateView,
     TutorialCommentLikeView,
     TutorialCommentUpVoteView,
     TutorialCommentDownVoteView,
-    tutorial_comment_create_view,
 )
 
 __all__ = [
     "TutorialLikeView",
     "TutorialUpVoteView",
     "TutorialDownVoteView",
+    "TutorialCommentCreateView",
     "TutorialCommentLikeView",
     "TutorialCommentUpVoteView",
     "TutorialCommentDownVoteView",
-    "tutorial_comment_create_view",
 ]

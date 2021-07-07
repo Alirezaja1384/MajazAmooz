@@ -14,5 +14,5 @@ urlpatterns = [
         "tutorial_comment/downvote",
         views.TutorialCommentDownVoteView.as_view(),
     ),
-    path("tutorial_comment/create", views.tutorial_comment_create_view),
+    path("tutorial_comment/create", views.TutorialCommentCreateView.as_view()),
 ]

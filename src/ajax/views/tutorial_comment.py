@@ -1,9 +1,7 @@
 import json
 from typing import Optional
-from django.http import HttpRequest, JsonResponse, HttpResponseBadRequest
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import DatabaseError
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 from constance import config
 from learning.models import (
     TutorialComment,
@@ -15,6 +13,7 @@ from ajax.forms import TutorialCommentForm
 from ajax.views.shared import (
     AjaxScoreCoinCreateDeleteView,
     InsertOrDeleteStatus,
+    AjaxView,
 )
 
 
@@ -65,40 +64,21 @@ class TutorialCommentDownVoteView(TutorialCommentUserRelationCreateDeleteView):
     coin = config.TUTORIAL_COMMENT_DOWNVOTE_COIN
 
 
-@login_required
-def tutorial_comment_create_view(request: HttpRequest):
-    # If request is ajax and tutorial_id sent by client
-    if request.method == "POST" and request.is_ajax():
+class TutorialCommentCreateView(LoginRequiredMixin, AjaxView):
+    def db_operation(self):
+        tutorial_comment = json.loads(self.request.body)
+        tutorial_comment["user"] = self.request.user
 
-        try:
-            tutorial_comment = json.loads(request.body)
-            tutorial_comment["user"] = request.user
+        form = TutorialCommentForm(tutorial_comment)
 
-            form = TutorialCommentForm(tutorial_comment)
-
-            if form.is_valid():
-                form.save()
-            else:
-                return JsonResponse(
-                    {
-                        "status": InsertOrDeleteStatus.ERROR,
-                        "error": form.errors,
-                    }
-                )
-
-            return JsonResponse({"status": InsertOrDeleteStatus.INSERTED})
-
-        except (DatabaseError, ObjectDoesNotExist):
+        if form.is_valid():
+            form.save()
+        else:
             return JsonResponse(
                 {
                     "status": InsertOrDeleteStatus.ERROR,
-                    "error": "خطایی در ثبت اطلاعات رخ داد",
+                    "error": form.errors,
                 }
             )
 
-        except Exception as ex:
-            return JsonResponse(
-                {"status": InsertOrDeleteStatus.ERROR, "error": ex.args}
-            )
-
-    return HttpResponseBadRequest()
+        return JsonResponse({"status": InsertOrDeleteStatus.INSERTED})
