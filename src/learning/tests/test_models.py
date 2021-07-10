@@ -1,11 +1,12 @@
+from copy import deepcopy
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from model_bakery import baker
-from learning.models import Category, Tutorial
+from learning.models import Category, Tutorial, TutorialComment
 from shared.models import ConfirmStatusChoices
 
 
-class TestCategory(TestCase):
+class CategoryTest(TestCase):
     def setUp(self):
         self.category: Category = baker.make_recipe(
             "learning.active_category",
@@ -19,7 +20,7 @@ class TestCategory(TestCase):
         """
         self.assertEqual(self.category.slug, "a-test-category")
 
-    def test_not_accept_self_parent(self):
+    def test_not_allow_self_parent(self):
         """Category's clean() method should raise validation error
         when category's parent is itself.
         """
@@ -28,7 +29,7 @@ class TestCategory(TestCase):
         self.assertRaises(ValidationError, self.category.clean)
 
 
-class TestTutorial(TestCase):
+class TutorialTest(TestCase):
     def setUp(self):
         tutorial: Tutorial = baker.make_recipe("learning.tutorial")
         tutorial.body = "Changed body"
@@ -68,5 +69,48 @@ class TestTutorial(TestCase):
         """
         self.assertEqual(
             self.changed_tutorial.confirm_status,
+            ConfirmStatusChoices.WAITING_FOR_CONFIRM,
+        )
+
+
+class TutorialCommentTest(TestCase):
+    def setUp(self):
+        tutorial: Tutorial = baker.make_recipe("learning.tutorial")
+
+        comment: TutorialComment = baker.make_recipe(
+            "learning.tutorial_comment", tutorial=tutorial
+        )
+        replied_comment: TutorialComment = baker.make_recipe(
+            "learning.tutorial_comment", parent_comment=comment
+        )
+
+        self.tutorial = tutorial
+        self.comment = comment
+        self.replied_comment = replied_comment
+
+    def test_not_allow_self_parent(self):
+        """Should not allow comment to be parent of itself."""
+        self.comment.parent_comment = self.comment
+        self.assertRaises(ValidationError, self.comment.clean)
+
+    def test_automatically_set_tutorial_on_replay(self):
+        """Should automatically set replied comment's tutorial to
+        its parents's tutorial.
+        """
+        self.assertEqual(self.replied_comment.tutorial, self.comment.tutorial)
+
+    def test_on_edit(self):
+        """Should set 'is_edited=True', 'last_edit_date', and
+        set 'confirm_status' to 'WAITING_FOR_CONFIRM'.
+        """
+        edited_comment = deepcopy(self.comment)
+        edited_comment.body = "Changed body"
+        edited_comment.confirm_status = ConfirmStatusChoices.CONFIRMED
+        edited_comment.save()
+
+        self.assertTrue(edited_comment.is_edited)
+        self.assertIsNotNone(edited_comment.last_edit_date)
+        self.assertEqual(
+            edited_comment.confirm_status,
             ConfirmStatusChoices.WAITING_FOR_CONFIRM,
         )
