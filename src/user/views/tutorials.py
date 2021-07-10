@@ -88,12 +88,15 @@ class TutorialCreateView(CreateView):
 
     form_class = TutorialForm
 
-    def form_valid(self, form: ModelForm):
+    def form_valid(self, form: TutorialForm):
         tutorial: Tutorial = form.save(commit=False)
         # Set tutorial author
         tutorial.author = self.request.user
         # Save tutorial
         tutorial.save()
+
+        # Save many-to-many relations (categories here)
+        form.save_m2m()
         # Save tutorial tags
         form.save_tags()
 
