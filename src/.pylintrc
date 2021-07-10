@@ -1,0 +1,12 @@
+[MASTER]
+disable=
+    missing-docstring,
+    W0614,
+    wildcard-import,
+    no-self-use,
+    too-few-public-methods
+
+max-line-length=79
+load-plugins=pylint_django
+django-settings-module=core.settings
+ignore=migrations

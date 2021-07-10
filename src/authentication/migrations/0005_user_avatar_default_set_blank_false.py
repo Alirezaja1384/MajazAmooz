@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0004_user_integer_fields_set_default_zero'),
+        ("authentication", "0004_user_integer_fields_set_default_zero"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='avatar',
-            field=models.ImageField(default='default/authentication/user-avatar.png', upload_to='images/avatars', verbose_name='تصویر پروفایل'),
+            model_name="user",
+            name="avatar",
+            field=models.ImageField(
+                default="default/authentication/user-avatar.png",
+                upload_to="images/avatars",
+                verbose_name="تصویر پروفایل",
+            ),
         ),
     ]

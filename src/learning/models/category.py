@@ -2,31 +2,36 @@
 from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
-
 from django_lifecycle import LifecycleModel, hook, BEFORE_SAVE
-
-from learning.querysets import CategoryQueryset
+from learning.querysets.category_queryset import CategoryQueryset
 
 
 class Category(LifecycleModel):
-    """ Category model """
+    """Category model"""
 
     parent_category = models.ForeignKey(
-        'self', on_delete=models.SET_NULL, null=True, blank=True,
-        related_name='child_categories', verbose_name='دسته بندی والد')
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="child_categories",
+        verbose_name="دسته بندی والد",
+    )
 
-    name = models.CharField('نام', unique=True, max_length=30)
+    name = models.CharField("نام", unique=True, max_length=30)
 
-    slug = models.SlugField('اسلاگ', unique=True, max_length=50,
-                            blank=True, allow_unicode=True)
+    slug = models.SlugField(
+        "اسلاگ", unique=True, max_length=50, blank=True, allow_unicode=True
+    )
 
-    is_active = models.BooleanField('فعال', default=True)
+    is_active = models.BooleanField("فعال", default=True)
 
     # Validate data (for admin panel)
     def clean(self):
         if self.id == self.parent_category_id:
             raise ValidationError(
-                'والد نمی تواند با دسته بندی فعلی یکسان باشد')
+                "والد نمی تواند با دسته بندی فعلی یکسان باشد"
+            )
 
     @hook(BEFORE_SAVE)
     def on_save(self):
@@ -36,8 +41,8 @@ class Category(LifecycleModel):
         return self.name
 
     class Meta:
-        verbose_name = 'دسته بندی'
-        verbose_name_plural = 'دسته بندی ها'
+        verbose_name = "دسته بندی"
+        verbose_name_plural = "دسته بندی ها"
 
     # Custom queryset
-    objects = CategoryQueryset.as_manager()
+    objects: CategoryQueryset = CategoryQueryset.as_manager()

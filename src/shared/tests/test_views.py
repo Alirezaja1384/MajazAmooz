@@ -171,11 +171,11 @@ class DynamicModelFieldDetailViewTest(TestCase):
         in visible_field_types.
         """
 
-        class DynamicDetailView(DynamicModelFieldDetailView):
-            def _custom_handler(obj, field):
-                # Returns upper-case field value
-                return str(getattr(obj, field.name)).upper()
+        def _custom_handler(obj, field):
+            # Returns upper-case field value
+            return str(getattr(obj, field.name)).upper()
 
+        class DynamicDetailView(DynamicModelFieldDetailView):
             model = User
             fields = ("username",)
             visible_field_types = [
@@ -261,11 +261,11 @@ class DynamicModelFieldDetailViewTest(TestCase):
         and additional contents by calling them.
         """
 
-        class DynamicDetailView(DynamicModelFieldDetailView):
-            def _custom_handler(obj, field):
-                # Returns upper-case field value
-                return str(getattr(obj, field.name)).upper()
+        def _custom_handler(obj, field):
+            # Returns upper-case field value
+            return str(getattr(obj, field.name)).upper()
 
+        class DynamicDetailView(DynamicModelFieldDetailView):
             def hello(self):
                 return "Hello!"
 

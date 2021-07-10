@@ -3,10 +3,7 @@
 """
 from django.contrib import admin
 
-from learning.models import (
-    Category, Tutorial,
-    TutorialTag, TutorialComment
-)
+from learning.models import Category, Tutorial, TutorialTag, TutorialComment
 from . import base
 
 

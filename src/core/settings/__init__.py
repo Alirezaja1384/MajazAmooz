@@ -1,6 +1,6 @@
 from .base import DEBUG
 
 if DEBUG:
-    from .development import *
+    from .development import *  # noqa
 else:
-    from .production import *
+    from .production import *  # noqa

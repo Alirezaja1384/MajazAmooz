@@ -1,43 +1,45 @@
 from django.forms import ModelForm
 from django.contrib import messages
-from django.views.generic import (CreateView, UpdateView)
-from django.shortcuts import (reverse, redirect)
+from django.views.generic import CreateView, UpdateView
+from django.shortcuts import reverse, redirect
 from django.core.exceptions import ImproperlyConfigured
 from django_tables2 import SingleTableView
 from constance import config
-from user.tables import (TutorialTable, TutorialUserRelationsTable)
+from user.tables import TutorialTable, TutorialUserRelationsTable
 from user.forms import TutorialForm
-from learning.models import (
-    Tutorial, TutorialView,
-    TutorialLike
-)
+from learning.models import Tutorial, TutorialView, TutorialLike
 from shared.views.generic import (
-    DynamicModelFieldDetailView, DeleteDeactivationView
+    DynamicModelFieldDetailView,
+    DeleteDeactivationView,
 )
 
 
-SUCCESS_VIEW_NAME = 'user:tutorials'
+SUCCESS_VIEW_NAME = "user:tutorials"
 
 
 def get_paginate_by():
-    """ Note: defining paginate_by as a function is necessary to ensure it changes immediately.
-    """
+    """Note: defining paginate_by as a function is necessary
+    to ensure it changes immediately."""
     return config.USER_PANEL_PAGINATE_BY
 
 
 def get_tutorials_queryset(user):
-    return Tutorial.objects.filter(author=user).select_related(
-        'author').prefetch_related('tags', 'categories')
+    return (
+        Tutorial.objects.filter(author=user)
+        .select_related("author")
+        .prefetch_related("tags", "categories")
+    )
 
 
 class TutorialListView(SingleTableView):
     table_class = TutorialTable
-    template_name = 'user/shared/list.html'
+    template_name = "user/shared/list.html"
 
     @property
     def paginate_by(self):
-        """ Note: SingleTableView doesn't use get_paginate_by() currently, then
-            defining paginate_by as a property is necessary to ensure it changes immediately.
+        """Note: SingleTableView doesn't use get_paginate_by()
+        currently. thus, defining paginate_by as a property
+        is necessary to ensure it changes immediately.
         """
         return get_paginate_by()
 
@@ -46,29 +48,43 @@ class TutorialListView(SingleTableView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['create_url'] = 'user:tutorial_create'
+        context["create_url"] = "user:tutorial_create"
         return context
 
 
 class TutorialDetailView(DynamicModelFieldDetailView):
-
     def get_tags(self):
-        return '، '.join([str(tag) for tag in self.object.tags.all()])
-    get_tags.short_description = 'کلمات کلیدی'
+        return "، ".join([str(tag) for tag in self.object.tags.all()])
 
-    template_name = 'user/shared/details.html'
+    get_tags.short_description = "کلمات کلیدی"
+
+    template_name = "user/shared/details.html"
     additional_content = [get_tags]
-    fields = ('title', 'slug', 'short_description', 'body', 'create_date',
-              'last_edit_date', 'confirm_status', 'categories', get_tags, 'image',
-              'user_views_count', 'up_votes_count', 'down_votes_count', 'likes_count',
-              'is_edited', 'is_active',)
+    fields = (
+        "title",
+        "slug",
+        "short_description",
+        "body",
+        "create_date",
+        "last_edit_date",
+        "confirm_status",
+        "categories",
+        get_tags,
+        "image",
+        "user_views_count",
+        "up_votes_count",
+        "down_votes_count",
+        "likes_count",
+        "is_edited",
+        "is_active",
+    )
 
     def get_queryset(self):
         return get_tutorials_queryset(self.request.user)
 
 
 class TutorialCreateView(CreateView):
-    template_name = 'user/shared/create_update.html'
+    template_name = "user/shared/create_update.html"
 
     form_class = TutorialForm
 
@@ -82,7 +98,8 @@ class TutorialCreateView(CreateView):
         form.save_tags()
 
         messages.success(
-            self.request, f'آموزش "{tutorial.title}" با موفقیت افزوده شد')
+            self.request, f'آموزش "{tutorial.title}" با موفقیت افزوده شد'
+        )
         return redirect(self.get_success_url())
 
     def get_success_url(self):
@@ -90,7 +107,7 @@ class TutorialCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tagsinput_required'] = True
+        context["tagsinput_required"] = True
         return context
 
 
@@ -106,7 +123,8 @@ class TutorialUpdateView(UpdateView):
         tutorial: Tutorial = form.save()
 
         messages.success(
-            self.request, f'آموزش "{tutorial.title}" با موفقیت ویرایش شد')
+            self.request, f'آموزش "{tutorial.title}" با موفقیت ویرایش شد'
+        )
         return redirect(self.get_success_url())
 
     def get_success_url(self):
@@ -114,8 +132,8 @@ class TutorialUpdateView(UpdateView):
 
 
 class TutorialDeleteDeactivateView(DeleteDeactivationView):
-    template_name = 'user/shared/delete.html'
-    context_object_name = 'tutorial'
+    template_name = "user/shared/delete.html"
+    context_object_name = "tutorial"
 
     def get_queryset(self):
         return get_tutorials_queryset(self.request.user)
@@ -124,37 +142,56 @@ class TutorialDeleteDeactivateView(DeleteDeactivationView):
         return reverse(SUCCESS_VIEW_NAME)
 
 
-class TutorialRelationsAbstractTableView(SingleTableView):
+class TutorialRelationsTableViewMixin:
+    model = None
     table_class = TutorialUserRelationsTable
 
-    default_ordering = ('-create_date',)
-    template_name = 'user/shared/list.html'
+    default_ordering = ("-create_date",)
+    template_name = "user/shared/list.html"
 
     @property
     def paginate_by(self):
-        """ Note: SingleTableView doesn't use get_paginate_by() currently, then
-            defining paginate_by as a property is necessary to ensure it changes immediately.
-        """
         return get_paginate_by()
 
     def get_queryset(self):
-        raise ImproperlyConfigured(
-            'You should implement get_queryset() to use TutorialRelationsAbstractTableView')
+        if not self.model:
+            raise ImproperlyConfigured(
+                "You should set model or implement get_queryset() "
+                "first to use TutorialRelationsTableViewMixin"
+            )
+
+        return (
+            self.model.objects.order_by(*self.default_ordering)
+            .select_related("user", "tutorial")
+            .active_confirmed_tutorials()
+        )
 
 
-class TutorialsViewedByOthersListView(TutorialRelationsAbstractTableView):
+class TutorialsViewedByOthersListView(
+    TutorialRelationsTableViewMixin, SingleTableView
+):
+    model = TutorialView
+
     def get_queryset(self):
-        return TutorialView.objects.filter(tutorial__author=self.request.user).order_by(
-            *self.default_ordering).select_related('user', 'tutorial').active_confirmed_tutorials()
+        qs = super().get_queryset()
+        return qs.filter(tutorial__author=self.request.user)
 
 
-class TutorialsLikedByOthersListView(TutorialRelationsAbstractTableView):
+class TutorialsLikedByOthersListView(
+    TutorialRelationsTableViewMixin, SingleTableView
+):
+    model = TutorialLike
+
     def get_queryset(self):
-        return TutorialLike.objects.filter(tutorial__author=self.request.user).order_by(
-            *self.default_ordering).select_related('user', 'tutorial').active_confirmed_tutorials()
+        qs = super().get_queryset()
+        return qs.filter(tutorial__author=self.request.user)
 
 
-class TutorialsLikedByMeListView(TutorialRelationsAbstractTableView):
+class TutorialsLikedByMeListView(
+    TutorialRelationsTableViewMixin, SingleTableView
+):
+    model = TutorialLike
+
     def get_queryset(self):
-        return TutorialLike.objects.filter(user=self.request.user).order_by(
-            *self.default_ordering).select_related('user', 'tutorial').active_confirmed_tutorials()
+        qs = super().get_queryset()
+        return qs.filter(user=self.request.user)

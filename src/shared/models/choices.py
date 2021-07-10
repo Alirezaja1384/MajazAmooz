@@ -8,6 +8,7 @@ class ConfirmStatusChoices(IntegerChoices):
         0 : Waiting for confirm
         -1 : disproved
     """
-    WAITING_FOR_CONFIRM = 0, 'در انتظار تایید'
-    CONFIRMED = 1, 'تایید شده'
-    DISPROVED = -1, 'رد شده'
+
+    WAITING_FOR_CONFIRM = 0, "در انتظار تایید"
+    CONFIRMED = 1, "تایید شده"
+    DISPROVED = -1, "رد شده"

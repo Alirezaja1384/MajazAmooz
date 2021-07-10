@@ -33,7 +33,10 @@ def normalize_month(month: int):
     return (month - 1) % 12 + 1
 
 
-def get_last_months(count: int = 1, today: date = date.today()):
+def get_last_months(count: int = 1, today: Optional[date] = None):
+
+    if not today:
+        today = date.today()
 
     jdatetime.set_locale("fa_IR")
     today_jalali = jdatetime.date.fromgregorian(date=today)
@@ -43,8 +46,8 @@ def get_last_months(count: int = 1, today: date = date.today()):
     # Month will decrease in every loop
     month = today_jalali.month + 1
 
-    # for each past month
-    for i in range(count):
+    # for each last month
+    for _ in range(count):
 
         # Decrease 1 month, If result is negative
         # decrease year and normalize month

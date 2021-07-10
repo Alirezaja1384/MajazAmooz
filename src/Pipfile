@@ -20,12 +20,16 @@ django-crispy-forms = ">=1.11.2"
 django-tinymce = ">=3.3.0"
 django-resized = ">=0.3.11"
 django-constance = {version = ">=2.8.0", extras = ["redis"]}
-model-bakery = "*"
 
 [dev-packages]
-autopep8 = "*"
 pylint = "*"
 pylint-django = "*"
+flake8 = "*"
+black = "*"
+model-bakery = "*"
 
 [requires]
 python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true

@@ -64,9 +64,8 @@ class LoginView(LogoutRequiredMixin, View):
             # If next didn't exist or wasn't local
             # redirect to learning home
             return redirect("learning:home")
-        else:
-            form.add_error("", "نام کاربری یا رمز عبور اشتباه است")
 
+        form.add_error("", "نام کاربری یا رمز عبور اشتباه است")
         return render(
             request,
             "authentication/login.html",
