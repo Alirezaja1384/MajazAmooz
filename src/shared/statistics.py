@@ -66,8 +66,7 @@ class UserPanelStatistics:
             """
             if goal_value == 0 or value > goal_value:
                 return 100
-            else:
-                return ceil((value / goal_value) * 100)
+            return ceil((value / goal_value) * 100)
 
         # Look for statistics values
         for key in self.tutorials_statistics.keys():

@@ -256,7 +256,8 @@ class DynamicModelFieldDetailView(DetailView):
         return visible_model_field_names + self.additional_content
 
     def get_model_field_value(self, obj: Model, field: Field) -> str:
-        """Finds given field in given object and handles its value by its handler
+        """Finds given field in given object and handles its value
+        by its handler.
 
         Args:
             obj (Model): Model object
@@ -271,22 +272,22 @@ class DynamicModelFieldDetailView(DetailView):
 
         if self.unimplemented_types_use_simple_handler:
             return FieldValueHandlers.simple_field_handler(obj, field)
-        else:
-            raise ImproperlyConfigured(
-                (
-                    "Unable to get value of '{}'. '{}' type handler not found."
-                    "Hint: You should implement it or set"
-                    "unimplemented_types_use_simple_handler = True"
-                ).format(field.name, field.__class__.__name__)
-            )
+
+        raise ImproperlyConfigured(
+            (
+                "Unable to get value of '{}'. '{}' type handler not found."
+                "Hint: You should implement it or set"
+                "unimplemented_types_use_simple_handler = True"
+            ).format(field.name, field.__class__.__name__)
+        )
 
     def get_additional_field_value(self, field: Callable):
         if inspect.ismethod(field):
             # If callable is a bound method
             return field()
-        else:
-            # If callable is an unbound method
-            return field(self)
+
+        # If callable is an unbound method
+        return field(self)
 
     def get_name_values(self) -> list[FieldNameValue]:
         """Gets name and value of fields in self.fields from

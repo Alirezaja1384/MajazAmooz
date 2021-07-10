@@ -7,12 +7,10 @@ class LoginRequiredMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-        self.urls = tuple(
-            [
-                re.compile(url)
-                for url in getattr(settings, "LOGIN_REQUIRED_URLS", [])
-            ]
-        )
+        self.urls = [
+            re.compile(url)
+            for url in getattr(settings, "LOGIN_REQUIRED_URLS", [])
+        ]
 
         self.login_url = getattr(settings, "LOGIN_URL", "/auth/login/")
 

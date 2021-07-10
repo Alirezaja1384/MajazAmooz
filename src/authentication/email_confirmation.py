@@ -59,6 +59,7 @@ class EmailConfirmationManager:
             # check token is valid or not
             if confirm_email_token.check_token(user, token):
                 return user
+            return None
 
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             return None
