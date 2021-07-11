@@ -6,13 +6,11 @@ from django.shortcuts import resolve_url
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.db.models import QuerySet
-
 from shared.models import ConfirmStatusChoices
 from learning.models import TutorialComment, Tutorial
 
 
 logger = logging.getLogger("emails")
-
 FROM_EMAIL = getattr(settings, "DEFAULT_FROM_EMAIL", None)
 
 
