@@ -8,6 +8,9 @@ from shared.models import ConfirmStatusChoices
 from learning.models.tutorial_user_relation_models import (
     AbstractTutorialScoreCoinModel,
 )
+from learning.models.tutorial_comment_user_relation_models import (
+    AbstractCommentScoreCoinModel,
+)
 from learning.models import (
     Category,
     Tutorial,
@@ -15,6 +18,9 @@ from learning.models import (
     TutorialLike,
     TutorialUpVote,
     TutorialDownVote,
+    TutorialCommentLike,
+    TutorialCommentUpVote,
+    TutorialCommentDownVote,
 )
 
 
@@ -175,13 +181,11 @@ class TutorialUserScoreCoinRelationsTest(TestCase):
 
     def test_increase_count_tutorial_model_on_create(self):
         """Creating model should increase its count in tutorial model."""
-        old_count = getattr(
-            self.tutorial, self.model_instance.tutorial_object_count_field
-        )
+        count_field = self.model_instance.tutorial_object_count_field
+
+        old_count = getattr(self.tutorial, count_field)
         self.tutorial.refresh_from_db()
-        new_count = getattr(
-            self.tutorial, self.model_instance.tutorial_object_count_field
-        )
+        new_count = getattr(self.tutorial, count_field)
 
         self.assertEqual(new_count, old_count + 1)
 
@@ -207,19 +211,109 @@ class TutorialUserScoreCoinRelationsTest(TestCase):
 
     def test_decrease_count_tutorial_model_on_delete(self):
         """Deleteting model should decrease its count in tutorial model."""
+        count_field = self.model_instance.tutorial_object_count_field
 
         # Refresh tutorial fields after model creation in setUp()
         self.tutorial.refresh_from_db()
-        old_count = getattr(
-            self.tutorial, self.model_instance.tutorial_object_count_field
-        )
+        old_count = getattr(self.tutorial, count_field)
 
         # Delete model
         self.model_instance.delete()
-        # Refresh author fields after model delete
+        # Refresh tutorial fields after model delete
         self.tutorial.refresh_from_db()
-        new_count = getattr(
-            self.tutorial, self.model_instance.tutorial_object_count_field
+        new_count = getattr(self.tutorial, count_field)
+
+        self.assertEqual(new_count, old_count - 1)
+
+
+class TutorialCommentUserScoreCoinRelationsTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        models = [
+            TutorialCommentLike,
+            TutorialCommentUpVote,
+            TutorialCommentDownVote,
+        ]
+        cls.model = random.choice(models)
+
+        super().setUpClass()
+
+    def setUp(self):
+        user: User = baker.make(User)
+        comment_user: User = baker.make(User)
+        comment: TutorialComment = baker.make_recipe(
+            "learning.tutorial_comment", user=comment_user
         )
+        self.user = deepcopy(user)
+        self.comment_user = deepcopy(comment_user)
+        self.comment = deepcopy(comment)
+
+        model_instance: AbstractCommentScoreCoinModel = baker.make(
+            self.model,
+            user=user,
+            comment=comment,
+            score=200,
+            coin=250,
+        )
+        self.model_instance = model_instance
+
+    def test_increase_comment_user_score_coin_on_create(self):
+        """Creating model should increase comment user's
+        coins and scores.
+        """
+        old_scores = self.comment_user.scores
+        old_coins = self.comment_user.coins
+        self.comment_user.refresh_from_db()
+
+        self.assertEqual(
+            self.comment_user.scores, old_scores + self.model_instance.score
+        )
+        self.assertEqual(
+            self.comment_user.coins, old_coins + self.model_instance.coin
+        )
+
+    def test_increase_count_comment_model_on_create(self):
+        """Creating model should increase its count in comment model."""
+        count_field = self.model_instance.comment_object_count_field
+
+        old_count = getattr(self.comment, count_field)
+        self.comment.refresh_from_db()
+        new_count = getattr(self.comment, count_field)
+
+        self.assertEqual(new_count, old_count + 1)
+
+    def test_decrease_comment_user_score_coin_on_delete(self):
+        """Deleteing model should decrease comment user's
+        coins and scores."""
+        # Refresh author fields after model creation in setUp()
+        self.comment_user.refresh_from_db()
+        old_scores = self.comment_user.scores
+        old_coins = self.comment_user.coins
+
+        # Delete model
+        self.model_instance.delete()
+        # Refresh comment_user fields after model delete
+        self.comment_user.refresh_from_db()
+
+        self.assertEqual(
+            self.comment_user.scores, old_scores - self.model_instance.score
+        )
+        self.assertEqual(
+            self.comment_user.coins, old_coins - self.model_instance.coin
+        )
+
+    def test_decrease_count_comment_model_on_delete(self):
+        """Deleteting model should decrease its count in comment model."""
+        count_field = self.model_instance.comment_object_count_field
+
+        # Refresh comment fields after model creation in setUp()
+        self.comment.refresh_from_db()
+        old_count = getattr(self.comment, count_field)
+
+        # Delete model
+        self.model_instance.delete()
+        # Refresh comment fields after model delete
+        self.comment.refresh_from_db()
+        new_count = getattr(self.comment, count_field)
 
         self.assertEqual(new_count, old_count - 1)
