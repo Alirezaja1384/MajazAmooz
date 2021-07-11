@@ -16,7 +16,7 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
 
     Needs these (required ones flagged by *):
         [tutorial relation field *]: required for increase/decrease
-                                     object's count and author's score and coin
+            object's count and author's score and coin.
 
         [tutorial_object_count_field]: object field on tutorial model to
             increase/decrease on insert/delete. Defaults to None.
@@ -24,11 +24,11 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
     Provides these hooks:
         AFTER_CREATE: increases author's score and coin by object's
             score and coin field and object count for tutorial model
-            (if specified by tutorial_object_count_field)
+            (if specified by tutorial_object_count_field).
 
         AFTER_CREATE: decreases author's score and coin by object's
             score andcoin field and object count on tutorial model
-            (if specified by tutorial_object_count_field)
+            (if specified by tutorial_object_count_field).
     """
 
     tutorial_object_count_field = None

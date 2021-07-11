@@ -1,9 +1,24 @@
+import random
 from copy import deepcopy
 from django.test import TestCase
 from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
 from model_bakery import baker
-from learning.models import Category, Tutorial, TutorialComment
 from shared.models import ConfirmStatusChoices
+from learning.models.tutorial_user_relation_models import (
+    AbstractTutorialScoreCoinModel,
+)
+from learning.models import (
+    Category,
+    Tutorial,
+    TutorialComment,
+    TutorialLike,
+    TutorialUpVote,
+    TutorialDownVote,
+)
+
+
+User = get_user_model()
 
 
 class CategoryTest(TestCase):
@@ -114,3 +129,97 @@ class TutorialCommentTest(TestCase):
             edited_comment.confirm_status,
             ConfirmStatusChoices.WAITING_FOR_CONFIRM,
         )
+
+
+class TutorialUserScoreCoinRelationsTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        models = [TutorialLike, TutorialUpVote, TutorialDownVote]
+        cls.model = random.choice(models)
+
+        super().setUpClass()
+
+    def setUp(self):
+        user: User = baker.make(User)
+        author: User = baker.make(User)
+        tutorial: Tutorial = baker.make_recipe(
+            "learning.tutorial", author=author
+        )
+        self.user = deepcopy(user)
+        self.author = deepcopy(author)
+        self.tutorial = deepcopy(tutorial)
+
+        model_instance: AbstractTutorialScoreCoinModel = baker.make(
+            self.model,
+            user=user,
+            tutorial=tutorial,
+            score=200,
+            coin=250,
+        )
+        self.model_instance = model_instance
+
+    def test_increase_user_score_coin_on_create(self):
+        """Creating model should increase tutorial author's
+        coins and scores.
+        """
+        old_scores = self.author.scores
+        old_coins = self.author.coins
+        self.author.refresh_from_db()
+
+        self.assertEqual(
+            self.author.scores, old_scores + self.model_instance.score
+        )
+        self.assertEqual(
+            self.author.coins, old_coins + self.model_instance.coin
+        )
+
+    def test_increase_count_tutorial_model_on_create(self):
+        """Creating model should increase its count in tutorial model."""
+        old_count = getattr(
+            self.tutorial, self.model_instance.tutorial_object_count_field
+        )
+        self.tutorial.refresh_from_db()
+        new_count = getattr(
+            self.tutorial, self.model_instance.tutorial_object_count_field
+        )
+
+        self.assertEqual(new_count, old_count + 1)
+
+    def test_decrease_user_score_coin_on_delete(self):
+        """Deleteing model should decrease tutorial author's
+        coins and scores."""
+        # Refresh author fields after model creation in setUp()
+        self.author.refresh_from_db()
+        old_scores = self.author.scores
+        old_coins = self.author.coins
+
+        # Delete model
+        self.model_instance.delete()
+        # Refresh author fields after model delete
+        self.author.refresh_from_db()
+
+        self.assertEqual(
+            self.author.scores, old_scores - self.model_instance.score
+        )
+        self.assertEqual(
+            self.author.coins, old_coins - self.model_instance.coin
+        )
+
+    def test_decrease_count_tutorial_model_on_delete(self):
+        """Deleteting model should decrease its count in tutorial model."""
+
+        # Refresh tutorial fields after model creation in setUp()
+        self.tutorial.refresh_from_db()
+        old_count = getattr(
+            self.tutorial, self.model_instance.tutorial_object_count_field
+        )
+
+        # Delete model
+        self.model_instance.delete()
+        # Refresh author fields after model delete
+        self.tutorial.refresh_from_db()
+        new_count = getattr(
+            self.tutorial, self.model_instance.tutorial_object_count_field
+        )
+
+        self.assertEqual(new_count, old_count - 1)
