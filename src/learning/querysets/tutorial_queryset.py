@@ -48,29 +48,6 @@ class TutorialQueryset(QuerySet):
             "title", "slug", "short_description", "likes_count", "image"
         )
 
-    def filter_by_categories(
-        self,
-        categories: list,
-        tutorial_count: int = 5,
-    ) -> TutorialQueryset:
-        """Filters tutorials by list of categories.
-
-        Args:
-            categories (list): Categories to search tutorials by them
-            tutorial_count (int, optional): Expected count of tutorial.
-                Defaults to 5.
-
-        Returns:
-            TutorialQueryset: Tutorials already have given category.
-        """
-        return (
-            self.filter(categories__in=categories)
-            .order_by("-create_date")
-            .active_and_confirmed_tutorials()
-            .only_main_fields()
-            .distinct()[:tutorial_count]
-        )
-
     def prefetch_active_categories(self) -> TutorialQueryset:
         """Prefetches active categories.
 
@@ -160,8 +137,10 @@ class TutorialQueryset(QuerySet):
         categories = _flat_categories_parents(categories_and_parents)
 
         # Get tutorials with joint categories
-        related_tutorials = self.exclude(pk=tutorial.pk).filter_by_categories(
-            categories, tutorial_count
+        related_tutorials = (
+            self.exclude(pk=tutorial.pk)
+            .filter(categories__in=categories)
+            .distinct()[:tutorial_count]
         )
 
         return related_tutorials

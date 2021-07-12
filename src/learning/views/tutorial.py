@@ -30,16 +30,18 @@ def record_tutorial_view(tutorial: Tutorial, user: User):
 @requires_csrf_token
 def tutorial_details_view(request: HttpRequest, slug: str):
     """Tutorial details view"""
+    all_tutorials = Tutorial.objects.active_and_confirmed_tutorials()
+
     tutorial: Tutorial = get_object_or_404(
-        Tutorial.objects.select_related("author")
+        all_tutorials.select_related("author")
         .prefetch_active_categories()
-        .prefetch_active_confirmed_comments()
-        .active_and_confirmed_tutorials(),
+        .prefetch_active_confirmed_comments(),
         slug=slug,
     )
 
-    all_tutorials = Tutorial.objects.active_and_confirmed_tutorials()
-    related_tutorials = all_tutorials.get_related_tutorials(tutorial)
+    related_tutorials = all_tutorials.get_related_tutorials(
+        tutorial
+    ).only_main_fields()
 
     # Check is user logged in and liked this tutorial
     liked_by_current_user = (
