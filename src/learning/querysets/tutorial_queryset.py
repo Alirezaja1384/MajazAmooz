@@ -21,7 +21,8 @@ class TutorialQueryset(QuerySet):
         )
 
     def annonate_comments_count(self) -> TutorialQueryset:
-        """Annonates comments count as comments_count
+        """Annonates active and confirmed comments count
+        as comments_count.
 
         Returns:
             TutorialQueryset: Tutorials with comments_count.

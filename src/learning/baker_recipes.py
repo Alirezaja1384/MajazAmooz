@@ -4,8 +4,9 @@ from shared.models import ConfirmStatusChoices
 from learning.models import Category, Tutorial, TutorialComment
 
 # Category recipes
-active_category = Recipe(Category, is_active=True)
-inactive_category = Recipe(Category, is_active=False)
+category = Recipe(Category)
+active_category = category.extend(is_active=True)
+inactive_category = category.extend(is_active=False)
 
 # Tutorial recipes
 tutorial = Recipe(
@@ -13,6 +14,9 @@ tutorial = Recipe(
 )
 confirmed_tutorial = tutorial.extend(
     confirm_status=ConfirmStatusChoices.CONFIRMED
+)
+waiting_for_confirm_tutorial = tutorial.extend(
+    confirm_status=ConfirmStatusChoices.WAITING_FOR_CONFIRM
 )
 disproved_tutorial = tutorial.extend(
     confirm_status=ConfirmStatusChoices.DISPROVED
