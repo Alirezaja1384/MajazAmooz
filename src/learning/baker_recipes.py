@@ -26,7 +26,11 @@ disproved_tutorial = tutorial.extend(
 )
 
 # TutorialComment recipes
-tutorial_comment = Recipe(TutorialComment, body=gen_string(150))
+tutorial_comment = Recipe(
+    TutorialComment,
+    body=gen_string(150),
+    _fill_optional=["user"],
+)
 confirmed_tutorial_comment = tutorial_comment.extend(
     confirm_status=ConfirmStatusChoices.CONFIRMED
 )

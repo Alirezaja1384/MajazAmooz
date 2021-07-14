@@ -3,8 +3,8 @@ import datetime
 from typing import Type
 from django.test import TestCase
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 from model_bakery import baker
-from authentication.models import User
 from shared.statistics import MonthlyCountStatistics
 from learning.models import (
     Category,
@@ -14,9 +14,15 @@ from learning.models import (
     TutorialView,
     TutorialUpVote,
     TutorialDownVote,
+    TutorialCommentLike,
+    TutorialCommentUpVote,
+    TutorialCommentDownVote,
 )
 from learning.models.tutorial_user_relation_models import (
     AbstractTutorialScoreCoinModel,
+)
+from learning.models.tutorial_comment_user_relation_models import (
+    AbstractCommentScoreCoinModel,
 )
 from learning.querysets.category_queryset import CategoryQueryset
 from learning.querysets.tutorial_queryset import TutorialQueryset
@@ -26,6 +32,11 @@ from learning.querysets.tutorial_comment_queryset import (
 from learning.querysets.tutorial_user_relation_querysets import (
     TutorialUserRelationQueryset,
 )
+from learning.querysets.tutorial_comment_user_relation_querysets import (
+    TutorialCommentUserRelationQueryset,
+)
+
+User = get_user_model()
 
 
 class CategoryQuerysetTest(TestCase):
@@ -333,3 +344,55 @@ class TutorialUserRelationQuerysetTest(TestCase):
             MonthlyCountStatistics({"label": "تیر 1400", "count": 2}),
         ]
         self.assertEqual(statistics, expected_statistics)
+
+
+class TutorialCommentUserRelationQuerysetTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        all_models: list[Type[AbstractCommentScoreCoinModel]] = [
+            TutorialCommentLike,
+            TutorialCommentUpVote,
+            TutorialCommentDownVote,
+        ]
+        model = random.choice(all_models)
+
+        active_confirmed_comment = baker.make_recipe(
+            "learning.confirmed_tutorial_comment"
+        )
+        disproved_comment = baker.make_recipe(
+            "learning.disproved_tutorial_comment"
+        )
+
+        baker.make(
+            model,
+            comment=random.choice(
+                [active_confirmed_comment, disproved_comment]
+            ),
+            _quantity=5,
+        )
+
+        cls.model = model
+        cls.all_models = all_models
+        cls.queryset = model.objects.all()
+        cls.active_confirmed_comment = active_confirmed_comment
+
+    def test_used_by_all_models(self):
+        """Should be used as all models' manager."""
+        for model in self.all_models:
+            qs = model.objects.all()
+            self.assertIsInstance(qs, TutorialCommentUserRelationQueryset)
+
+    def test_active_confirmed_comments(self):
+        """Should return objects that have active and
+        confirmed comment."""
+        objs_active_confirmed_comment = (
+            self.queryset.active_confirmed_comments()
+        )
+        self.assertEqual(
+            list(objs_active_confirmed_comment),
+            list(
+                self.model.objects.filter(
+                    comment=self.active_confirmed_comment
+                )
+            ),
+        )
