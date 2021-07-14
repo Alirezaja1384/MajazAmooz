@@ -1,9 +1,9 @@
-from .home import home_view
-from .tutorial import tutorial_details_view
+from .home import HomeView
+from .tutorial import TutorialDetailsView
 from .tutorials_archive import TutorialListView
 
 __all__ = [
-    "home_view",
-    "tutorial_details_view",
+    "HomeView",
+    "TutorialDetailsView",
     "TutorialListView",
 ]
