@@ -10,7 +10,10 @@ inactive_category = category.extend(is_active=False)
 
 # Tutorial recipes
 tutorial = Recipe(
-    Tutorial, short_description=gen_string(50), body=gen_string(150)
+    Tutorial,
+    short_description=gen_string(50),
+    body=gen_string(150),
+    _fill_optional=["author"],
 )
 confirmed_tutorial = tutorial.extend(
     confirm_status=ConfirmStatusChoices.CONFIRMED

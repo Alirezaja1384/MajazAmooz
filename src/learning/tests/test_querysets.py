@@ -1,18 +1,30 @@
 import random
+import datetime
+from typing import Type
 from django.test import TestCase
+from django.utils import timezone
 from model_bakery import baker
 from authentication.models import User
+from shared.statistics import MonthlyCountStatistics
 from learning.models import (
     Category,
     Tutorial,
     TutorialComment,
     TutorialLike,
     TutorialView,
+    TutorialUpVote,
+    TutorialDownVote,
+)
+from learning.models.tutorial_user_relation_models import (
+    AbstractTutorialScoreCoinModel,
 )
 from learning.querysets.category_queryset import CategoryQueryset
 from learning.querysets.tutorial_queryset import TutorialQueryset
 from learning.querysets.tutorial_comment_queryset import (
     TutorialCommentQueryset,
+)
+from learning.querysets.tutorial_user_relation_querysets import (
+    TutorialUserRelationQueryset,
 )
 
 
@@ -264,3 +276,60 @@ class TutorialCommentQuerysetTest(TestCase):
             comments_active_confirmed_tutorial,
             list(self.active_confirmed_tutorial.comments.all()),
         )
+
+
+class TutorialUserRelationQuerysetTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+
+        all_models: list[Type[AbstractTutorialScoreCoinModel]] = [
+            TutorialLike,
+            TutorialView,
+            TutorialUpVote,
+            TutorialDownVote,
+        ]
+        model = random.choice(all_models)
+
+        # date, count
+        date_counts = [
+            # 4th jalali month (Khordad)
+            (datetime.datetime(2021, 6, 10), 3),
+            # 3rd jalali month (Tir)
+            (datetime.datetime(2021, 7, 10), 2),
+        ]
+
+        tutorial = baker.make_recipe("learning.tutorial")
+        for date_count in date_counts:
+            month_items = baker.make(
+                model,
+                tutorial=tutorial,
+                _quantity=date_count[1],
+            )
+            for item in month_items:
+                # create_date has auto_now_add=True, then
+                # its create_date can only change on update.
+                item.create_date = timezone.make_aware(date_count[0])
+                item.save()
+
+        cls.all_models = all_models
+        cls.queryset = model.objects.all()
+
+    def test_used_by_all_models(self):
+        """Should be used as all models' manager."""
+        for model in self.all_models:
+            qs = model.objects.all()
+            self.assertIsInstance(qs, TutorialUserRelationQueryset)
+
+    def test_get_last_months_count_statistics(self):
+        """get_last_months_count_statistics should return last months
+        label and object counts created in each month.
+        """
+        today = datetime.date(2021, 7, 14)
+        statistics = list(
+            self.queryset.get_last_months_count_statistics(2, today)
+        )
+        expected_statistics = [
+            MonthlyCountStatistics({"label": "خرداد 1400", "count": 3}),
+            MonthlyCountStatistics({"label": "تیر 1400", "count": 2}),
+        ]
+        self.assertEqual(statistics, expected_statistics)
