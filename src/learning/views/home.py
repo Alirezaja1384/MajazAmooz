@@ -1,13 +1,14 @@
 """ Learn home view """
 from django.http import HttpRequest
 from django.shortcuts import render
+from constance import config
 from learning.models import Tutorial
 
 
 def home_view(request: HttpRequest):
     """Home view"""
 
-    carousel_count = 5
+    carousel_count = config.LEARNING_HOME_CAROUSEL_ITEMS_COUNT
 
     tutorials = (
         Tutorial.objects.active_and_confirmed_tutorials()
