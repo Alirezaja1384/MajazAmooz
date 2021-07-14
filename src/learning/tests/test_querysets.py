@@ -2,9 +2,18 @@ import random
 from django.test import TestCase
 from model_bakery import baker
 from authentication.models import User
-from learning.models import Category, Tutorial, TutorialLike, TutorialView
+from learning.models import (
+    Category,
+    Tutorial,
+    TutorialComment,
+    TutorialLike,
+    TutorialView,
+)
 from learning.querysets.category_queryset import CategoryQueryset
 from learning.querysets.tutorial_queryset import TutorialQueryset
+from learning.querysets.tutorial_comment_queryset import (
+    TutorialCommentQueryset,
+)
 
 
 class CategoryQuerysetTest(TestCase):
@@ -200,4 +209,58 @@ class TutorialQuerysetTest(TestCase):
 
         self.assertEqual(
             list(joint_category_tutorials), list(related_tutorials)
+        )
+
+
+class TutorialCommentQuerysetTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        active_confirmed: list[TutorialComment] = baker.make_recipe(
+            "learning.confirmed_tutorial_comment", is_active=True, _quantity=2
+        )
+
+        active_confirmed_tutorial: Tutorial = baker.make_recipe(
+            "learning.confirmed_tutorial", is_active=True
+        )
+        disproved_tutorial: Tutorial = baker.make_recipe(
+            "learning.disproved_tutorial"
+        )
+
+        baker.make_recipe(
+            "learning.tutorial_comment",
+            tutorial=random.choice(
+                [active_confirmed_tutorial, disproved_tutorial]
+            ),
+            _quantity=5,
+        )
+
+        cls.active_confirmed_comments = active_confirmed
+        cls.active_confirmed_tutorial = active_confirmed_tutorial
+        cls.comments_qs = TutorialComment.objects.all()
+
+    def test_used_by_model(self):
+        """Should be used as TutorialComment model's manager."""
+        self.assertIsInstance(self.comments_qs, TutorialCommentQueryset)
+
+    def test_active_and_confirmed_comments(self):
+        """active_and_confirmed_comments should return queryset of active
+        and confirmed tutorial comments.
+        """
+        active_confirmed_qs = (
+            self.comments_qs.active_and_confirmed_comments().order_by()
+        )
+        self.assertEqual(
+            list(active_confirmed_qs), list(self.active_confirmed_comments)
+        )
+
+    def test_active_confirmed_tutorials(self):
+        """active_confirmed_tutorials should return comments with
+        active and confirmed tutorials.
+        """
+        comments_active_confirmed_tutorial = list(
+            self.comments_qs.active_confirmed_tutorials()
+        )
+        self.assertEqual(
+            comments_active_confirmed_tutorial,
+            list(self.active_confirmed_tutorial.comments.all()),
         )
