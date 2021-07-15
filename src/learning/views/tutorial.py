@@ -13,6 +13,8 @@ class TutorialDetailsView(View):
     """Tutorial details view"""
 
     def get(self, request: HttpRequest, slug: str):
+        recommendation_items_count = config.LEARNING_RECOMMENDATION_ITEMS_COUNT
+
         all_tutorials = Tutorial.objects.active_and_confirmed_tutorials()
 
         tutorial: Tutorial = get_object_or_404(
@@ -24,7 +26,7 @@ class TutorialDetailsView(View):
         )
 
         related_tutorials = all_tutorials.get_related_tutorials(
-            tutorial
+            tutorial, recommendation_items_count
         ).only_main_fields()
 
         # Check is user logged in and liked this tutorial
@@ -32,8 +34,13 @@ class TutorialDetailsView(View):
             request.user.is_authenticated
             and tutorial.likes.filter(user=request.user).exists()
         )
-        latest_tutorials = all_tutorials.order_by("-create_date")[:4]
-        most_popular_tutorials = all_tutorials.order_by("-likes_count")[:4]
+
+        latest_tutorials = all_tutorials.order_by("-create_date")[
+            :recommendation_items_count
+        ]
+        most_popular_tutorials = all_tutorials.order_by(
+            "-likes_count", "-create_date"
+        )[:recommendation_items_count]
 
         context = {
             "tutorial": tutorial,
