@@ -3,12 +3,12 @@ from django.http import HttpRequest
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
-from django.views.decorators.csrf import requires_csrf_token
+from django.views.decorators.csrf import ensure_csrf_cookie
 from constance import config
 from learning.models import Tutorial, TutorialView
 
 
-@method_decorator(requires_csrf_token, name="dispatch")
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class TutorialDetailsView(View):
     """Tutorial details view"""
 
