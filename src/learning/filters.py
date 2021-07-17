@@ -12,6 +12,22 @@ class TutorialArchiveFilterSet(django_filters.FilterSet):
                                                 likes_count, create_date)
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Get ordering value
+        ordering: str = self.data["order_by"]
+        # Get ascending_or_descending from data with default value=descending
+        ascending_or_descending = self.data.get(
+            "ascending_or_descending", "descending"
+        )
+
+        # If ascending_or_descending was descending reverse queryset's ordering
+        if ascending_or_descending == "descending" and (
+            not ordering.startswith("-")
+        ):
+            self.data["order_by"] = "-" + ordering
+
     category = django_filters.CharFilter(
         field_name="categories", lookup_expr="slug"
     )
@@ -35,18 +51,3 @@ class TutorialArchiveFilterSet(django_filters.FilterSet):
             )
             | Q(tags__title__contains=value)
         )
-
-    @property
-    def qs(self):
-        query_set = super().qs
-
-        # Get ascending_or_descending from data with default value=descending
-        ascending_or_descending = self.data.get(
-            "ascending_or_descending", "descending"
-        )
-
-        # If ascending_or_descending was descending reverse queryset
-        if ascending_or_descending == "descending":
-            query_set = query_set.reverse()
-
-        return query_set
