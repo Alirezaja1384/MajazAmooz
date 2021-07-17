@@ -61,7 +61,6 @@ class TutorialDetailsView(View):
 
         Args:
             tutorial (Tutorial): Visited tutorial
-            user (User): User that visited the tutorial
         """
         tutorial_view_score = config.TUTORIAL_VIEW_SCORE
         tutorial_view_coin = config.TUTORIAL_VIEW_COIN
