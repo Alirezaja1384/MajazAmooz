@@ -2,15 +2,20 @@
 import random
 from typing import Optional
 from unittest import mock
-from django.test import TestCase, RequestFactory
 from django.http import HttpResponse
+from django.db.models import QuerySet
+from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from django.shortcuts import reverse, resolve_url
 from django.core.exceptions import MultipleObjectsReturned
 from model_bakery import baker
 from shared.tests.utils import prevent_request_warnings
-from learning.views import home, tutorial as tutorial_details_view
-from learning.models import Tutorial, TutorialLike, TutorialView
+from learning.views import (
+    home,
+    tutorial as tutorial_details_view,
+    tutorials_archive,
+)
+from learning.models import Tutorial, Category, TutorialLike, TutorialView
 
 
 User = get_user_model()
@@ -21,6 +26,7 @@ class ConstanceConfigMock:
     TUTORIAL_VIEW_SCORE = 4
     LEARNING_HOME_CAROUSEL_ITEMS_COUNT = 4
     LEARNING_RECOMMENDATION_ITEMS_COUNT = 5
+    LEARNING_TUTORIAL_ARCHIVE_PAGINATE_BY = 9
 
 
 @mock.patch.object(home, "config", ConstanceConfigMock)
@@ -312,3 +318,149 @@ class TutorialDetailsViewTest(TestCase):
         self.assertEqual(
             tutorial_view.coin, ConstanceConfigMock.TUTORIAL_VIEW_COIN
         )
+
+
+@mock.patch.object(tutorials_archive, "config", ConstanceConfigMock)
+class TutorialListViewTest(TestCase):
+    ordering_choices = [
+        "title",
+        "likes_count",
+        "create_date",
+        "user_views_count",
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        active_confirmed_tutorials: list[Tutorial] = baker.make_recipe(
+            "learning.confirmed_tutorial",
+            is_active=True,
+            # Make 1 more than paginate_by' value
+            _quantity=ConstanceConfigMock.LEARNING_TUTORIAL_ARCHIVE_PAGINATE_BY
+            + 1,
+        )
+
+        cls.active_confirmed_tutorials = active_confirmed_tutorials
+
+    def get_view_url(self, **get_params) -> str:
+        """Generates tutorial archive url by given GET parameters.
+
+        Returns:
+            str: Generated url.
+        """
+        return (
+            reverse("learning:tutorials_archive")
+            + "?"
+            + "&".join(
+                [f"{param[0]}={param[1]}" for param in get_params.items()]
+            )
+        )
+
+    def get_view_queryset(self, **get_params) -> QuerySet:
+        """Gets view's queryset by its get_queryset() method.
+
+        Returns:
+            QuerySet: View's queryset.
+        """
+        request = RequestFactory().get(self.get_view_url(**get_params))
+
+        archive_view = tutorials_archive.TutorialListView()
+        archive_view.setup(request)
+
+        return archive_view.get_queryset()
+
+    def test_active_confirmed_tutorial_status_200(self):
+        """Response's status code should be 200."""
+        # It automatically uses ana active and confirmed tutorial
+        response = self.client.get(self.get_view_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_paginate_by(self):
+        """Should paginate tutorials by config's
+        LEARNING_TUTORIAL_ARCHIVE_PAGINATE_BY.
+        """
+        response = self.client.get(self.get_view_url())
+        page = response.context["page_obj"]
+
+        self.assertEqual(
+            len(page.object_list),
+            ConstanceConfigMock.LEARNING_TUTORIAL_ARCHIVE_PAGINATE_BY,
+        )
+
+    def test_page_parameter(self):
+        """Should use GET parameters' page as page number."""
+        page = self.client.get(self.get_view_url(page=2)).context["page_obj"]
+        self.assertEqual(page.number, 2)
+
+    def test_default_ordering(self):
+        """Should order tutorials by create_date descendingly."""
+        queryset = self.get_view_queryset()
+        self.assertEqual(queryset.query.order_by, ("-create_date",))
+
+    def test_apply_descending_ordering_by_default(self):
+        """Should apply descending ordering when ascending_or_descending
+        is not specified.
+        """
+        for ordering in self.ordering_choices:
+            queryset = self.get_view_queryset(order_by=ordering)
+            self.assertEqual(queryset.query.order_by, ("-" + ordering,))
+
+    def test_apply_ascending_ordering(self):
+        """Should apply ascending ordering when ascending_or_descending
+        equals to ascending.
+        """
+        for ordering in self.ordering_choices:
+            queryset = self.get_view_queryset(
+                order_by=ordering, ascending_or_descending="ascending"
+            )
+            self.assertEqual(queryset.query.order_by, (ordering,))
+
+    def test_apply_descending_ordering(self):
+        """Should apply descending ordering when ascending_or_descending
+        equals to descending.
+        """
+        for ordering in self.ordering_choices:
+            queryset = self.get_view_queryset(
+                order_by=ordering, ascending_or_descending="descending"
+            )
+            self.assertEqual(queryset.query.order_by, ("-" + ordering,))
+
+    def test_filter_by_category(self):
+        """Queryset should filter tutrials by given category parameter."""
+        category: Category = baker.make_recipe("learning.active_category")
+        cat_tutorials: list[Tutorial] = baker.make_recipe(
+            "learning.confirmed_tutorial",
+            is_active=True,
+            categories=[category],
+            _quantity=3,
+        )
+
+        queryset = self.get_view_queryset(category=category.slug).order_by()
+
+        self.assertEqual(cat_tutorials, list(queryset))
+
+    def test_search_filter(self):
+        """Should use search GET parameter to search in tutorias'
+        "title", "short_description", "body" and "slug" fields.
+        """
+        search_fields = ["title", "short_description", "body", "slug"]
+
+        for field in search_fields:
+            random_tutorial = random.choice(self.active_confirmed_tutorials)
+            field_val = getattr(random_tutorial, field)
+
+            view_queryset_tutorials = list(
+                self.get_view_queryset(search=field_val)
+            )
+            search_tutorials = list(
+                Tutorial.objects.filter(**{field: field_val})
+            )
+
+            self.assertEqual(view_queryset_tutorials, search_tutorials)
+
+    def test_context_category_name(self):
+        """Context's category should be equal to filtered category."""
+        category = baker.make_recipe("learning.active_category")
+        response = self.client.get(self.get_view_url(category=category.slug))
+        context_category = response.context.get("category")
+
+        self.assertEqual(category, context_category)
