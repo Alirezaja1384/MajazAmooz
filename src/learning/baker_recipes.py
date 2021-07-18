@@ -11,8 +11,8 @@ inactive_category = category.extend(is_active=False)
 # Tutorial recipes
 tutorial = Recipe(
     Tutorial,
-    short_description=gen_string(50),
-    body=gen_string(150),
+    short_description=lambda: gen_string(150),
+    body=lambda: gen_string(150),
     _fill_optional=["author"],
 )
 confirmed_tutorial = tutorial.extend(
@@ -28,7 +28,7 @@ disproved_tutorial = tutorial.extend(
 # TutorialComment recipes
 tutorial_comment = Recipe(
     TutorialComment,
-    body=gen_string(150),
+    body=lambda: gen_string(150),
     _fill_optional=["user"],
 )
 confirmed_tutorial_comment = tutorial_comment.extend(
