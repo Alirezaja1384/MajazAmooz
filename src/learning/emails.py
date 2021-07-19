@@ -1,10 +1,11 @@
 import logging
+from typing import Optional, Dict
 from smtplib import SMTPException
 from django.conf import settings
 from django.http import HttpRequest
 from django.shortcuts import resolve_url
-from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
 from django.db.models import QuerySet
 from shared.models import ConfirmStatusChoices
 from learning.models import TutorialComment, Tutorial
@@ -26,10 +27,29 @@ class EmailsResult:
 
 
 def send_mail(
-    subject, to: list[str], plain_message=None, template=None, context=None
-):
+    subject: str,
+    to_emails: list[str],
+    plain_message: Optional[str] = None,
+    template: Optional[str] = None,
+    context: Optional[Dict] = None,
+) -> bool:
+    """Send email to given to_emails.
 
-    email = EmailMultiAlternatives(subject, plain_message, FROM_EMAIL, to=to)
+    Args:
+        subject (str): Email subject.
+        to_emails (list[str]): Sends emails to these emails.
+        plain_message (Optional[str], optional): Email plain_message.
+            Defaults to None.
+        template (Optional[str], optional): Email template. Defaults to None.
+        context (Optional[Dict], optional): Email template's context.
+            Defaults to None.
+
+    Returns:
+        bool: True if sending was successful, otherwise False.
+    """
+    email = EmailMultiAlternatives(
+        subject, plain_message, FROM_EMAIL, to=to_emails
+    )
 
     if template:
         html_message = render_to_string(template, context)
@@ -71,7 +91,7 @@ def notify_tutorial_comments_reply(
             + f"#comment-{child_comment.pk}"
         )
 
-        to = [parent_comment.user.email]
+        to_emails = [parent_comment.user.email]
         subject = f'پاسخ به نظر "{parent_comment.title}"'
         plain_message = (
             f'پاسخی برای نظر "{parent_comment.title}" ثبت شده و اکنون تایید شد'
@@ -86,7 +106,7 @@ def notify_tutorial_comments_reply(
             "url": url,
         }
 
-        return send_mail(subject, to, plain_message, template, context)
+        return send_mail(subject, to_emails, plain_message, template, context)
 
     # Comments to notify their parent comments' user
     comments_with_parent = (
@@ -136,7 +156,7 @@ def notify_tutorial_comment_confirm_disprove(
         else:
             status_text = "رد شد"
 
-        to = [comment.user.email]
+        to_emails = [comment.user.email]
         subject = "تایید/رد دیدگاه"
         plain_message = (
             f'دیدگاه "{comment.title}" برای آموزش '
@@ -160,7 +180,7 @@ def notify_tutorial_comment_confirm_disprove(
             plain_message += f"\n لینک پاسخ: {url}"
             context["url"] = url
 
-        return send_mail(subject, to, plain_message, template, context)
+        return send_mail(subject, to_emails, plain_message, template, context)
 
     for comment in queryset:
         result = _send_notification_mail(comment)
@@ -198,7 +218,7 @@ def notify_tutorial_confirm_disprove(
         else:
             status_text = "رد شد"
 
-        to = [tutorial.author.email]
+        to_emails = [tutorial.author.email]
         subject = "تایید/رد آموزش"
         plain_message = f'دیدگاه "{tutorial.title}" {status_text}'
         template = "mails/tutorial_confirm_disprove.html"
@@ -217,7 +237,7 @@ def notify_tutorial_confirm_disprove(
             plain_message += f"\n لینک آموزش: {url}"
             context["url"] = url
 
-        return send_mail(subject, to, plain_message, template, context)
+        return send_mail(subject, to_emails, plain_message, template, context)
 
     for tutorial in queryset:
         result = _send_notification_mail(tutorial)
@@ -251,7 +271,7 @@ def notify_tutorial_new_confirmed_comment(
             + f"#comment-{comment.pk}"
         )
 
-        to = [comment.tutorial.author.email]
+        to_emails = [comment.tutorial.author.email]
         subject = "ثبت دیدگاه جدید برای آموزش شما"
         plain_message = (
             f'دیدگاه "{comment.title}" برای آموزش '
@@ -266,7 +286,7 @@ def notify_tutorial_new_confirmed_comment(
             "url": url,
         }
 
-        return send_mail(subject, to, plain_message, template, context)
+        return send_mail(subject, to_emails, plain_message, template, context)
 
     for comment in queryset:
         result = _send_notification_mail(comment)
