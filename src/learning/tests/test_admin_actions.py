@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, DEFAULT, patch
+from unittest.mock import MagicMock, patch
 from django.test import TestCase, RequestFactory
 from model_bakery import baker
 from shared.models import ConfirmStatusChoices
@@ -6,7 +6,7 @@ from learning.models import Tutorial, TutorialComment
 from learning.admin import actions
 
 
-@patch.object(actions, "notify_tutorial_confirm_disprove")
+@patch.object(actions, "TutorialConfirmDisproveNotifier")
 class TutorialAdminActionsTest(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -60,7 +60,7 @@ class TutorialAdminActionsTest(TestCase):
             mock (MagicMock): Mocked notify_tutorial_confirm_disprove method.
         """
         self.confirm_queryset()
-        self.assertTrue(mock.called)
+        self.assertTrue(mock.return_value.notify.called)
 
     def test_confirm_action_message_user(self, _: MagicMock):
         """Confirm action should call given modeladmin's message_user().
@@ -105,13 +105,13 @@ class TutorialAdminActionsTest(TestCase):
         self.assertTrue(mock.called)
 
 
-@patch.multiple(
-    actions,
-    notify_tutorial_comments_reply=DEFAULT,
-    notify_tutorial_new_confirmed_comment=DEFAULT,
-    notify_tutorial_comment_confirm_disprove=DEFAULT,
-)
 class TutorialCommentAdminActionsTest(TestCase):
+    notifier_classes = [
+        "TutorialCommentConfirmDisproveNotifier",
+        "TutorialCommentReplyNotifier",
+        "TutorialAuthorNewConfirmedCommentNotifier",
+    ]
+
     @classmethod
     def setUpClass(cls):
         cls.factory = RequestFactory()
@@ -120,10 +120,21 @@ class TutorialCommentAdminActionsTest(TestCase):
         super().setUpClass()
 
     def setUp(self):
+        # Patchers
+        self.notifier_patchers = {
+            notifier: patch.object(actions, notifier)
+            for notifier in self.notifier_classes
+        }
+
+        # Mocked classes' instances
+        self.notifier_instances = {
+            patcher[0]: patcher[1].start().return_value
+            for patcher in self.notifier_patchers.items()
+        }
+
         # Create 12 tutorial comments (7 confirmed and 5 disproved)
         baker.make_recipe("learning.confirmed_tutorial_comment", _quantity=7)
         baker.make_recipe("learning.disproved_tutorial_comment", _quantity=5)
-
         self.queryset = TutorialComment.objects.all()
 
     def confirm_queryset(self):
@@ -142,9 +153,10 @@ class TutorialCommentAdminActionsTest(TestCase):
             self.queryset,
         )
 
-    def test_confirm_action_confirm_tutorial_comments(self, **_):
+    def test_confirm_action_confirm_tutorial_comments(self):
         """Confirm action should confirm given queryset objects."""
         self.confirm_queryset()
+
         # No non-confirmed object should exist
         self.assertFalse(
             self.queryset.exclude(
@@ -152,36 +164,32 @@ class TutorialCommentAdminActionsTest(TestCase):
             ).exists()
         )
 
-    def test_confirm_action_call_notifiers(
-        self,
-        notify_tutorial_comments_reply: MagicMock,
-        notify_tutorial_new_confirmed_comment: MagicMock,
-        notify_tutorial_comment_confirm_disprove: MagicMock,
-    ):
-        """Confirm action should call all mocked notifiers.
-
-        Args:
-            notify_tutorial_comments_reply (MagicMock): mocked
-                notify_tutorial_comments_reply.
-
-            notify_tutorial_new_confirmed_comment (MagicMock): Mocked
-                notify_tutorial_new_confirmed_comment.
-
-            notify_tutorial_comment_confirm_disprove (MagicMock): Mocked
-                notify_tutorial_comment_confirm_disprove.
-        """
+    def test_confirm_action_call_notifiers(self):
+        """Confirm action should call all mocked notifiers."""
         self.confirm_queryset()
 
-        self.assertTrue(notify_tutorial_comments_reply.called)
-        self.assertTrue(notify_tutorial_new_confirmed_comment.called)
-        self.assertTrue(notify_tutorial_comment_confirm_disprove.called)
+        self.assertTrue(
+            self.notifier_instances[
+                "TutorialCommentConfirmDisproveNotifier"
+            ].notify.called
+        )
+        self.assertTrue(
+            self.notifier_instances[
+                "TutorialCommentReplyNotifier"
+            ].notify.called
+        )
+        self.assertTrue(
+            self.notifier_instances[
+                "TutorialAuthorNewConfirmedCommentNotifier"
+            ].notify.called
+        )
 
-    def test_confirm_action_message_user(self, **_):
+    def test_confirm_action_message_user(self):
         """Confirm action should call given modeladmin's message_user()."""
         self.confirm_queryset()
         self.assertTrue(self.modeladmin.message_user.called)
 
-    def test_disprove_action_disprove_tutorial_comments(self, **_):
+    def test_disprove_action_disprove_tutorial_comments(self):
         """Disprove action should disprove given queryset objects."""
         self.disprove_queryset()
         # No non-disproved object should exist
@@ -191,32 +199,33 @@ class TutorialCommentAdminActionsTest(TestCase):
             ).exists()
         )
 
-    def test_disprove_action_message_user(self, **_):
+    def test_disprove_action_message_user(self):
         """Disprove action should call given modeladmin's message_user()."""
         self.disprove_queryset()
         self.assertTrue(self.modeladmin.message_user.called)
 
-    def test_disprove_action_call_notifiers(
-        self,
-        notify_tutorial_comments_reply: MagicMock,
-        notify_tutorial_new_confirmed_comment: MagicMock,
-        notify_tutorial_comment_confirm_disprove: MagicMock,
-    ):
-        """Disprove action should only call confirm_disprove notifier.
-
-        Args:
-            notify_tutorial_comments_reply (MagicMock): mocked
-                notify_tutorial_comments_reply.
-
-            notify_tutorial_new_confirmed_comment (MagicMock): Mocked
-                notify_tutorial_new_confirmed_comment.
-
-            notify_tutorial_comment_confirm_disprove (MagicMock): Mocked
-                notify_tutorial_comment_confirm_disprove.
-        """
+    def test_disprove_action_call_notifiers(self):
+        """Disprove action should only call confirm_disprove notifier."""
         self.disprove_queryset()
+
         # Call confirm_disprove notifier
-        self.assertTrue(notify_tutorial_comment_confirm_disprove.called)
+        self.assertTrue(
+            self.notifier_instances[
+                "TutorialCommentConfirmDisproveNotifier"
+            ].notify.called
+        )
         # Don't call others
-        self.assertFalse(notify_tutorial_comments_reply.called)
-        self.assertFalse(notify_tutorial_new_confirmed_comment.called)
+        self.assertFalse(
+            self.notifier_instances[
+                "TutorialCommentReplyNotifier"
+            ].notify.called
+        )
+        self.assertFalse(
+            self.notifier_instances[
+                "TutorialAuthorNewConfirmedCommentNotifier"
+            ].notify.called
+        )
+
+    def tearDown(self):
+        for patcher in self.notifier_patchers.values():
+            patcher.stop()

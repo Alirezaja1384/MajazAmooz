@@ -1,25 +1,41 @@
 import random
 from smtplib import SMTPException
 from unittest import mock
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from model_bakery import baker
-from learning import emails
+from shared.models import ConfirmStatusChoices
+from learning import notifications
+from learning.models import Tutorial
 
 
-class EmailsTest(TestCase):
+class NotificationsTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.factory = RequestFactory()
+        super().setUpClass()
+
     @classmethod
     def setUpTestData(cls):
-        tutorials = baker.make_recipe("learning.tutorial", _quantity=5)
+        confirmed_tutorials = baker.make_recipe(
+            "learning.confirmed_tutorial", _quantity=2
+        )
+        disproved_tutorials = baker.make_recipe(
+            "learning.disproved_tutorial", _quantity=2
+        )
         baker.make_recipe(
             "learning.tutorial_comment",
-            tutorial=random.choice(tutorials),
+            tutorial=random.choice(confirmed_tutorials + disproved_tutorials),
             _quantity=10,
         )
 
+        cls.confirmed_disproved_tutorials = Tutorial.objects.exclude(
+            confirm_status=ConfirmStatusChoices.WAITING_FOR_CONFIRM
+        )
+
     def setUp(self):
-        self.logger_pathcher = mock.patch.object(emails, "logger")
+        self.logger_pathcher = mock.patch.object(notifications, "logger")
         self.email_cls_pathcher = mock.patch.object(
-            emails, "EmailMultiAlternatives"
+            notifications, "EmailMultiAlternatives"
         )
 
         self.logger_mock = self.logger_pathcher.start()
@@ -33,14 +49,16 @@ class EmailsTest(TestCase):
                 ["testmail@mail.com"],
             )
 
-        return emails.send_mail(*args, **kwargs)
+        return notifications.AbstractQuerysetNotifier.send_email(
+            *args, **kwargs
+        )
 
-    def test_send_mail_call_send(self):
+    def test_notifier_send_email_call_send(self):
         """Should call EmailMultiAlternatives instance's send method."""
         self.send_email()
         self.assertTrue(self.email_instance_mock.send.called)
 
-    def test_send_mail_smtp_exception_return_false(self):
+    def test_notifier_send_email_smtp_exception_return_false(self):
         """Should return False if EmailMultiAlternatives instance's
         save method raise SMTPException.
         """
@@ -48,7 +66,7 @@ class EmailsTest(TestCase):
         self.email_instance_mock.send.side_effect = SMTPException()
         self.assertFalse(self.send_email())
 
-    def test_send_mail_smtp_exception_log_warning(self):
+    def test_notifier_send_email_smtp_exception_log_warning(self):
         """Should log exception as warning if EmailMultiAlternatives
         instance's save method raise SMTPException.
         """
@@ -59,8 +77,8 @@ class EmailsTest(TestCase):
             self.email_instance_mock.send.side_effect
         )
 
-    @mock.patch.object(emails, "render_to_string")
-    def test_send_mail_render_template(
+    @mock.patch.object(notifications, "render_to_string")
+    def test_notifier_send_email_render_template(
         self, render_to_string_mock: mock.MagicMock
     ):
         """Should call render_to_string with given template and context
