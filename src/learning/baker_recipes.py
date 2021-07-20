@@ -34,6 +34,9 @@ tutorial_comment = Recipe(
 confirmed_tutorial_comment = tutorial_comment.extend(
     confirm_status=ConfirmStatusChoices.CONFIRMED
 )
+waiting_for_confirm_tutorial_comment = tutorial_comment.extend(
+    confirm_status=ConfirmStatusChoices.WAITING_FOR_CONFIRM
+)
 disproved_tutorial_comment = tutorial_comment.extend(
     confirm_status=ConfirmStatusChoices.DISPROVED
 )

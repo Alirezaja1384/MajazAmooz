@@ -8,7 +8,7 @@ from django.shortcuts import resolve_url
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from shared.models import ConfirmStatusChoices
 from learning.models import TutorialComment, Tutorial
 
@@ -167,7 +167,9 @@ class TutorialConfirmDisproveNotifier(AbstractQuerysetNotifier):
 class TutorialCommentConfirmDisproveNotifier(AbstractQuerysetNotifier):
     def get_queryset(self) -> QuerySet[TutorialComment]:
         return self.queryset.exclude(
-            confirm_status=ConfirmStatusChoices.WAITING_FOR_CONFIRM
+            Q(user=None)
+            | Q(tutorial=None)
+            | Q(confirm_status=ConfirmStatusChoices.WAITING_FOR_CONFIRM)
         )
 
     def notify_by_email(

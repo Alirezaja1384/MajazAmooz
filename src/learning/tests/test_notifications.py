@@ -3,7 +3,7 @@ from unittest import mock
 from django.test import TestCase, RequestFactory
 from model_bakery import baker
 from learning import notifications
-from learning.models import Tutorial
+from learning.models import Tutorial, TutorialComment
 
 
 class AbstractQuerysetNotifierTest(TestCase):
@@ -190,6 +190,101 @@ class TutorialConfirmDisproveNotifierTest(TestCase):
         """build_url() should not return None."""
         notifier = notifications.TutorialConfirmDisproveNotifier(
             self.factory.get("/"), Tutorial.objects.all()
+        )
+        self.assertIsNotNone(notifier.build_url(notifier.queryset.first()))
+
+    def tearDown(self):
+        self.logger_pathcher.stop()
+        self.email_cls_pathcher.stop()
+
+
+class TutorialCommentConfirmDisproveNotifierTest(TestCase):
+    notifier_object_type = TutorialComment
+    notifier_cls = notifications.TutorialCommentConfirmDisproveNotifier
+
+    @classmethod
+    def setUpClass(cls):
+        cls.factory = RequestFactory()
+        cls.queryset = cls.notifier_object_type.objects.all()
+        super().setUpClass()
+
+    @classmethod
+    def setUpTestData(cls):
+        tutorial = baker.make_recipe("learning.confirmed_tutorial")
+
+        # Make tutorial comments
+        confirmed_tutorial_comments: list[TutorialComment] = baker.make_recipe(
+            "learning.confirmed_tutorial_comment",
+            tutorial=tutorial,
+            _quantity=2,
+        )
+        baker.make_recipe(
+            "learning.waiting_for_confirm_tutorial_comment",
+            tutorial=tutorial,
+            _quantity=2,
+        )
+        disproved_tutorial_comments: list[TutorialComment] = baker.make_recipe(
+            "learning.disproved_tutorial_comment",
+            tutorial=tutorial,
+            _quantity=2,
+        )
+
+        cls.confirmed_disproved_tutorial_comments = (
+            confirmed_tutorial_comments + disproved_tutorial_comments
+        )
+
+    def setUp(self):
+        self.logger_pathcher = mock.patch.object(notifications, "logger")
+        self.email_cls_pathcher = mock.patch.object(
+            notifications, "EmailMultiAlternatives"
+        )
+
+        self.logger_mock = self.logger_pathcher.start()
+        self.email_instance_mock = self.email_cls_pathcher.start().return_value
+
+    def test_not_include_waiting_for_confirm(self):
+        """queryset should not include waiting for confirm objects."""
+        notifier = self.notifier_cls(self.factory.get("/"), self.queryset)
+        qs = notifier.get_queryset().order_by()
+
+        self.assertEqual(list(qs), self.confirmed_disproved_tutorial_comments)
+
+    def test_not_include_without_user(self):
+        """queryset should not include objects without user."""
+        # Make a tutorial comment without user
+        without_user = baker.make_recipe(
+            "learning.confirmed_tutorial_comment", user=None
+        )
+        notifier = self.notifier_cls(self.factory.get("/"), self.queryset)
+        qs = notifier.get_queryset().order_by()
+
+        # Should not include this one
+        self.assertNotIn(without_user, qs)
+
+    def test_not_include_without_tutorial(self):
+        """queryset should not include objects without tutorial."""
+        # Make a tutorial comment without tutorial
+        without_tutorial = baker.make_recipe(
+            "learning.confirmed_tutorial_comment"
+        )
+        notifier = self.notifier_cls(self.factory.get("/"), self.queryset)
+        qs = notifier.get_queryset().order_by()
+
+        # Should not include this one
+        self.assertNotIn(without_tutorial, qs)
+
+    def test_call_send_email(self):
+        """notify_by_email() should call send_email() once."""
+        notifier = self.notifier_cls(self.factory.get("/"), mock.MagicMock())
+
+        with mock.patch.object(notifier, "send_email") as send_email_mock:
+            notifier.notify_by_email(mock.MagicMock())
+            send_email_mock.assert_called_once()
+
+    def test_build_url(self):
+        """build_url() should not return None."""
+        notifier = self.notifier_cls(
+            self.factory.get("/"), self.notifier_object_type.objects.all()
         )
         self.assertIsNotNone(notifier.build_url(notifier.queryset.first()))
 
