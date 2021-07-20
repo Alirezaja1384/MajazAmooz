@@ -9,6 +9,9 @@ from learning.models import Tutorial
 
 
 class NotificationsTest(TestCase):
+    class TestQuerysetNotifier(notifications.AbstractQuerysetNotifier):
+        pass
+
     @classmethod
     def setUpClass(cls):
         cls.factory = RequestFactory()
@@ -39,10 +42,14 @@ class NotificationsTest(TestCase):
         )
 
         self.logger_mock = self.logger_pathcher.start()
-        self.email_cls_mock = self.email_cls_pathcher.start()
-        self.email_instance_mock = self.email_cls_mock.return_value
+        self.email_instance_mock = self.email_cls_pathcher.start().return_value
 
-    def send_email(self, *args, **kwargs):
+    def send_email(self, *args, **kwargs) -> bool:
+        """Sends email using AbstractQuerysetNotifier.send_email
+
+        Returns:
+            bool: Result of send_email() method.
+        """
         if not args:
             args = (
                 "subject",
@@ -94,6 +101,51 @@ class NotificationsTest(TestCase):
         )
 
         render_to_string_mock.assert_called_with(template, context)
+
+    def test_notifier_notify_call_notify_by_email(self):
+        """notify() should call notify_by_email() for each model object
+        in the queryset.
+        """
+        notifier_instance = self.TestQuerysetNotifier(
+            self.factory.get("/"), Tutorial.objects.all()
+        )
+
+        with mock.patch.object(
+            notifier_instance, "notify_by_email"
+        ) as notify_by_email_mock:
+            notifier_instance.notify()
+            self.assertEqual(
+                notify_by_email_mock.call_count,
+                notifier_instance.get_queryset().count(),
+            )
+
+    def test_notifier_notify_result_success_count(self):
+        """Should correctly calculate count of successful notifications."""
+        notifier_instance = self.TestQuerysetNotifier(
+            self.factory.get("/"), Tutorial.objects.all()
+        )
+
+        with mock.patch.object(
+            notifier_instance, "notify_by_email", return_value=True
+        ):
+            result = notifier_instance.notify()
+            self.assertEqual(
+                result.success, notifier_instance.get_queryset().count()
+            )
+
+    def test_notifier_notify_result_failed_count(self):
+        """Should correctly calculate count of failed notifications."""
+        notifier_instance = self.TestQuerysetNotifier(
+            self.factory.get("/"), Tutorial.objects.all()
+        )
+
+        with mock.patch.object(
+            notifier_instance, "notify_by_email", return_value=False
+        ):
+            result = notifier_instance.notify()
+            self.assertEqual(
+                result.failed, notifier_instance.get_queryset().count()
+            )
 
     def tearDown(self):
         self.logger_pathcher.stop()
