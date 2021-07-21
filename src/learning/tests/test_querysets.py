@@ -66,7 +66,7 @@ class TutorialQuerysetTest(TestCase):
     def setUpTestData(cls):
         author: User = baker.make(User)
         baker.make_recipe(
-            "learning.tutorial",
+            "learning.disproved_tutorial",
             is_active=True,
             author=author,
             _quantity=5,
@@ -238,10 +238,6 @@ class TutorialQuerysetTest(TestCase):
 class TutorialCommentQuerysetTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        active_confirmed: list[TutorialComment] = baker.make_recipe(
-            "learning.confirmed_tutorial_comment", is_active=True, _quantity=2
-        )
-
         active_confirmed_tutorial: Tutorial = baker.make_recipe(
             "learning.confirmed_tutorial", is_active=True
         )
@@ -249,8 +245,8 @@ class TutorialCommentQuerysetTest(TestCase):
             "learning.disproved_tutorial"
         )
 
-        baker.make_recipe(
-            "learning.tutorial_comment",
+        active_confirmed = baker.make_recipe(
+            "learning.confirmed_tutorial_comment",
             tutorial=random.choice(
                 [active_confirmed_tutorial, disproved_tutorial]
             ),

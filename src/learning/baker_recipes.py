@@ -1,7 +1,19 @@
+import random
 from model_bakery.recipe import Recipe
 from model_bakery.random_gen import gen_string
 from shared.models import ConfirmStatusChoices
 from learning.models import Category, Tutorial, TutorialComment
+
+
+def get_random_confirm_status():
+    return random.choice(
+        [
+            ConfirmStatusChoices.CONFIRMED,
+            ConfirmStatusChoices.WAITING_FOR_CONFIRM,
+            ConfirmStatusChoices.DISPROVED,
+        ]
+    )
+
 
 # Category recipes
 category = Recipe(Category)
@@ -13,6 +25,7 @@ tutorial = Recipe(
     Tutorial,
     short_description=lambda: gen_string(150),
     body=lambda: gen_string(150),
+    confirm_status=get_random_confirm_status,
     _fill_optional=["author"],
 )
 confirmed_tutorial = tutorial.extend(
@@ -29,6 +42,8 @@ disproved_tutorial = tutorial.extend(
 tutorial_comment = Recipe(
     TutorialComment,
     body=lambda: gen_string(150),
+    tutorial=tutorial.make,
+    confirm_status=get_random_confirm_status,
     _fill_optional=["user"],
 )
 confirmed_tutorial_comment = tutorial_comment.extend(
