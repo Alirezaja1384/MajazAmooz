@@ -295,5 +295,67 @@ class TutorialAuthorNewConfirmedCommentNotifierTest(_QuerysetNotifierBaseTest):
         self.assertNotIn(without_tutorial_author, qs)
 
 
+class TutorialCommentReplyNotifierTest(_QuerysetNotifierBaseTest):
+    notifier_object_type = TutorialComment
+    notifier_cls = notifications.TutorialCommentReplyNotifier
+
+    def test_qs_not_include_orphan_objects(self):
+        """Queryset should not include orphan objects (comments
+        without parent_comment).
+        """
+        orphan_comment = baker.make_recipe(
+            "learning.confirmed_tutorial_comment",
+            is_active=True,
+            parent_comment=None,
+        )
+        qs = self.get_notifier_queryset()
+
+        self.assertNotIn(orphan_comment, qs)
+
+    def test_qs_not_include_parent_comment_notify_replies_false(self):
+        """Queryset should not include objects that their parents's
+        notify_replies is False.
+        """
+        parent_comment = baker.make_recipe(
+            "learning.confirmed_tutorial_comment",
+            is_active=True,
+            notify_replies=False,
+        )
+        child_comment = baker.make_recipe(
+            "learning.confirmed_tutorial_comment",
+            is_active=True,
+            parent_comment=parent_comment,
+        )
+        qs = self.get_notifier_queryset()
+
+        self.assertNotIn(child_comment, qs)
+
+    def test_qs_not_include_inactive_parent_comment(self):
+        """Queryset should only include active objects."""
+        inactive_parent = baker.make_recipe(
+            "learning.confirmed_tutorial_comment", is_active=False
+        )
+        comment = baker.make_recipe(
+            "learning.confirmed_tutorial_comment",
+            parent_comment=inactive_parent,
+        )
+        qs = self.get_notifier_queryset()
+
+        self.assertNotIn(comment, qs)
+
+    def test_qs_not_include_disproved_parent_comment(self):
+        """Queryset should only include objects with confirmed parent."""
+        disproved_parent = baker.make_recipe(
+            "learning.disproved_tutorial_comment"
+        )
+        comment = baker.make_recipe(
+            "learning.confirmed_tutorial_comment",
+            parent_comment=disproved_parent,
+        )
+        qs = self.get_notifier_queryset()
+
+        self.assertNotIn(comment, qs)
+
+
 # Delete it to prevent testing itself!
 del _QuerysetNotifierBaseTest
