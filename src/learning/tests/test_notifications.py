@@ -1,6 +1,11 @@
-from smtplib import SMTPException
+import abc
+import random
+from typing import Type
 from unittest import mock
+from smtplib import SMTPException
 from django.test import TestCase, RequestFactory
+from django.db.models import Model
+from django.core.exceptions import ImproperlyConfigured
 from model_bakery import baker
 from learning import notifications
 from learning.models import Tutorial, TutorialComment
@@ -137,100 +142,34 @@ class AbstractQuerysetNotifierTest(TestCase):
         self.email_cls_pathcher.stop()
 
 
-class TutorialConfirmDisproveNotifierTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.factory = RequestFactory()
-        super().setUpClass()
-
-    @classmethod
-    def setUpTestData(cls):
-        # Make tutorials
-        confirmed_tutorials: list[Tutorial] = baker.make_recipe(
-            "learning.confirmed_tutorial", _quantity=2
-        )
-        baker.make_recipe("learning.waiting_for_confirm_tutorial", _quantity=2)
-        disproved_tutorials: list[Tutorial] = baker.make_recipe(
-            "learning.disproved_tutorial", _quantity=2
-        )
-
-        cls.confirmed_disproved_tutorials = (
-            confirmed_tutorials + disproved_tutorials
-        )
-
-    def setUp(self):
-        self.logger_pathcher = mock.patch.object(notifications, "logger")
-        self.email_cls_pathcher = mock.patch.object(
-            notifications, "EmailMultiAlternatives"
-        )
-
-        self.logger_mock = self.logger_pathcher.start()
-        self.email_instance_mock = self.email_cls_pathcher.start().return_value
-
-    def test_not_include_waiting_for_confirm(self):
-        """queryset should not include waiting for confirm tutorials."""
-        notifier = notifications.TutorialConfirmDisproveNotifier(
-            self.factory.get("/"), Tutorial.objects.all()
-        )
-        qs = notifier.get_queryset().order_by()
-
-        self.assertEqual(list(qs), self.confirmed_disproved_tutorials)
-
-    def test_call_send_email(self):
-        """notify_by_email() should call send_email() once."""
-        notifier = notifications.TutorialConfirmDisproveNotifier(
-            self.factory.get("/"), Tutorial.objects.all()
-        )
-
-        with mock.patch.object(notifier, "send_email") as send_email_mock:
-            notifier.notify_by_email(mock.MagicMock())
-            send_email_mock.assert_called_once()
-
-    def test_build_url(self):
-        """build_url() should not return None."""
-        notifier = notifications.TutorialConfirmDisproveNotifier(
-            self.factory.get("/"), Tutorial.objects.all()
-        )
-        self.assertIsNotNone(notifier.build_url(notifier.queryset.first()))
-
-    def tearDown(self):
-        self.logger_pathcher.stop()
-        self.email_cls_pathcher.stop()
-
-
-class TutorialCommentConfirmDisproveNotifierTest(TestCase):
-    notifier_object_type = TutorialComment
-    notifier_cls = notifications.TutorialCommentConfirmDisproveNotifier
+class _QuerysetNotifierBaseTest(TestCase, metaclass=abc.ABCMeta):
+    notifier_cls: notifications.AbstractQuerysetNotifier
+    notifier_object_type: Type[Model]
 
     @classmethod
     def setUpClass(cls):
-        cls.factory = RequestFactory()
+
+        if not hasattr(cls, "notifier_cls") or not hasattr(
+            cls, "notifier_object_type"
+        ):
+            raise ImproperlyConfigured(
+                "notifier_cls and notifier_object_type should be configured."
+            )
+
         cls.queryset = cls.notifier_object_type.objects.all()
+        cls.factory = RequestFactory()
         super().setUpClass()
 
     @classmethod
     def setUpTestData(cls):
-        tutorial = baker.make_recipe("learning.confirmed_tutorial")
-
-        # Make tutorial comments
-        confirmed_tutorial_comments: list[TutorialComment] = baker.make_recipe(
-            "learning.confirmed_tutorial_comment",
-            tutorial=tutorial,
-            _quantity=2,
+        tutorials = baker.make_recipe("learning.tutorial", _quantity=4)
+        baker.make_recipe(
+            "learning.tutorial_comment", tutorial=None, _quantity=4
         )
         baker.make_recipe(
-            "learning.waiting_for_confirm_tutorial_comment",
-            tutorial=tutorial,
-            _quantity=2,
-        )
-        disproved_tutorial_comments: list[TutorialComment] = baker.make_recipe(
-            "learning.disproved_tutorial_comment",
-            tutorial=tutorial,
-            _quantity=2,
-        )
-
-        cls.confirmed_disproved_tutorial_comments = (
-            confirmed_tutorial_comments + disproved_tutorial_comments
+            "learning.tutorial_comment",
+            tutorial=random.choice(tutorials),
+            _quantity=4,
         )
 
     def setUp(self):
@@ -242,38 +181,7 @@ class TutorialCommentConfirmDisproveNotifierTest(TestCase):
         self.logger_mock = self.logger_pathcher.start()
         self.email_instance_mock = self.email_cls_pathcher.start().return_value
 
-    def test_not_include_waiting_for_confirm(self):
-        """queryset should not include waiting for confirm objects."""
-        notifier = self.notifier_cls(self.factory.get("/"), self.queryset)
-        qs = notifier.get_queryset().order_by()
-
-        self.assertEqual(list(qs), self.confirmed_disproved_tutorial_comments)
-
-    def test_not_include_without_user(self):
-        """queryset should not include objects without user."""
-        # Make a tutorial comment without user
-        without_user = baker.make_recipe(
-            "learning.confirmed_tutorial_comment", user=None
-        )
-        notifier = self.notifier_cls(self.factory.get("/"), self.queryset)
-        qs = notifier.get_queryset().order_by()
-
-        # Should not include this one
-        self.assertNotIn(without_user, qs)
-
-    def test_not_include_without_tutorial(self):
-        """queryset should not include objects without tutorial."""
-        # Make a tutorial comment without tutorial
-        without_tutorial = baker.make_recipe(
-            "learning.confirmed_tutorial_comment"
-        )
-        notifier = self.notifier_cls(self.factory.get("/"), self.queryset)
-        qs = notifier.get_queryset().order_by()
-
-        # Should not include this one
-        self.assertNotIn(without_tutorial, qs)
-
-    def test_call_send_email(self):
+    def test_notify_by_email_call_send_email(self):
         """notify_by_email() should call send_email() once."""
         notifier = self.notifier_cls(self.factory.get("/"), mock.MagicMock())
 
@@ -291,3 +199,65 @@ class TutorialCommentConfirmDisproveNotifierTest(TestCase):
     def tearDown(self):
         self.logger_pathcher.stop()
         self.email_cls_pathcher.stop()
+
+
+class TutorialConfirmDisproveNotifierTest(_QuerysetNotifierBaseTest):
+    notifier_object_type = Tutorial
+    notifier_cls = notifications.TutorialConfirmDisproveNotifier
+
+    def test_not_include_waiting_for_confirm(self):
+        """queryset should not include waiting for confirm tutorials."""
+        waiting_for_confirm = baker.make_recipe(
+            "learning.waiting_for_confirm_tutorial"
+        )
+
+        notifier = notifications.TutorialConfirmDisproveNotifier(
+            self.factory.get("/"), self.queryset
+        )
+        qs = notifier.get_queryset().order_by()
+
+        self.assertNotIn(waiting_for_confirm, qs)
+
+
+class TutorialCommentConfirmDisproveNotifierTest(_QuerysetNotifierBaseTest):
+    notifier_object_type = TutorialComment
+    notifier_cls = notifications.TutorialCommentConfirmDisproveNotifier
+
+    def test_not_include_waiting_for_confirm(self):
+        """queryset should not include waiting for confirm objects."""
+        waiting_for_confirm = baker.make_recipe(
+            "learning.waiting_for_confirm_tutorial_comment"
+        )
+
+        notifier = self.notifier_cls(self.factory.get("/"), self.queryset)
+        qs = notifier.get_queryset().order_by()
+
+        self.assertNotIn(waiting_for_confirm, qs)
+
+    def test_not_include_without_user(self):
+        """queryset should not include objects without user."""
+        # Make a tutorial comment without user
+        without_user = baker.make_recipe(
+            "learning.confirmed_tutorial_comment", user=None
+        )
+        notifier = self.notifier_cls(self.factory.get("/"), self.queryset)
+        qs = notifier.get_queryset().order_by()
+
+        # Should not include this one
+        self.assertNotIn(without_user, qs)
+
+    def test_not_include_without_tutorial(self):
+        """queryset should not include objects without tutorial."""
+        # Make a tutorial comment without tutorial
+        without_tutorial = baker.make_recipe(
+            "learning.confirmed_tutorial_comment", tutorial=None
+        )
+        notifier = self.notifier_cls(self.factory.get("/"), self.queryset)
+        qs = notifier.get_queryset().order_by()
+
+        # Should not include this one
+        self.assertNotIn(without_tutorial, qs)
+
+
+# Delete it to prevent testing itself!
+del _QuerysetNotifierBaseTest
