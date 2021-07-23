@@ -213,7 +213,9 @@ class TutorialCommentConfirmDisproveNotifier(AbstractQuerysetNotifier):
 
 class TutorialAuthorNewConfirmedCommentNotifier(AbstractQuerysetNotifier):
     def get_queryset(self) -> QuerySet[TutorialComment]:
-        return self.queryset.exclude(tutorial=None).filter(
+        return self.queryset.exclude(
+            Q(tutorial=None) | Q(tutorial__author=None)
+        ).filter(
             confirm_status=ConfirmStatusChoices.CONFIRMED,
             is_active=True,
             tutorial__confirm_status=ConfirmStatusChoices.CONFIRMED,
