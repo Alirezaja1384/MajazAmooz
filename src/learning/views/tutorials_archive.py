@@ -1,5 +1,4 @@
 from django.views.generic import ListView
-from django.http import QueryDict
 from constance import config
 from learning.models import Tutorial, Category
 from learning.filters import TutorialArchiveFilterSet
@@ -23,14 +22,9 @@ class TutorialListView(ListView):
             .active_and_confirmed_tutorials()
         )
 
-        # create_date=order_by and update it with request.GET
-        # (order_by=create_date if request.GET doesn't contain order_by)
-        filters = QueryDict("order_by=create_date", mutable=True)
-        filters.update(self.request.GET)
-
         # Filter and order tutorials, then annonate comments_count
         tutorials = TutorialArchiveFilterSet(
-            filters, tutorials
+            self.request.GET, tutorials
         ).qs.annonate_comments_count()
 
         return tutorials

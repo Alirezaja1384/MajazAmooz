@@ -396,14 +396,6 @@ class TutorialListViewTest(TestCase):
         queryset = self.get_view_queryset()
         self.assertEqual(queryset.query.order_by, ("-create_date",))
 
-    def test_apply_descending_ordering_by_default(self):
-        """Should apply descending ordering when ascending_or_descending
-        is not specified.
-        """
-        for ordering in self.ordering_choices:
-            queryset = self.get_view_queryset(order_by=ordering)
-            self.assertEqual(queryset.query.order_by, ("-" + ordering,))
-
     def test_apply_ascending_ordering(self):
         """Should apply ascending ordering when ascending_or_descending
         equals to ascending.
