@@ -4,7 +4,8 @@ disable=
     W0614,
     wildcard-import,
     no-self-use,
-    too-few-public-methods
+    too-few-public-methods,
+    protected-access
 
 max-line-length=79
 load-plugins=pylint_django

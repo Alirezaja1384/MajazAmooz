@@ -1,4 +1,5 @@
-from typing import Generator
+from datetime import date
+from typing import Generator, Optional
 from django.db.models import QuerySet
 from shared.models import ConfirmStatusChoices
 from shared.date_time import get_last_months
@@ -18,7 +19,7 @@ class TutorialUserRelationQueryset(QuerySet):
 
     # TODO: Improve performance by reducing query count
     def get_last_months_count_statistics(
-        self, last_months_count=5
+        self, last_months_count: int = 5, today: Optional[date] = None
     ) -> Generator[MonthlyCountStatistics, None, None]:
         """Calculates count of objects per last given jalali months.
 
@@ -31,7 +32,7 @@ class TutorialUserRelationQueryset(QuerySet):
                 count of object for that month.
         """
         # Convert descending months data to ascending
-        last_months = list(get_last_months(last_months_count))[::-1]
+        last_months = list(get_last_months(last_months_count, today))[::-1]
 
         for month in last_months:
             yield MonthlyCountStatistics(

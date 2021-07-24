@@ -378,6 +378,14 @@ CONSTANCE_CONFIG = OrderedDict(
         ),
         # Learning
         (
+            "LEARNING_HOME_CAROUSEL_ITEMS_COUNT",
+            (6, "صفحه اصلی - تعداد گزینه اسلایدرها", int),
+        ),
+        (
+            "LEARNING_RECOMMENDATION_ITEMS_COUNT",
+            (5, "آموزش - تعداد موارد پیشنهادها", int),
+        ),
+        (
             "LEARNING_TUTORIAL_ARCHIVE_PAGINATE_BY",
             (30, "آرشیو آموزش ها - تعداد آموزش هر صفحه", int),
         ),
