@@ -1,6 +1,7 @@
 """
     Tutorial-User many to many relation models
 """
+from constance import config
 from django.db import models
 from django.db.models import F
 from django.core.exceptions import ImproperlyConfigured
@@ -40,7 +41,7 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
         raise ImproperlyConfigured(msg)
 
     @hook(AFTER_CREATE)
-    def on_create(self):
+    def after_create(self):
         author = self.tutorial.author
 
         # Increase author's scores and coins
@@ -60,7 +61,7 @@ class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
             )
 
     @hook(BEFORE_DELETE)
-    def on_delete(self):
+    def before_delete(self):
         author = self.tutorial.author
 
         # Decrease author's scores and coins
@@ -106,6 +107,12 @@ class TutorialView(AbstractTutorialScoreCoinModel):
         verbose_name="آموزش",
     )
 
+    def get_create_score(self) -> int:
+        return config.TUTORIAL_VIEW_SCORE
+
+    def get_create_coin(self) -> int:
+        return config.TUTORIAL_VIEW_COIN
+
 
 class TutorialLike(AbstractTutorialScoreCoinModel):
     """TutorialLike model"""
@@ -125,6 +132,12 @@ class TutorialLike(AbstractTutorialScoreCoinModel):
         related_name="likes",
         verbose_name="آموزش",
     )
+
+    def get_create_score(self) -> int:
+        return config.TUTORIAL_LIKE_SCORE
+
+    def get_create_coin(self) -> int:
+        return config.TUTORIAL_LIKE_COIN
 
 
 class TutorialUpVote(AbstractTutorialScoreCoinModel):
@@ -146,6 +159,12 @@ class TutorialUpVote(AbstractTutorialScoreCoinModel):
         verbose_name="آموزش",
     )
 
+    def get_create_score(self) -> int:
+        return config.TUTORIAL_UPVOTE_SCORE
+
+    def get_create_coin(self) -> int:
+        return config.TUTORIAL_UPVOTE_COIN
+
 
 class TutorialDownVote(AbstractTutorialScoreCoinModel):
     """TutorialDownVote model"""
@@ -165,3 +184,9 @@ class TutorialDownVote(AbstractTutorialScoreCoinModel):
         related_name="down_votes",
         verbose_name="آموزش",
     )
+
+    def get_create_score(self) -> int:
+        return config.TUTORIAL_DOWNVOTE_SCORE
+
+    def get_create_coin(self) -> int:
+        return config.TUTORIAL_DOWNVOTE_COIN

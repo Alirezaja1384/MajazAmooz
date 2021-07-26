@@ -22,8 +22,6 @@ User = get_user_model()
 
 
 class ConstanceConfigMock:
-    TUTORIAL_VIEW_COIN = 5
-    TUTORIAL_VIEW_SCORE = 4
     LEARNING_HOME_CAROUSEL_ITEMS_COUNT = 4
     LEARNING_RECOMMENDATION_ITEMS_COUNT = 5
     LEARNING_TUTORIAL_ARCHIVE_PAGINATE_BY = 9
@@ -301,23 +299,6 @@ class TutorialDetailsViewTest(TestCase):
             self.fail(
                 "record_tutorial_view inserted TutorialView multiple times."
             )
-
-    def test_record_tutorial_view_score_coin_use_config(self):
-        """Inserted TutorialView object's score and coin should be equal
-        to config's TUTORIAL_VIEW_COIN and TUTORIAL_VIEW_SCORE.
-        """
-        self.record_tutorial_view()
-
-        tutorial_view: TutorialView = TutorialView.objects.get(
-            user=self.user, tutorial=self.random_active_confirmed_tutorial
-        )
-
-        self.assertEqual(
-            tutorial_view.score, ConstanceConfigMock.TUTORIAL_VIEW_SCORE
-        )
-        self.assertEqual(
-            tutorial_view.coin, ConstanceConfigMock.TUTORIAL_VIEW_COIN
-        )
 
 
 @mock.patch.object(tutorials_archive, "config", ConstanceConfigMock)
