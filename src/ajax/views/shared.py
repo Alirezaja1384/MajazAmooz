@@ -1,11 +1,15 @@
+import json
 import logging
-from typing import Optional
+from typing import Optional, Dict
 from django.views.generic import View
 from django.db.models import QuerySet
 from django.db import transaction, DatabaseError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest, JsonResponse, HttpResponseBadRequest
+
+
+logger = logging.getLogger("database")
 
 
 class InsertOrDeleteStatus:
@@ -15,6 +19,17 @@ class InsertOrDeleteStatus:
 
 
 class AjaxView(View):
+    """Accepts ajax views and handles them. Calls db_operation()
+    method and returns its result as post view's result.
+
+    Raises:
+        ImproperlyConfigured: When db_operation didn't implemented.
+    """
+
+    data: Optional[Dict] = None
+    http_method_names = ["post"]
+    db_error_default_text = "خطایی در ثبت اطلاعات رخ داد"
+
     def post(self, request: HttpRequest, *args, **kwargs):
         if request.is_ajax():
             try:
@@ -31,29 +46,44 @@ class AjaxView(View):
                 transaction.rollback(before_operation)
 
                 # Log error
-                logger = logging.getLogger("database")
                 logger.error(ex)
 
                 # Return error result
                 return JsonResponse(
                     {
                         "status": InsertOrDeleteStatus.ERROR,
-                        "error": "خطایی رخ داد",
+                        "error": self.db_error_default_text,
                     }
                 )
 
         return HttpResponseBadRequest()
 
-    def db_operation(self):
+    def get_request_data(self):
+        """Reads request body and sets its data as self.data"""
+        try:
+            return json.loads(self.request.body)
+        except json.JSONDecodeError:
+            return dict()
+
+    def db_operation(self) -> JsonResponse:
+        """Handles ajax request's database operations.
+
+        Raises:
+            ImproperlyConfigured: It should be implemented by user, otherwise
+                will raise ImproperlyConfigured.
+
+        Returns:
+            JsonResponse: Result of database operation as JsonResponse.
+        """
         raise ImproperlyConfigured("You should configure db_actions first.")
+
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
+        self.data = self.get_request_data()
 
 
 class AjaxScoreCoinCreateDeleteView(LoginRequiredMixin, AjaxView):
     model = None
-    http_method_names = ["post"]
-
-    score: Optional[int] = None
-    coin: Optional[int] = None
 
     def db_operation(self):
         # Set patent objects like tutorial, tutorial_comment
@@ -68,11 +98,6 @@ class AjaxScoreCoinCreateDeleteView(LoginRequiredMixin, AjaxView):
         raise ImproperlyConfigured("get_objects should be configured.")
 
     def create_delete_object(self):
-        if (self.model is None) or (self.score is None) or (self.coin is None):
-            raise ImproperlyConfigured(
-                "You should configure model type, score and coin."
-            )
-
         objs = self.get_objects()
         # If tutorial upvote already exist delete it
         if objs.exists():
