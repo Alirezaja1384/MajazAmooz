@@ -82,16 +82,16 @@ class AjaxView(View):
         self.data = self.get_request_data()
 
 
-class AjaxScoreCoinCreateDeleteView(LoginRequiredMixin, AjaxView):
+class AjaxModelCreateDeleteView(LoginRequiredMixin, AjaxView):
     model = None
 
     def db_operation(self):
         # Set patent objects like tutorial, tutorial_comment
-        self.set_parent_objects()
+        self.prepare_objects()
         # Create/Delete object
         return self.create_delete_object()
 
-    def set_parent_objects(self):
+    def prepare_objects(self):
         pass
 
     def get_objects(self):

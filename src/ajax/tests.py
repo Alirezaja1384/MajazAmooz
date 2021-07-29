@@ -1,13 +1,21 @@
 from http import HTTPStatus
 from unittest import mock
 from typing import Optional, Dict
-from django.db import DatabaseError
+from model_bakery import baker
+from django.db import DatabaseError, models
 from django.test import TestCase, RequestFactory
 from django.http import HttpRequest, HttpResponse
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from shared.tests.utils import ModelTestCase
 from .views import shared as shared_views
 
+User = get_user_model()
 
-def ajax_request(data: Optional[Dict] = None) -> HttpRequest:
+
+def ajax_request(
+    data: Optional[Dict] = None, user: Optional[User] = None
+) -> HttpRequest:
     factory = RequestFactory()
     request = factory.post(
         "/",
@@ -15,6 +23,8 @@ def ajax_request(data: Optional[Dict] = None) -> HttpRequest:
         content_type="application/json",
         HTTP_X_REQUESTED_WITH="XMLHttpRequest",
     )
+    request.user = user or AnonymousUser()
+
     return request
 
 
@@ -94,3 +104,66 @@ class AjaxViewTest(TestCase):
                 "error": self.TestBrokenAjaxView.db_error_default_text,
             },
         )
+
+
+class AjaxModelCreateDeleteViewTest(ModelTestCase):
+    class TestEmployeeCreateDeleteView(shared_views.AjaxModelCreateDeleteView):
+        class TestEmployeeModel(models.Model):
+            name = models.CharField(max_length=20)
+
+        employee_name = None
+        model = TestEmployeeModel
+
+        def prepare_objects(self):
+            self.employee_name = self.data.get("name")
+
+        def get_objects(self):
+            return self.model.objects.filter(name=self.employee_name)
+
+        def create_object(self):
+            self.model.objects.create(name=self.employee_name)
+
+    model = TestEmployeeCreateDeleteView.TestEmployeeModel
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = baker.make(User)
+        cls.view = cls.TestEmployeeCreateDeleteView.as_view()
+
+    def test_authentication_required(self):
+        """Should not return OK status(200) when user is not authenticated."""
+        response = self.view(ajax_request())
+        self.assertNotEqual(response.status_code, HTTPStatus.OK)
+
+    def test_create_response_status(self):
+        """Should response INSERTED as status when creates object."""
+        request = ajax_request({"name": "John"}, self.user)
+
+        self.assertJSONEqual(
+            str(self.view(request).content, "utf8"),
+            {"status": shared_views.InsertOrDeleteStatus.INSERTED},
+        )
+
+    def test_create_model_object(self):
+        """Should create object when it doesn't exist in database."""
+        self.view(ajax_request({"name": "John"}, self.user))
+        self.assertTrue(self.model.objects.filter(name="John").exists())
+
+    def test_delete_response_status(self):
+        """Should response DELETED as status when deletes object."""
+        self.model.objects.create(name="John")
+        # Send request with existing name
+        request = ajax_request({"name": "John"}, self.user)
+
+        self.assertJSONEqual(
+            str(self.view(request).content, "utf8"),
+            {"status": shared_views.InsertOrDeleteStatus.DELETED},
+        )
+
+    def test_delete_model_object(self):
+        """Should delete object when it exists in database."""
+        employee = self.model.objects.create(name="John")
+        # Send request with existing name
+        self.view(ajax_request({"name": employee.name}, self.user))
+
+        self.assertNotIn(employee, self.model.objects.all())
