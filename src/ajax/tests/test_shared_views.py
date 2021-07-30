@@ -1,31 +1,15 @@
 from http import HTTPStatus
 from unittest import mock
-from typing import Optional, Dict
 from model_bakery import baker
+from django.http import HttpResponse
 from django.db import DatabaseError, models
 from django.test import TestCase, RequestFactory
-from django.http import HttpRequest, HttpResponse
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
 from shared.tests.utils import ModelTestCase
-from .views import shared as shared_views
+from ajax.views import shared as shared_views
+from .utils import ajax_request
 
 User = get_user_model()
-
-
-def ajax_request(
-    data: Optional[Dict] = None, user: Optional[User] = None
-) -> HttpRequest:
-    factory = RequestFactory()
-    request = factory.post(
-        "/",
-        data=data or dict(),
-        content_type="application/json",
-        HTTP_X_REQUESTED_WITH="XMLHttpRequest",
-    )
-    request.user = user or AnonymousUser()
-
-    return request
 
 
 @mock.patch.multiple(
