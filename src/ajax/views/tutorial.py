@@ -1,24 +1,29 @@
-import json
 from typing import Optional
-from constance import config
 from learning.models import (
     Tutorial,
     TutorialLike,
     TutorialUpVote,
     TutorialDownVote,
 )
-from ajax.views.shared import AjaxScoreCoinCreateDeleteView
+from ajax.views.shared import AjaxModelCreateDeleteView
 
 
-class TutorialUserRelationCreateDeleteView(AjaxScoreCoinCreateDeleteView):
+__all__ = [
+    "like_view",
+    "upvote_view",
+    "downvote_view",
+]
+
+
+class TutorialUserRelationCreateDeleteView(AjaxModelCreateDeleteView):
     tutorial: Optional[Tutorial] = None
 
-    def set_parent_objects(self):
-        tutorial_id = int(json.loads(self.request.body).get("tutorial_id"))
+    def prepare_objects(self):
+        tutorial_id = self.data.get("tutorial_id")
         self.tutorial = (
             Tutorial.objects.active_and_confirmed_tutorials()
             .select_related("author")
-            .get(id=tutorial_id)
+            .get(pk=tutorial_id)
         )
 
     def get_objects(self):
@@ -27,27 +32,14 @@ class TutorialUserRelationCreateDeleteView(AjaxScoreCoinCreateDeleteView):
         )
 
     def create_object(self):
+        # Should automatically specify score and coin
         self.model.objects.create(
-            user=self.request.user,
-            tutorial=self.tutorial,
-            score=self.score,
-            coin=self.coin,
+            user=self.request.user, tutorial=self.tutorial
         )
 
 
-class TutorialLikeView(TutorialUserRelationCreateDeleteView):
-    model = TutorialLike
-    score = config.TUTORIAL_LIKE_SCORE
-    coin = config.TUTORIAL_LIKE_COIN
+BaseView = TutorialUserRelationCreateDeleteView
 
-
-class TutorialUpVoteView(TutorialUserRelationCreateDeleteView):
-    model = TutorialUpVote
-    score = config.TUTORIAL_UPVOTE_SCORE
-    coin = config.TUTORIAL_UPVOTE_COIN
-
-
-class TutorialDownVoteView(TutorialUserRelationCreateDeleteView):
-    model = TutorialDownVote
-    score = config.TUTORIAL_DOWNVOTE_SCORE
-    coin = config.TUTORIAL_DOWNVOTE_COIN
+like_view = BaseView.as_view(model=TutorialLike)
+upvote_view = BaseView.as_view(model=TutorialUpVote)
+downvote_view = BaseView.as_view(model=TutorialDownVote)
