@@ -20,8 +20,8 @@ User = get_user_model()
 
 class TutorialCommentUserRelationCreateDeleteViewTest(ModelTestCase):
     class TestTutorialCommentUserScoreCoinModel(AbstractCommentScoreCoinModel):
-        user = models.ForeignKey(User, models.CASCADE)
-        comment = models.ForeignKey(TutorialComment, models.CASCADE)
+        user = models.ForeignKey(User, models.DO_NOTHING)
+        comment = models.ForeignKey(TutorialComment, models.DO_NOTHING)
 
         class Meta:
             managed = False
