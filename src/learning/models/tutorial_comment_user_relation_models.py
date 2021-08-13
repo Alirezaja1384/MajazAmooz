@@ -1,6 +1,7 @@
 """
     TutorialComment-User many to many relation models
 """
+from constance import config
 from django.db import models
 from django.db.models import F
 from django.core.exceptions import ImproperlyConfigured
@@ -41,7 +42,7 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
         )
 
     @hook(AFTER_CREATE)
-    def on_create(self):
+    def after_create(self):
         user = self.comment.user
 
         # Increase commnet.user's scores and coins
@@ -59,7 +60,7 @@ class AbstractCommentScoreCoinModel(AbstractScoreCoinModel):
             self.comment.save(update_fields=[self.comment_object_count_field])
 
     @hook(BEFORE_DELETE)
-    def on_delete(self):
+    def before_delete(self):
         user = self.comment.user
 
         # Decrease commnet.user's scores and coins
@@ -104,6 +105,12 @@ class TutorialCommentLike(AbstractCommentScoreCoinModel):
         verbose_name="نظر آموزش",
     )
 
+    def get_create_score(self):
+        return config.TUTORIAL_COMMENT_LIKE_SCORE
+
+    def get_create_coin(self):
+        return config.TUTORIAL_COMMENT_LIKE_COIN
+
 
 class TutorialCommentUpVote(AbstractCommentScoreCoinModel):
     """TutorialCommentUpVote model"""
@@ -124,6 +131,12 @@ class TutorialCommentUpVote(AbstractCommentScoreCoinModel):
         verbose_name="نظر آموزش",
     )
 
+    def get_create_score(self):
+        return config.TUTORIAL_COMMENT_UPVOTE_SCORE
+
+    def get_create_coin(self):
+        return config.TUTORIAL_COMMENT_UPVOTE_COIN
+
 
 class TutorialCommentDownVote(AbstractCommentScoreCoinModel):
     """TutorialCommentDownVote model"""
@@ -143,3 +156,9 @@ class TutorialCommentDownVote(AbstractCommentScoreCoinModel):
         related_name="down_votes",
         verbose_name="نظر آموزش",
     )
+
+    def get_create_score(self):
+        return config.TUTORIAL_COMMENT_DOWNVOTE_SCORE
+
+    def get_create_coin(self):
+        return config.TUTORIAL_COMMENT_DOWNVOTE_COIN

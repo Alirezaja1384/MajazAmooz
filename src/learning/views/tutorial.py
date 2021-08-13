@@ -62,17 +62,10 @@ class TutorialDetailsView(View):
         Args:
             tutorial (Tutorial): Visited tutorial
         """
-        tutorial_view_score = config.TUTORIAL_VIEW_SCORE
-        tutorial_view_coin = config.TUTORIAL_VIEW_COIN
-
         user = self.request.user
         if (
             user.is_authenticated
             and not tutorial.views.filter(user=user).exists()
         ):
-            TutorialView.objects.create(
-                user=user,
-                tutorial=tutorial,
-                score=tutorial_view_score,
-                coin=tutorial_view_coin,
-            )
+            # Will automatically specify score and coin
+            TutorialView.objects.create(user=user, tutorial=tutorial)

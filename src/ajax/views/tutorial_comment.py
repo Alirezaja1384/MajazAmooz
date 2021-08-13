@@ -1,35 +1,36 @@
-import json
 from typing import Optional
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-from constance import config
 from learning.models import (
     TutorialComment,
+    TutorialCommentLike,
     TutorialCommentUpVote,
     TutorialCommentDownVote,
-    TutorialCommentLike,
 )
 from ajax.forms import TutorialCommentForm
 from ajax.views.shared import (
-    AjaxScoreCoinCreateDeleteView,
-    InsertOrDeleteStatus,
     AjaxView,
+    InsertOrDeleteStatus,
+    AjaxModelCreateDeleteView,
 )
 
+__all__ = [
+    "like_view",
+    "upvote_view",
+    "downvote_view",
+    "TutorialCommentCreateView",
+]
 
-class TutorialCommentUserRelationCreateDeleteView(
-    AjaxScoreCoinCreateDeleteView
-):
+
+class TutorialCommentUserRelationCreateDeleteView(AjaxModelCreateDeleteView):
     tutorial_comment: Optional[TutorialComment] = None
 
-    def set_parent_objects(self):
-        tutorial_comment_id = int(
-            json.loads(self.request.body).get("comment_id")
-        )
+    def prepare_objects(self):
+        tutorial_comment_id = self.data.get("comment_id")
         self.tutorial_comment = (
             TutorialComment.objects.active_and_confirmed_comments()
             .select_related("user")
-            .get(id=tutorial_comment_id)
+            .get(pk=tutorial_comment_id)
         )
 
     def get_objects(self):
@@ -38,38 +39,17 @@ class TutorialCommentUserRelationCreateDeleteView(
         )
 
     def create_object(self):
+        # Should automatically specify score and coin
         self.model.objects.create(
-            user=self.request.user,
-            comment=self.tutorial_comment,
-            score=self.score,
-            coin=self.coin,
+            user=self.request.user, comment=self.tutorial_comment
         )
-
-
-class TutorialCommentLikeView(TutorialCommentUserRelationCreateDeleteView):
-    model = TutorialCommentLike
-    score = config.TUTORIAL_COMMENT_LIKE_SCORE
-    coin = config.TUTORIAL_COMMENT_LIKE_COIN
-
-
-class TutorialCommentUpVoteView(TutorialCommentUserRelationCreateDeleteView):
-    model = TutorialCommentUpVote
-    score = config.TUTORIAL_COMMENT_UPVOTE_SCORE
-    coin = config.TUTORIAL_COMMENT_UPVOTE_COIN
-
-
-class TutorialCommentDownVoteView(TutorialCommentUserRelationCreateDeleteView):
-    model = TutorialCommentDownVote
-    score = config.TUTORIAL_COMMENT_DOWNVOTE_SCORE
-    coin = config.TUTORIAL_COMMENT_DOWNVOTE_COIN
 
 
 class TutorialCommentCreateView(LoginRequiredMixin, AjaxView):
     def db_operation(self):
-        tutorial_comment = json.loads(self.request.body)
-        tutorial_comment["user"] = self.request.user
+        self.data["user"] = self.request.user
 
-        form = TutorialCommentForm(tutorial_comment)
+        form = TutorialCommentForm(self.data)
 
         if form.is_valid():
             form.save()
@@ -82,3 +62,10 @@ class TutorialCommentCreateView(LoginRequiredMixin, AjaxView):
             )
 
         return JsonResponse({"status": InsertOrDeleteStatus.INSERTED})
+
+
+BaseView = TutorialCommentUserRelationCreateDeleteView
+
+like_view = BaseView.as_view(model=TutorialCommentLike)
+upvote_view = BaseView.as_view(model=TutorialCommentUpVote)
+downvote_view = BaseView.as_view(model=TutorialCommentDownVote)
