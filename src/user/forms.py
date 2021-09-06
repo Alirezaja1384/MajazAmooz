@@ -2,9 +2,8 @@ from typing import Optional
 from django import forms
 from django.contrib import auth
 from django.core.exceptions import ValidationError
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
 from learning.models import Tutorial, TutorialComment, TutorialTag
+from shared.forms import CrispySubmitButtonMixin, ExtraRequiredFieldsMixin
 
 
 UserModel = auth.get_user_model()
@@ -16,7 +15,7 @@ class TutorialTagForm(forms.ModelForm):
         fields = ("title",)
 
 
-class TutorialForm(forms.ModelForm):
+class TutorialForm(forms.ModelForm, CrispySubmitButtonMixin):
 
     tags = forms.CharField(required=False, label="کلمات کلیدی")
 
@@ -27,12 +26,6 @@ class TutorialForm(forms.ModelForm):
         # it will be a reference to _save_tags
         # if form save(commit=False) be called
         self.save_tags = lambda self: None
-
-        # Add submit button
-        self.helper = FormHelper()
-        self.helper.add_input(
-            Submit("create_update", "انجام", css_class="btn-success")
-        )
 
         # If editing model, fill tags input with current tags
         instance: Optional[Tutorial] = kwargs.get("instance")
@@ -141,16 +134,7 @@ class TutorialForm(forms.ModelForm):
         )
 
 
-class TutorialCommentForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Add submit button
-        self.helper = FormHelper()
-        self.helper.add_input(
-            Submit("create_update", "انجام", css_class="btn-success")
-        )
-
+class TutorialCommentForm(forms.ModelForm, CrispySubmitButtonMixin):
     class Meta:
         model = TutorialComment
         fields = (
@@ -166,20 +150,9 @@ class TutorialCommentForm(forms.ModelForm):
         }
 
 
-class UserProfileForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Add submit button
-        self.helper = FormHelper()
-        self.helper.add_input(
-            Submit("create_update", "انجام", css_class="btn-success")
-        )
-
-        # Make extra_required_fields required in form
-        for field in self.Meta.extra_required_fields:
-            self.fields[field].required = True
-
+class UserProfileForm(
+    forms.ModelForm, CrispySubmitButtonMixin, ExtraRequiredFieldsMixin
+):
     class Meta:
         model = UserModel
         fields = (
@@ -198,12 +171,8 @@ class UserProfileForm(forms.ModelForm):
         )
 
 
-class PasswordChangeForm(auth.forms.PasswordChangeForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Add submit button
-        self.helper = FormHelper()
-        self.helper.add_input(
-            Submit("create_update", "تغییر گذرواژه", css_class="btn-success")
-        )
+class PasswordChangeForm(
+    auth.forms.PasswordChangeForm, CrispySubmitButtonMixin
+):
+    class Meta:
+        submit_btn_text = "تغییر گذرواژه"
