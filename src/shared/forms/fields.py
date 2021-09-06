@@ -28,3 +28,22 @@ class CrispySubmitButtonMixin(forms.Form):
                 ),
             )
         )
+
+
+class ExtraRequiredFieldsMixin(forms.Form):
+    """Makes Meta class's extra_required_fields required.
+
+    Meta class options:
+        extra_required_fields : Iterable of field names
+            to make them required.
+    """
+
+    class Meta:
+        extra_required_fields = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Make extra_required_fields required in form
+        for field in getattr(self.Meta, "extra_required_fields", []):
+            self.fields[field].required = True
