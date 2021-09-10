@@ -48,12 +48,12 @@ class TutorialForm(forms.ModelForm, CrispySubmitButtonMixin):
         """
         tag_instances: list[TutorialTag] = []
 
-        # Split tags by ',' and assign tag name's to tag_titles as a list
-        tag_titles = (
-            self.cleaned_data["tags"].split(",")
-            if self.cleaned_data["tags"]
-            else []
-        )
+        # Split non-blank tags by ',' and assign tag name's to tag_titles list
+        tag_titles: list[str] = [
+            tag
+            for tag in self.cleaned_data.get("tags", "").split(",")
+            if tag != ""
+        ]
 
         for tag_title in tag_titles:
             # create form to validate tutorial tag
@@ -63,7 +63,10 @@ class TutorialForm(forms.ModelForm, CrispySubmitButtonMixin):
             if not tag_form.is_valid():
                 # Just raise errors (without its field name)
                 raise ValidationError(
-                    [tag_form.errors[field] for field in tag_form.errors]
+                    [
+                        f"{err[0]}: {err[1][0]}"
+                        for err in tag_form.errors.items()
+                    ]
                 )
 
             # Set tag's tutorial
@@ -114,7 +117,7 @@ class TutorialForm(forms.ModelForm, CrispySubmitButtonMixin):
             # If commit=True save tag automatically
             self._save_tags()
         else:
-            # Else add save_tags function to object that
+            # Otherwise add save_tags function to object that
             # references to self._save_tags
             self.save_tags = self._save_tags
 
