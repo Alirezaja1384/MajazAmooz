@@ -91,13 +91,14 @@ class TutorialQueryset(QuerySet):
             # Use Coalesce to ensure aggregation result won't be None
             likes_count=Coalesce(Sum("likes_count"), 0),
             views_count=Coalesce(Sum("user_views_count"), 0),
-        )
-
-        # TODO: change comments_count calcultion method
-        statistics["comments_count"] = (
-            TutorialComment.objects.filter(tutorial__in=self)
-            .active_and_confirmed_comments()
-            .count()
+            # Aggregate count of active and confirmed tutorial comments
+            comments_count=Count(
+                "comments",
+                filter=Q(
+                    comments__is_active=True,
+                    comments__confirm_status=ConfirmStatusChoices.CONFIRMED,
+                ),
+            ),
         )
 
         return TutorialStatistics(statistics)

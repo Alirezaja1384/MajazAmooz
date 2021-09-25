@@ -206,6 +206,11 @@ class TutorialQuerysetTest(TestCase):
             comment_per_tutorial * total_tutorials_count,
         )
 
+    def test_aggregate_statistics_query_count_limit(self):
+        """aggregate_statistics should only execute one query."""
+        with self.assertNumQueries(1):
+            self.tutorials_qs.aggregate_statistics()
+
     def test_get_related_tutorials(self):
         """get_related_tutorials should return tutorials that have
         joint category with given tutorial
