@@ -1,6 +1,5 @@
 from django.db.models import QuerySet
-
-from shared.models import ConfirmStatusChoices
+from . import get_active_confirmed_filters
 
 
 class TutorialCommentUserRelationQueryset(QuerySet):
@@ -9,7 +8,4 @@ class TutorialCommentUserRelationQueryset(QuerySet):
         Returns:
             [QuerySet]: objects with active and confirmed comment
         """
-        return self.filter(
-            comment__is_active=True,
-            comment__confirm_status=ConfirmStatusChoices.CONFIRMED,
-        )
+        return self.filter(get_active_confirmed_filters("comment"))

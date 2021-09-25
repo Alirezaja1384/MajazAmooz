@@ -1,9 +1,9 @@
 from datetime import date
 from typing import Generator, Optional
 from django.db.models import QuerySet
-from shared.models import ConfirmStatusChoices
 from shared.date_time import get_last_months
 from shared.statistics import MonthlyCountStatistics
+from . import get_active_confirmed_filters
 
 
 class TutorialUserRelationQueryset(QuerySet):
@@ -12,10 +12,7 @@ class TutorialUserRelationQueryset(QuerySet):
         Returns:
             [QuerySet]: objects with active and confirmed tutorial
         """
-        return self.filter(
-            tutorial__is_active=True,
-            tutorial__confirm_status=ConfirmStatusChoices.CONFIRMED,
-        )
+        return self.filter(get_active_confirmed_filters("tutorial"))
 
     # TODO: Improve performance by reducing query count
     def get_last_months_count_statistics(

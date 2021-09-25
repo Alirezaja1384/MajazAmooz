@@ -2,10 +2,10 @@
 from __future__ import annotations
 from django.db.models import QuerySet, Prefetch, Count, Sum, Q
 from django.db.models.functions import Coalesce
-from shared.models import ConfirmStatusChoices
 from shared.statistics import TutorialStatistics
 from learning.models.category import Category
 from learning.models.tutorial_comment import TutorialComment
+from . import get_active_confirmed_filters
 
 
 class TutorialQueryset(QuerySet):
@@ -16,9 +16,7 @@ class TutorialQueryset(QuerySet):
         Returns:
             [QuerySet]: Confirmed tutorials
         """
-        return self.filter(
-            is_active=True, confirm_status=ConfirmStatusChoices.CONFIRMED
-        )
+        return self.filter(get_active_confirmed_filters())
 
     def annonate_comments_count(self) -> TutorialQueryset:
         """Annonates active and confirmed comments count
@@ -33,8 +31,7 @@ class TutorialQueryset(QuerySet):
                 # multiple times then count will go wrong
                 "comments",
                 distinct=True,
-                filter=Q(comments__is_active=True)
-                & Q(comments__confirm_status=ConfirmStatusChoices.CONFIRMED),
+                filter=Q(get_active_confirmed_filters("comments")),
             ),
         )
 
@@ -94,10 +91,7 @@ class TutorialQueryset(QuerySet):
             # Aggregate count of active and confirmed tutorial comments
             comments_count=Count(
                 "comments",
-                filter=Q(
-                    comments__is_active=True,
-                    comments__confirm_status=ConfirmStatusChoices.CONFIRMED,
-                ),
+                filter=Q(get_active_confirmed_filters("comments")),
             ),
         )
 
