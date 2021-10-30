@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Generator
 from datetime import datetime, date
 from django.utils import timezone
 import jdatetime
@@ -33,7 +33,9 @@ def normalize_month(month: int):
     return (month - 1) % 12 + 1
 
 
-def get_last_months(count: int = 1, today: Optional[date] = None):
+def get_last_months(
+    count: int = 1, today: Optional[date] = None
+) -> Generator[JalaliMonth, None, None]:
 
     if not today:
         today = date.today()

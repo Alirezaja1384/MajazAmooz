@@ -206,6 +206,11 @@ class TutorialQuerysetTest(TestCase):
             comment_per_tutorial * total_tutorials_count,
         )
 
+    def test_aggregate_statistics_query_count_limit(self):
+        """aggregate_statistics should only execute one query."""
+        with self.assertNumQueries(1):
+            self.tutorials_qs.aggregate_statistics()
+
     def test_get_related_tutorials(self):
         """get_related_tutorials should return tutorials that have
         joint category with given tutorial
@@ -321,25 +326,48 @@ class TutorialUserRelationQuerysetTest(TestCase):
         cls.all_models = all_models
         cls.queryset = model.objects.all()
 
+        cls.today = datetime.date(2021, 7, 14)
+        # Expected monthly count result for today in ascending mode
+        cls.expected_monthly_count_statistics = [
+            MonthlyCountStatistics({"label": "خرداد 1400", "count": 3}),
+            MonthlyCountStatistics({"label": "تیر 1400", "count": 2}),
+        ]
+
     def test_used_by_all_models(self):
         """Should be used as all models' manager."""
         for model in self.all_models:
             qs = model.objects.all()
             self.assertIsInstance(qs, TutorialUserRelationQueryset)
 
-    def test_get_last_months_count_statistics(self):
+    def test_get_last_months_count_ascending(self):
         """get_last_months_count_statistics should return last months
-        label and object counts created in each month.
+        created object counts in ascending sort when ascending=True(default).
         """
-        today = datetime.date(2021, 7, 14)
-        statistics = list(
-            self.queryset.get_last_months_count_statistics(2, today)
+        statistics = self.queryset.get_last_months_count_statistics(
+            last_months_count=len(self.expected_monthly_count_statistics),
+            today=self.today,
         )
-        expected_statistics = [
-            MonthlyCountStatistics({"label": "خرداد 1400", "count": 3}),
-            MonthlyCountStatistics({"label": "تیر 1400", "count": 2}),
-        ]
-        self.assertEqual(statistics, expected_statistics)
+
+        self.assertEqual(statistics, self.expected_monthly_count_statistics)
+
+    def test_get_last_months_count_descending(self):
+        """get_last_months_count_statistics should return last months
+        created object counts in descending sort when ascending=False.
+        """
+        statistics = self.queryset.get_last_months_count_statistics(
+            last_months_count=len(self.expected_monthly_count_statistics),
+            today=self.today,
+            ascending=False,
+        )
+
+        self.assertEqual(
+            statistics, self.expected_monthly_count_statistics[::-1]
+        )
+
+    def test_get_last_months_count_query_count_limit(self):
+        """get_last_months_count_statistics should only run 1 query."""
+        with self.assertNumQueries(1):
+            self.queryset.get_last_months_count_statistics(5, self.today)
 
 
 class TutorialCommentUserRelationQuerysetTest(TestCase):

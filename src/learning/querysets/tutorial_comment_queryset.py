@@ -1,7 +1,6 @@
 """ QuerySet for tutorial comment model """
 from django.db.models import QuerySet
-
-from shared.models import ConfirmStatusChoices
+from . import get_active_confirmed_filters
 
 
 class TutorialCommentQueryset(QuerySet):
@@ -12,16 +11,11 @@ class TutorialCommentQueryset(QuerySet):
         Returns:
             [QuerySet]: Confirmed tutorial comments
         """
-        return self.filter(
-            is_active=True, confirm_status=ConfirmStatusChoices.CONFIRMED
-        )
+        return self.filter(get_active_confirmed_filters())
 
     def active_confirmed_tutorials(self) -> QuerySet:
         """
         Returns:
             [QuerySet]: Tutorial comments with active and confirmed tutorials
         """
-        return self.filter(
-            tutorial__is_active=True,
-            tutorial__confirm_status=ConfirmStatusChoices.CONFIRMED,
-        )
+        return self.filter(get_active_confirmed_filters("tutorial"))
