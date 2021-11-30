@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     # Project apps
     "authentication.apps.AuthenticationConfig",
     "learning.apps.LearningConfig",
+    "exam.apps.ExamConfig",
     "ajax.apps.AjaxConfig",
     "user.apps.UserConfig",
     "shared.apps.SharedConfig",
