@@ -2,7 +2,8 @@ from datetime import timedelta
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from model_bakery import baker
-from exam.models import Exam, Question, ExamResult
+from shared.models import AnswerStatusChoices
+from exam.models import Exam, Question, ExamResult, ParticipantAnswer
 
 
 User = get_user_model()
@@ -84,4 +85,46 @@ class ExamResultTest(TestCase):
         self.assertEqual(
             exam_result.deadline,
             exam_result.started_at + exam.deadline_duration,
+        )
+
+
+class ParticipantAnswerTest(TestCase):
+    """Test the ParticipantAnswer model."""
+
+    bakery_recipe = "exam.participant_answer"
+
+    def test_answer_status_incorrect(self):
+        """Test that the answer status is set to incorrect when participant's
+        answer is not the correct answer.
+        """
+        participant_answer: ParticipantAnswer = baker.make_recipe(
+            self.bakery_recipe, participant_answer=1, correct_answer=2
+        )
+
+        self.assertEqual(
+            participant_answer.answer_status, AnswerStatusChoices.INCORRECT
+        )
+
+    def test_answer_status_correct(self):
+        """Test that the answer status is set to correct when participant's
+        answer is the correct answer.
+        """
+        participant_answer: ParticipantAnswer = baker.make_recipe(
+            self.bakery_recipe, participant_answer=1, correct_answer=1
+        )
+
+        self.assertEqual(
+            participant_answer.answer_status, AnswerStatusChoices.CORRECT
+        )
+
+    def test_answer_status_blank(self):
+        """Test that the answer status is set to blank when participant
+        didn't answer the question.
+        """
+        participant_answer: ParticipantAnswer = baker.make_recipe(
+            self.bakery_recipe, participant_answer=None, correct_answer=1
+        )
+
+        self.assertEqual(
+            participant_answer.answer_status, AnswerStatusChoices.BLANK
         )

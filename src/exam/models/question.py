@@ -1,11 +1,11 @@
 from django.db import models
 from django_lifecycle import LifecycleModel
+from shared.models import QUESTION_ANSWER_CHOICES
 
 
 class Question(LifecycleModel):
     """Question model"""
 
-    ANSWER_CHOICES = [(i, f"گزینه {i}") for i in range(1, 5)]
     ANSWER_HELP_TEXT = (
         "پاسخ پس از اتمام زمان آزمون برای دانش آموز نمایش داده می شود"
     )
@@ -20,7 +20,7 @@ class Question(LifecycleModel):
 
     # Answers
     correct_choice = models.IntegerField(
-        choices=ANSWER_CHOICES,
+        choices=QUESTION_ANSWER_CHOICES,
         verbose_name="جواب صحیح",
         help_text=ANSWER_HELP_TEXT,
     )

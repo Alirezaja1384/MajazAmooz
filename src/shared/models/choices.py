@@ -25,3 +25,19 @@ class ExamResultStatusChoices(IntegerChoices):
     IN_PROGRESS = 1, "در حال تکمیل"
     WAITING_FOR_MARK = 2, "در انتظار صدور کارنامه"
     MARKED = 3, "کارنامه صادر شده"
+
+
+QUESTION_ANSWER_CHOICES = [(i, f"گزینه {i}") for i in range(1, 5)]
+
+
+class AnswerStatusChoices(IntegerChoices):
+    """
+    Answer status choices:
+        1 : Correct
+        0 : Blank
+        -1 : Incorrect
+    """
+
+    CORRECT = 1, "صحیح"
+    INCORRECT = -1, "غلط"
+    BLANK = 0, "نزده"

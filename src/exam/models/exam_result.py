@@ -45,11 +45,18 @@ class ExamResult(LifecycleModel):
         related_name="results",
         verbose_name="آزمون",
     )
+
     user = models.ForeignKey(
         "authentication.User",
         on_delete=models.CASCADE,
         related_name="exam_results",
         verbose_name="کاربر",
+    )
+
+    questions = models.ManyToManyField(
+        through="exam.ParticipantAnswer",
+        to="exam.Question",
+        related_name="exam_results",
     )
 
     @hook(BEFORE_CREATE)
