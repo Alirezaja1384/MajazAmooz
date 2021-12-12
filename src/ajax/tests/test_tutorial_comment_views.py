@@ -9,7 +9,7 @@ from shared.models import ConfirmStatusChoices
 from shared.tests.utils import ModelTestCase
 from learning.models import TutorialComment
 from learning.models.tutorial_comment_user_relation_models import (
-    AbstractCommentScoreCoinModel,
+    AbstractScoreCoinModel,
 )
 from ajax.views import tutorial_comment_views
 from ajax.views.shared import InsertOrDeleteStatus
@@ -19,7 +19,7 @@ User = get_user_model()
 
 
 class TutorialCommentUserRelationCreateDeleteViewTest(ModelTestCase):
-    class TestTutorialCommentUserScoreCoinModel(AbstractCommentScoreCoinModel):
+    class TestTutorialCommentUserScoreCoinModel(AbstractScoreCoinModel):
         user = models.ForeignKey(User, models.DO_NOTHING)
         comment = models.ForeignKey(TutorialComment, models.DO_NOTHING)
 

@@ -4,7 +4,7 @@ from model_bakery import baker
 from shared.tests.utils import ModelTestCase
 from learning.models import Tutorial
 from learning.models.tutorial_user_relation_models import (
-    AbstractTutorialScoreCoinModel,
+    AbstractScoreCoinModel,
 )
 from ajax.views import tutorial_views
 from .utils import ajax_request
@@ -13,7 +13,7 @@ User = get_user_model()
 
 
 class TutorialUserRelationCreateDeleteViewTest(ModelTestCase):
-    class TestTutorialUserScoreCoinModel(AbstractTutorialScoreCoinModel):
+    class TestTutorialUserScoreCoinModel(AbstractScoreCoinModel):
         user = models.ForeignKey(User, models.DO_NOTHING)
         tutorial = models.ForeignKey(Tutorial, models.DO_NOTHING)
 

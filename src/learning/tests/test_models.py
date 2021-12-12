@@ -5,12 +5,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from model_bakery import baker
 from shared.models import ConfirmStatusChoices
-from learning.models.tutorial_user_relation_models import (
-    AbstractTutorialScoreCoinModel,
-)
-from learning.models.tutorial_comment_user_relation_models import (
-    AbstractCommentScoreCoinModel,
-)
+from shared.models import AbstractScoreCoinModel
 from learning.models import (
     Category,
     Tutorial,
@@ -155,7 +150,7 @@ class TutorialUserScoreCoinRelationsTest(TestCase):
         self.author = deepcopy(author)
         self.tutorial = deepcopy(tutorial)
 
-        model_instance: AbstractTutorialScoreCoinModel = baker.make(
+        model_instance: AbstractScoreCoinModel = baker.make(
             self.model,
             user=user,
             tutorial=tutorial,
@@ -181,7 +176,7 @@ class TutorialUserScoreCoinRelationsTest(TestCase):
 
     def test_increase_count_tutorial_model_on_create(self):
         """Creating model should increase its count in tutorial model."""
-        count_field = self.model_instance.tutorial_object_count_field
+        count_field = self.model_instance.object_relation_count_field_name
 
         old_count = getattr(self.tutorial, count_field)
         self.tutorial.refresh_from_db()
@@ -211,7 +206,7 @@ class TutorialUserScoreCoinRelationsTest(TestCase):
 
     def test_decrease_count_tutorial_model_on_delete(self):
         """Deleteting model should decrease its count in tutorial model."""
-        count_field = self.model_instance.tutorial_object_count_field
+        count_field = self.model_instance.object_relation_count_field_name
 
         # Refresh tutorial fields after model creation in setUp()
         self.tutorial.refresh_from_db()
@@ -248,7 +243,7 @@ class TutorialCommentUserScoreCoinRelationsTest(TestCase):
         self.comment_user = deepcopy(comment_user)
         self.comment = deepcopy(comment)
 
-        model_instance: AbstractCommentScoreCoinModel = baker.make(
+        model_instance: AbstractScoreCoinModel = baker.make(
             self.model,
             user=user,
             comment=comment,
@@ -274,7 +269,7 @@ class TutorialCommentUserScoreCoinRelationsTest(TestCase):
 
     def test_increase_count_comment_model_on_create(self):
         """Creating model should increase its count in comment model."""
-        count_field = self.model_instance.comment_object_count_field
+        count_field = self.model_instance.object_relation_count_field_name
 
         old_count = getattr(self.comment, count_field)
         self.comment.refresh_from_db()
@@ -304,7 +299,7 @@ class TutorialCommentUserScoreCoinRelationsTest(TestCase):
 
     def test_decrease_count_comment_model_on_delete(self):
         """Deleteting model should decrease its count in comment model."""
-        count_field = self.model_instance.comment_object_count_field
+        count_field = self.model_instance.object_relation_count_field_name
 
         # Refresh comment fields after model creation in setUp()
         self.comment.refresh_from_db()
