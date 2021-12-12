@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from model_bakery import baker
 from shared.statistics import MonthlyCountStatistics
+from shared.models import AbstractScoreCoinModel
 from learning.models import (
     Category,
     Tutorial,
@@ -17,12 +18,6 @@ from learning.models import (
     TutorialCommentLike,
     TutorialCommentUpVote,
     TutorialCommentDownVote,
-)
-from learning.models.tutorial_user_relation_models import (
-    AbstractTutorialScoreCoinModel,
-)
-from learning.models.tutorial_comment_user_relation_models import (
-    AbstractCommentScoreCoinModel,
 )
 from learning.querysets.category_queryset import CategoryQueryset
 from learning.querysets.tutorial_queryset import TutorialQueryset
@@ -294,7 +289,7 @@ class TutorialUserRelationQuerysetTest(TestCase):
     @classmethod
     def setUpTestData(cls):
 
-        all_models: list[Type[AbstractTutorialScoreCoinModel]] = [
+        all_models: list[Type[AbstractScoreCoinModel]] = [
             TutorialLike,
             TutorialView,
             TutorialUpVote,
@@ -373,7 +368,7 @@ class TutorialUserRelationQuerysetTest(TestCase):
 class TutorialCommentUserRelationQuerysetTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        all_models: list[Type[AbstractCommentScoreCoinModel]] = [
+        all_models: list[Type[AbstractScoreCoinModel]] = [
             TutorialCommentLike,
             TutorialCommentUpVote,
             TutorialCommentDownVote,

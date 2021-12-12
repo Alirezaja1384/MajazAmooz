@@ -3,6 +3,7 @@ from typing import Type
 from django.test import TestCase
 from django.db import connection
 from django.db.models import Model
+from django.db.utils import ProgrammingError
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -23,7 +24,13 @@ class ModelTestCase(TestCase):
                 "model should be configured to use ModelTestCase."
             )
 
+        # Try to delete model if it exists.
+        # Note: there is no need to delete model in tearDownClass because
+        #       It will be deleted automatically in next SetUpClass.
+        cls.delete_model()
+        # Create the dummy model.
         cls.create_model()
+
         super().setUpClass()
 
     @classmethod
@@ -37,14 +44,11 @@ class ModelTestCase(TestCase):
     def delete_model(cls):
         """Deletes class's model from database."""
         # Delete model's table
-        with connection.schema_editor() as schema_editor:
-            schema_editor.delete_model(cls.model)
-
-    @classmethod
-    def tearDownClass(cls):
-        # allow the transaction to exit
-        super().tearDownClass()
-        cls.delete_model()
+        try:
+            with connection.schema_editor() as schema_editor:
+                schema_editor.delete_model(cls.model)
+        except ProgrammingError:
+            pass
 
 
 def prevent_request_warnings(original_function):

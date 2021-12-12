@@ -3,95 +3,14 @@
 """
 from constance import config
 from django.db import models
-from django.db.models import F
-from django.core.exceptions import ImproperlyConfigured
-from django_lifecycle import hook, AFTER_CREATE, BEFORE_DELETE
 from shared.models import AbstractScoreCoinModel
 from learning.querysets.tutorial_user_relation_querysets import (
     TutorialUserRelationQueryset,
 )
 
 
-class AbstractTutorialScoreCoinModel(AbstractScoreCoinModel):
-    """Abstract tutorial score-coin model
-
-    Needs these (required ones flagged by *):
-        [tutorial relation field *]: required for increase/decrease
-            object's count and author's score and coin.
-
-        [tutorial_object_count_field]: object field on tutorial model to
-            increase/decrease on insert/delete. Defaults to None.
-
-    Provides these hooks:
-        AFTER_CREATE: increases author's score and coin by object's
-            score and coin field and object count for tutorial model
-            (if specified by tutorial_object_count_field).
-
-        AFTER_CREATE: decreases author's score and coin by object's
-            score andcoin field and object count on tutorial model
-            (if specified by tutorial_object_count_field).
-    """
-
-    tutorial_object_count_field = None
-
-    @property
-    def tutorial(self):
-        msg = "You should implement tutorial field to use \
-            AbstractTutorialScoreCoinModel"
-        raise ImproperlyConfigured(msg)
-
-    @hook(AFTER_CREATE)
-    def after_create(self):
-        author = self.tutorial.author
-
-        # Increase author's scores and coins
-        author.scores = F("scores") + self.score
-        author.coins = F("coins") + self.coin
-        author.save(update_fields=["scores", "coins"])
-
-        if self.tutorial_object_count_field:
-            # Increase tutorial.{tutorial_object_count_field}
-            setattr(
-                self.tutorial,
-                self.tutorial_object_count_field,
-                F(self.tutorial_object_count_field) + 1,
-            )
-            self.tutorial.save(
-                update_fields=[self.tutorial_object_count_field]
-            )
-
-    @hook(BEFORE_DELETE)
-    def before_delete(self):
-        author = self.tutorial.author
-
-        # Decrease author's scores and coins
-        author.scores = F("scores") - self.score
-        author.coins = F("coins") - self.coin
-        author.save(update_fields=["scores", "coins"])
-
-        if self.tutorial_object_count_field:
-            # Increase tutorial.{tutorial_object_count_field}
-            setattr(
-                self.tutorial,
-                self.tutorial_object_count_field,
-                F(self.tutorial_object_count_field) - 1,
-            )
-            self.tutorial.save(
-                update_fields=[self.tutorial_object_count_field]
-            )
-
-    objects: TutorialUserRelationQueryset = (
-        TutorialUserRelationQueryset.as_manager()
-    )
-
-    class Meta:
-        abstract = True
-
-
-class TutorialView(AbstractTutorialScoreCoinModel):
+class TutorialView(AbstractScoreCoinModel):
     """TutorialView model"""
-
-    tutorial_object_count_field = "user_views_count"
 
     user = models.ForeignKey(
         to="authentication.User",
@@ -107,6 +26,14 @@ class TutorialView(AbstractTutorialScoreCoinModel):
         verbose_name="آموزش",
     )
 
+    # AbstractScoreCoinModel's settings
+    user_relation_field = "user"
+    object_relation_field = "tutorial"
+    object_relation_count_field_name = "user_views_count"
+
+    # Custom queryset
+    objects = TutorialUserRelationQueryset.as_manager()
+
     def get_create_score(self) -> int:
         return config.TUTORIAL_VIEW_SCORE
 
@@ -114,10 +41,8 @@ class TutorialView(AbstractTutorialScoreCoinModel):
         return config.TUTORIAL_VIEW_COIN
 
 
-class TutorialLike(AbstractTutorialScoreCoinModel):
+class TutorialLike(AbstractScoreCoinModel):
     """TutorialLike model"""
-
-    tutorial_object_count_field = "likes_count"
 
     user = models.ForeignKey(
         to="authentication.User",
@@ -133,6 +58,14 @@ class TutorialLike(AbstractTutorialScoreCoinModel):
         verbose_name="آموزش",
     )
 
+    # AbstractScoreCoinModel's settings
+    user_relation_field = "tutorial.author"
+    object_relation_field = "tutorial"
+    object_relation_count_field_name = "likes_count"
+
+    # Custom queryset
+    objects = TutorialUserRelationQueryset.as_manager()
+
     def get_create_score(self) -> int:
         return config.TUTORIAL_LIKE_SCORE
 
@@ -140,10 +73,8 @@ class TutorialLike(AbstractTutorialScoreCoinModel):
         return config.TUTORIAL_LIKE_COIN
 
 
-class TutorialUpVote(AbstractTutorialScoreCoinModel):
+class TutorialUpVote(AbstractScoreCoinModel):
     """TutorialUpVote model"""
-
-    tutorial_object_count_field = "up_votes_count"
 
     user = models.ForeignKey(
         to="authentication.User",
@@ -159,6 +90,14 @@ class TutorialUpVote(AbstractTutorialScoreCoinModel):
         verbose_name="آموزش",
     )
 
+    # Custom queryset
+    objects = TutorialUserRelationQueryset.as_manager()
+
+    # AbstractScoreCoinModel's settings
+    user_relation_field = "tutorial.author"
+    object_relation_field = "tutorial"
+    object_relation_count_field_name = "up_votes_count"
+
     def get_create_score(self) -> int:
         return config.TUTORIAL_UPVOTE_SCORE
 
@@ -166,10 +105,8 @@ class TutorialUpVote(AbstractTutorialScoreCoinModel):
         return config.TUTORIAL_UPVOTE_COIN
 
 
-class TutorialDownVote(AbstractTutorialScoreCoinModel):
+class TutorialDownVote(AbstractScoreCoinModel):
     """TutorialDownVote model"""
-
-    tutorial_object_count_field = "down_votes_count"
 
     user = models.ForeignKey(
         to="authentication.User",
@@ -184,6 +121,14 @@ class TutorialDownVote(AbstractTutorialScoreCoinModel):
         related_name="down_votes",
         verbose_name="آموزش",
     )
+
+    # Custom queryset
+    objects = TutorialUserRelationQueryset.as_manager()
+
+    # AbstractScoreCoinModel's settings
+    user_relation_field = "tutorial.author"
+    object_relation_field = "tutorial"
+    object_relation_count_field_name = "down_votes_count"
 
     def get_create_score(self) -> int:
         return config.TUTORIAL_DOWNVOTE_SCORE
