@@ -457,5 +457,14 @@ CONSTANCE_CONFIG = OrderedDict(
             "TUTORIAL_COMMENT_DOWNVOTE_COIN",
             (0, "دیدگاه آموزش - سکه رای مخالف", int),
         ),
+        # Exam relations
+        (
+            "EXAM_LIKE_COIN",
+            (7, "آزمون - سکه لایک", int),
+        ),
+        (
+            "EXAM_LIKE_SCORE",
+            (7, "آزمون - امتیاز لایک", int),
+        ),
     ]
 )

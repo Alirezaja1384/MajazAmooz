@@ -1,7 +1,9 @@
 from datetime import timedelta
-from django.test import TestCase
-from django.contrib.auth import get_user_model
+from constance import config
 from model_bakery import baker
+from django.test import TestCase
+from django.forms import ValidationError
+from django.contrib.auth import get_user_model
 from shared.models import AnswerStatusChoices
 from exam.models import Exam, Question, ExamResult, ParticipantAnswer
 
@@ -128,3 +130,67 @@ class ParticipantAnswerTest(TestCase):
         self.assertEqual(
             participant_answer.answer_status, AnswerStatusChoices.BLANK
         )
+
+
+class ExamLikeTest(TestCase):
+    """Test the ExamLike model."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.designer_user = baker.make(User)
+        cls.participant_user = baker.make(User)
+        cls.nonparticipant_user = baker.make(User)
+        cls.exam = baker.make_recipe("exam.exam", designer=cls.designer_user)
+
+        baker.make_recipe(
+            "exam.exam_result", user=cls.participant_user, exam=cls.exam
+        )
+
+    def make_like(self):
+        return baker.make_recipe(
+            "exam.exam_like", user=self.participant_user, exam=self.exam
+        )
+
+    def test_nonparticipant_user(self):
+        """Test that raises ValidationError when user is not a participant."""
+        with self.assertRaises(ValidationError):
+            baker.make_recipe(
+                "exam.exam_like", user=self.nonparticipant_user, exam=self.exam
+            )
+
+    def test_participant_user(self):
+        """Test that saves object when user is a participant."""
+        like = self.make_like()
+        self.assertIn(like, self.participant_user.exam_likes.all())
+
+    def test_creation_score_coin(self):
+        """Test that sets the score and coin correctly when user
+        likes an exam.
+        """
+        old_score = self.participant_user.scores
+        old_coin = self.participant_user.coins
+
+        self.make_like()
+        self.designer_user.refresh_from_db()
+
+        self.assertEqual(
+            self.designer_user.scores - old_score, config.EXAM_LIKE_SCORE
+        )
+        self.assertEqual(
+            self.designer_user.coins - old_coin, config.EXAM_LIKE_COIN
+        )
+
+    def test_increase_likes_count(self):
+        """Test that increases likes count on create."""
+        like = self.make_like()
+        self.assertEqual(like.exam.likes_count, 1)
+
+    def test_decrease_likes_count(self):
+        """Test that decreases likes count on delete."""
+        self.make_like()
+        like2 = self.make_like()
+        like2.delete()
+
+        like2.exam.refresh_from_db()
+
+        self.assertEqual(like2.exam.likes_count, 1)

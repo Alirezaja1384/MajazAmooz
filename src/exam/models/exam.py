@@ -103,7 +103,11 @@ class Exam(LifecycleModel):
         verbose_name="دسته بندی ها",
     )
 
-    # TODO: Likes relation
+    likers = models.ManyToManyField(
+        "authentication.User",
+        related_name="liked_exams",
+        verbose_name="کاربران لایک کرده",
+    )
 
     @hook(BEFORE_SAVE)
     def before_save(self, *args, **kwargs):
