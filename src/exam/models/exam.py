@@ -6,6 +6,7 @@ from django.core.validators import (
     MaxValueValidator,
 )
 from django_resized import ResizedImageField
+from django_bleach.models import BleachField
 from django_lifecycle import LifecycleModel, hook, BEFORE_SAVE
 from shared.models import ConfirmStatusChoices
 
@@ -20,10 +21,8 @@ class Exam(LifecycleModel):
         max_length=255, allow_unicode=True, verbose_name="اسلاگ"
     )
 
-    short_description = models.CharField(
-        max_length=255, verbose_name="توضیح کوتاه"
-    )
-    full_description = models.TextField(verbose_name="توضیح کامل")
+    short_description = BleachField(max_length=255, verbose_name="توضیح کوتاه")
+    full_description = BleachField(verbose_name="توضیح کامل")
 
     deadline_duration = models.DurationField(
         null=True, blank=True, verbose_name="مدت زمان تحویل"
