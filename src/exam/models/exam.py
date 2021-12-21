@@ -102,6 +102,13 @@ class Exam(LifecycleModel):
         verbose_name="دسته بندی ها",
     )
 
+    participants = models.ManyToManyField(
+        to="authentication.User",
+        through="exam.ExamResult",
+        related_name="participated_exams",
+        verbose_name="شرکت کنندگان",
+    )
+
     likers = models.ManyToManyField(
         "authentication.User",
         related_name="liked_exams",
