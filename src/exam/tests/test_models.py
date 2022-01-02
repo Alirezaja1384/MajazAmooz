@@ -4,7 +4,7 @@ from model_bakery import baker
 from django.test import TestCase
 from django.forms import ValidationError
 from django.contrib.auth import get_user_model
-from shared.models import AnswerStatusChoices
+from exam.querysets import ParticipantAnswerQuerySet
 from exam.models import Exam, Question, ExamResult, ParticipantAnswer
 
 
@@ -95,40 +95,11 @@ class ParticipantAnswerTest(TestCase):
 
     bakery_recipe = "exam.participant_answer"
 
-    def test_answer_status_incorrect(self):
-        """Test that the answer status is set to incorrect when participant's
-        answer is not the correct answer.
-        """
-        participant_answer: ParticipantAnswer = baker.make_recipe(
-            self.bakery_recipe, participant_answer=1, correct_answer=2
-        )
-
-        self.assertEqual(
-            participant_answer.answer_status, AnswerStatusChoices.INCORRECT
-        )
-
-    def test_answer_status_correct(self):
-        """Test that the answer status is set to correct when participant's
-        answer is the correct answer.
-        """
-        participant_answer: ParticipantAnswer = baker.make_recipe(
-            self.bakery_recipe, participant_answer=1, correct_answer=1
-        )
-
-        self.assertEqual(
-            participant_answer.answer_status, AnswerStatusChoices.CORRECT
-        )
-
-    def test_answer_status_blank(self):
-        """Test that the answer status is set to blank when participant
-        didn't answer the question.
-        """
-        participant_answer: ParticipantAnswer = baker.make_recipe(
-            self.bakery_recipe, participant_answer=None, correct_answer=1
-        )
-
-        self.assertEqual(
-            participant_answer.answer_status, AnswerStatusChoices.BLANK
+    def test_model_uses_proper_queryset(self):
+        """Test that the model uses the ParticipantAnswerQuerySet as
+        its queryset manager."""
+        self.assertIsInstance(
+            ParticipantAnswer.objects.all(), ParticipantAnswerQuerySet
         )
 
 
