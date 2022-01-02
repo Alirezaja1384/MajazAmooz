@@ -29,10 +29,10 @@ class ExamResult(LifecycleModel):
     score_max = models.IntegerField(default=0, verbose_name="حداکثر امتیاز")
     score_percent = models.IntegerField(default=0, verbose_name="درصد امتیاز")
 
-    status = models.IntegerField(
+    mark_status = models.IntegerField(
         choices=ExamResultStatusChoices.choices,
-        default=ExamResultStatusChoices.IN_PROGRESS,
-        verbose_name="وضعیت",
+        default=ExamResultStatusChoices.NOT_STARTED,
+        verbose_name="وضعیت کارنامه",
     )
     is_finalized = models.BooleanField(
         default=False, verbose_name="پایان یافته"

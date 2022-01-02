@@ -22,9 +22,9 @@ class ExamResultStatusChoices(IntegerChoices):
         1 : Still in progress
     """
 
-    IN_PROGRESS = 1, "در حال تکمیل"
-    WAITING_FOR_MARK = 2, "در انتظار صدور کارنامه"
-    MARKED = 3, "کارنامه صادر شده"
+    NOT_STARTED = 1, "پردازش شروع نشده"
+    IN_PROGRESS = 2, "در حال پردازش"
+    COMPLETED = 3, "پردازش تمام شده"
 
 
 QUESTION_ANSWER_CHOICES = [(i, f"گزینه {i}") for i in range(1, 5)]
