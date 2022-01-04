@@ -2,7 +2,7 @@ import base64
 from django.core import mail
 from django.test import TestCase
 from django.shortcuts import resolve_url
-from django.utils.encoding import force_text, force_bytes
+from django.utils.encoding import force_str, force_bytes
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from model_bakery import baker
@@ -61,11 +61,11 @@ class EmailConfirmationManagerTest(TestCase):
     def test_base64uid_base64_encoded(self):
         """Encoded user id should be correct."""
         uid_base64 = self.confirmation_manager.get_uid_base64()
-        uid = force_text(
+        uid = force_str(
             # b"==" is padding to prevent invalid padding error
             base64.b64decode(force_bytes(uid_base64, "ascii") + b"==")
         )
-        self.assertEqual(uid, force_text(self.user.pk))
+        self.assertEqual(uid, force_str(self.user.pk))
 
     def test_get_token(self):
         """Generated token by get_token() should be valid."""

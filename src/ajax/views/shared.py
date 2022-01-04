@@ -30,8 +30,11 @@ class AjaxView(View):
     http_method_names = ["post"]
     db_error_default_text = "خطایی در ثبت اطلاعات رخ داد"
 
+    def is_ajax(self, request: HttpRequest) -> bool:
+        return request.headers.get("Accept", "") == "application/json"
+
     def post(self, request: HttpRequest, *args, **kwargs):
-        if request.is_ajax():
+        if self.is_ajax(request):
             try:
                 # Create a db savepoint
                 before_operation = transaction.savepoint()

@@ -16,7 +16,9 @@ def ajax_request(
         "/",
         data=data or dict(),
         content_type="application/json",
-        HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        # This request will be detected as ajax request
+        # because of its Accept header.
+        **{"HTTP_ACCEPT": "application/json"}
     )
     request.user = user
 
