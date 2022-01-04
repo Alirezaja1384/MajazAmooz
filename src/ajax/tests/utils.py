@@ -15,8 +15,8 @@ def ajax_request(
     request = factory.post(
         "/",
         data=data or dict(),
+        Accept="application/json",
         content_type="application/json",
-        HTTP_X_REQUESTED_WITH="XMLHttpRequest",
     )
     request.user = user
 

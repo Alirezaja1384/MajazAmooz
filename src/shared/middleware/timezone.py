@@ -1,5 +1,3 @@
-import pytz
-
 from django.utils import timezone
 from django.conf import settings
 
@@ -17,7 +15,7 @@ class TimezoneMiddleware:
         # Try to get timezone from user's session
         tz_name = request.session.get("timezone", default_timezone)
         # Activate timezone
-        timezone.activate(pytz.timezone(tz_name))
+        timezone.activate(tz_name)
 
         # Get response and set Time-Zone header
         response = self.get_response(request)

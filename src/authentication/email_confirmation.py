@@ -8,7 +8,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.db import DatabaseError
 
 from authentication.models import User
@@ -52,7 +52,7 @@ class EmailConfirmationManager:
         """
         try:
             # decode user id
-            uid = force_text(urlsafe_base64_decode(uid_base64))
+            uid = force_str(urlsafe_base64_decode(uid_base64))
             # get user by decoded user id
             user = UserModel.objects.get(id=uid)
 
