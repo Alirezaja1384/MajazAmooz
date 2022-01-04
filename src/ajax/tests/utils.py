@@ -15,8 +15,10 @@ def ajax_request(
     request = factory.post(
         "/",
         data=data or dict(),
-        Accept="application/json",
         content_type="application/json",
+        # This request will be detected as ajax request
+        # because of its Accept header.
+        **{"HTTP_ACCEPT": "application/json"}
     )
     request.user = user
 

@@ -31,7 +31,7 @@ class AjaxView(View):
     db_error_default_text = "خطایی در ثبت اطلاعات رخ داد"
 
     def is_ajax(self, request: HttpRequest) -> bool:
-        return request.META.get("Accept", "") == "application/json"
+        return request.headers.get("Accept", "") == "application/json"
 
     def post(self, request: HttpRequest, *args, **kwargs):
         if self.is_ajax(request):
