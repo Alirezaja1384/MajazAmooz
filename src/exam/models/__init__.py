@@ -1,7 +1,13 @@
 from .exam import Exam
 from .question import Question
 from .exam_like import ExamLike
-from .exam_result import ExamResult
+from .exam_participation import ExamParticipation
 from .participant_answer import ParticipantAnswer
 
-__all__ = ["Exam", "Question", "ExamLike", "ExamResult", "ParticipantAnswer"]
+__all__ = [
+    "Exam",
+    "Question",
+    "ExamLike",
+    "ExamParticipation",
+    "ParticipantAnswer",
+]

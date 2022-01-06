@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.forms import ValidationError
 from django.contrib.auth import get_user_model
 from exam.querysets import ParticipantAnswerQuerySet
-from exam.models import Exam, Question, ExamResult, ParticipantAnswer
+from exam.models import Exam, Question, ExamParticipation, ParticipantAnswer
 
 
 User = get_user_model()
@@ -41,15 +41,15 @@ class QuestionTest(TestCase):
         self.assertEqual(str(question), "Test Question")
 
 
-class ExamResultTest(TestCase):
-    baker_recipe = "exam.exam_result"
+class ExamParticipationTest(TestCase):
+    baker_recipe = "exam.exam_participation"
 
     @classmethod
     def setUpTestData(cls):
         """Set up the test data."""
         cls.user = baker.make(User, username="testuser")
         cls.exam = baker.make_recipe("exam.exam", title="Test Exam")
-        cls.exam_result = baker.make_recipe(
+        cls.exam_participation = baker.make_recipe(
             cls.baker_recipe, user=cls.user, exam=cls.exam
         )
 
@@ -58,7 +58,7 @@ class ExamResultTest(TestCase):
         Exam result's string representation should contain the user's
         username and the exam's title.
         """
-        result_str = str(self.exam_result)
+        result_str = str(self.exam_participation)
         self.assertIn(self.user.username, result_str)
         self.assertIn(self.exam.title, result_str)
 
@@ -69,24 +69,24 @@ class ExamResultTest(TestCase):
         exam: Exam = baker.make_recipe(
             ExamTest.bakery_recipe, deadline_duration=None
         )
-        exam_result: ExamResult = baker.make_recipe(
-            "exam.exam_result", exam=exam
+        exam_participation: ExamParticipation = baker.make_recipe(
+            "exam.exam_participation", exam=exam
         )
 
-        self.assertIsNone(exam_result.deadline)
+        self.assertIsNone(exam_participation.deadline)
 
     def test_set_deadline_with_duration(self):
         """Test that the deadline is set correctly when exam has a deadline."""
         exam: Exam = baker.make_recipe(
             ExamTest.bakery_recipe, deadline_duration=timedelta(hours=1)
         )
-        exam_result: ExamResult = baker.make_recipe(
-            "exam.exam_result", exam=exam
+        exam_participation: ExamParticipation = baker.make_recipe(
+            "exam.exam_participation", exam=exam
         )
 
         self.assertEqual(
-            exam_result.deadline,
-            exam_result.started_at + exam.deadline_duration,
+            exam_participation.deadline,
+            exam_participation.started_at + exam.deadline_duration,
         )
 
 
@@ -114,7 +114,7 @@ class ExamLikeTest(TestCase):
         cls.exam = baker.make_recipe("exam.exam", designer=cls.designer_user)
 
         baker.make_recipe(
-            "exam.exam_result", user=cls.participant_user, exam=cls.exam
+            "exam.exam_participation", user=cls.participant_user, exam=cls.exam
         )
 
     def make_like(self):

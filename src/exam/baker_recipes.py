@@ -5,7 +5,7 @@ from exam.models import (
     Exam,
     Question,
     ExamLike,
-    ExamResult,
+    ExamParticipation,
     ParticipantAnswer,
 )
 
@@ -15,5 +15,5 @@ generators.add("django_bleach.models.BleachField", gen_text)
 exam = Recipe(Exam)
 question = Recipe(Question)
 exam_like = Recipe(ExamLike)
-exam_result = Recipe(ExamResult)
+exam_participation = Recipe(ExamParticipation)
 participant_answer = Recipe(ParticipantAnswer)

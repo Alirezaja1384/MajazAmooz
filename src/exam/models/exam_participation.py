@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils import timezone
 from django_lifecycle import LifecycleModel, hook, BEFORE_CREATE
-from shared.models import ExamResultStatusChoices
+from shared.models import ExamParticipationStatusChoices
 
 
-class ExamResult(LifecycleModel):
-    """ExamResult model."""
+class ExamParticipation(LifecycleModel):
+    """A model that represents a user's participation in an exam."""
 
     started_at = models.DateTimeField(
         null=False, default=timezone.now, verbose_name="شروع شده در"
@@ -30,8 +30,8 @@ class ExamResult(LifecycleModel):
     score_percent = models.IntegerField(default=0, verbose_name="درصد امتیاز")
 
     mark_status = models.IntegerField(
-        choices=ExamResultStatusChoices.choices,
-        default=ExamResultStatusChoices.NOT_STARTED,
+        choices=ExamParticipationStatusChoices.choices,
+        default=ExamParticipationStatusChoices.NOT_STARTED,
         verbose_name="وضعیت کارنامه",
     )
     is_finalized = models.BooleanField(
@@ -49,14 +49,14 @@ class ExamResult(LifecycleModel):
     user = models.ForeignKey(
         "authentication.User",
         on_delete=models.CASCADE,
-        related_name="exam_results",
+        related_name="exam_participations",
         verbose_name="کاربر",
     )
 
     questions = models.ManyToManyField(
         through="exam.ParticipantAnswer",
         to="exam.Question",
-        related_name="exam_results",
+        related_name="exam_participations",
     )
 
     @hook(BEFORE_CREATE)

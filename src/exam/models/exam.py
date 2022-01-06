@@ -104,7 +104,7 @@ class Exam(LifecycleModel):
 
     participants = models.ManyToManyField(
         to="authentication.User",
-        through="exam.ExamResult",
+        through="exam.ExamParticipation",
         related_name="participated_exams",
         verbose_name="شرکت کنندگان",
     )

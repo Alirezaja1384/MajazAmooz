@@ -21,8 +21,8 @@ class ParticipantAnswer(models.Model):
     )
 
     # Relations
-    exam_result = models.ForeignKey(
-        "exam.ExamResult",
+    exam_participation = models.ForeignKey(
+        "exam.ExamParticipation",
         null=False,
         related_name="answers",
         on_delete=models.CASCADE,

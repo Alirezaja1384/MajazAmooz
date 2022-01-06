@@ -2,7 +2,7 @@ from .fields import BleachField
 from .abstract_models import AbstractScoreCoinModel
 from .choices import (
     ConfirmStatusChoices,
-    ExamResultStatusChoices,
+    ExamParticipationStatusChoices,
     QUESTION_ANSWER_CHOICES,
     AnswerStatusChoices,
 )
@@ -10,7 +10,7 @@ from .choices import (
 __all__ = [
     "AbstractScoreCoinModel",
     "ConfirmStatusChoices",
-    "ExamResultStatusChoices",
+    "ExamParticipationStatusChoices",
     "QUESTION_ANSWER_CHOICES",
     "AnswerStatusChoices",
     "BleachField",

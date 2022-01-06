@@ -14,7 +14,7 @@ class ConfirmStatusChoices(IntegerChoices):
     DISPROVED = -1, "رد شده"
 
 
-class ExamResultStatusChoices(IntegerChoices):
+class ExamParticipationStatusChoices(IntegerChoices):
     """
     Exam result status choices:
         3 : Finalized and Marked

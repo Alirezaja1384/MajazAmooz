@@ -34,7 +34,12 @@ class Question(LifecycleModel):
     is_active = models.BooleanField(default=True, verbose_name="فعال")
 
     # Relations
-    exam = models.ForeignKey("exam.Exam", null=False, on_delete=models.CASCADE)
+    exam = models.ForeignKey(
+        "exam.Exam",
+        null=False,
+        related_name="questions",
+        on_delete=models.CASCADE,
+    )
 
     def __str__(self) -> str:
         return str(self.question_text)
