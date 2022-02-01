@@ -12,7 +12,7 @@ class ParticipantAnswer(models.Model):
         choices=QUESTION_ANSWER_CHOICES, null=True
     )
     correct_answer = models.IntegerField(
-        choices=QUESTION_ANSWER_CHOICES, null=False
+        choices=QUESTION_ANSWER_CHOICES, null=True
     )
     answer_status = models.IntegerField(
         choices=AnswerStatusChoices.choices,
