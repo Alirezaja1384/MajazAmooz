@@ -139,8 +139,7 @@ class ParticipantAnswerQuerysetTest(TestCase):
         )
 
     def test_set_correct_answers(self):
-        """ Test that set_correct_answers sets correct_answer field correctly.
-        """
+        """Test that set_correct_answers sets correct_answer correctly."""
         self.model.objects.set_correct_answers()
 
         # The wrong assigned correct_answer fields should not exist.
@@ -152,4 +151,16 @@ class ParticipantAnswerQuerysetTest(TestCase):
             # Get only the objects with incorrect correct_answer field
             .exclude(correct_answer=F("question__correct_choice")).count(),
             0,
+        )
+
+    def test_aggregate_answer_statuses_count(self):
+        """Test that aggregate_answer_statuses_count returns the correct
+        number of answers for each status.
+        """
+        answer_statuses = self.model.objects.aggregate_answer_statuses_count()
+
+        self.assertEqual(answer_statuses.blank, len(self.blank_answer_pks))
+        self.assertEqual(answer_statuses.correct, len(self.correct_answer_pks))
+        self.assertEqual(
+            answer_statuses.incorrect, len(self.incorrect_answer_pks)
         )

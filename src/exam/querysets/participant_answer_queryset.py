@@ -1,6 +1,26 @@
-from django.db.models import QuerySet, Subquery, OuterRef, When, Case, Q, F
+from dataclasses import dataclass
+from django.db.models import (
+    F,
+    Q,
+    Case,
+    When,
+    Count,
+    QuerySet,
+    Subquery,
+    OuterRef,
+)
+from django.db.models.functions import Coalesce
 from shared.models import AnswerStatusChoices
 from exam.models import Question
+
+
+@dataclass
+class AnswerStatusCounts:
+    """Answer status counts."""
+
+    blank: int = 0
+    correct: int = 0
+    incorrect: int = 0
 
 
 class ParticipantAnswerQuerySet(QuerySet):
@@ -71,3 +91,46 @@ class ParticipantAnswerQuerySet(QuerySet):
         )
 
         return update_count
+
+    def aggregate_answer_statuses_count(
+        self, set_statuses=False
+    ) -> AnswerStatusCounts:
+        """Aggregates the answer statuses' counts.
+
+        Args:
+            set_statuses (bool): If True, sets the answer statuses
+                automatically. Default is False.
+
+        Returns:
+            AnswerStatusCounts: The answer statuses' counts.
+        """
+        if set_statuses:
+            self.set_answers_status()
+
+        return AnswerStatusCounts(
+            **self.aggregate(
+                # Counts answers that their status is correct
+                correct=Coalesce(
+                    Count(
+                        "pk",
+                        filter=Q(answer_status=AnswerStatusChoices.CORRECT),
+                    ),
+                    0,
+                ),
+                # Counts answers that their status is incorrect
+                incorrect=Coalesce(
+                    Count(
+                        "pk",
+                        filter=Q(answer_status=AnswerStatusChoices.INCORRECT),
+                    ),
+                    0,
+                ),
+                # Counts answers that their status is blank
+                blank=Coalesce(
+                    Count(
+                        "pk", filter=Q(answer_status=AnswerStatusChoices.BLANK)
+                    ),
+                    0,
+                ),
+            )
+        )

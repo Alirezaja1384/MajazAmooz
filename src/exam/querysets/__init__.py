@@ -1,5 +1,12 @@
-from .participant_answer_queryset import ParticipantAnswerQuerySet
+from .participant_answer_queryset import (
+    ParticipantAnswerQuerySet,
+    AnswerStatusCounts,
+)
 from .exam_participation_queryset import ExamParticipationQuerySet
 
 
-__all__ = ["ParticipantAnswerQuerySet", "ExamParticipationQuerySet"]
+__all__ = [
+    "AnswerStatusCounts",
+    "ParticipantAnswerQuerySet",
+    "ExamParticipationQuerySet",
+]
