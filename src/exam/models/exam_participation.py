@@ -1,7 +1,9 @@
 from django.db import models
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django_lifecycle import LifecycleModel, hook, BEFORE_CREATE
 from shared.models import ExamParticipationStatusChoices
+from exam.querysets import ExamParticipationQuerySet
 
 
 class ExamParticipation(LifecycleModel):
@@ -27,7 +29,13 @@ class ExamParticipation(LifecycleModel):
         default=0, verbose_name="امتیاز کسب شده"
     )
     score_max = models.IntegerField(default=0, verbose_name="حداکثر امتیاز")
-    score_percent = models.IntegerField(default=0, verbose_name="درصد امتیاز")
+    score_percent = models.DecimalField(
+        default=0,
+        max_digits=5,  # Max value is 100.00
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        verbose_name="درصد امتیاز",
+    )
 
     mark_status = models.IntegerField(
         choices=ExamParticipationStatusChoices.choices,
@@ -58,6 +66,8 @@ class ExamParticipation(LifecycleModel):
         to="exam.Question",
         related_name="exam_participations",
     )
+
+    objects: ExamParticipationQuerySet = ExamParticipationQuerySet.as_manager()
 
     @hook(BEFORE_CREATE)
     def before_create(self):
