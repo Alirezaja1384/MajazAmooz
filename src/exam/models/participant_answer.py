@@ -24,6 +24,7 @@ class ParticipantAnswer(models.Model):
     exam_participation = models.ForeignKey(
         "exam.ExamParticipation",
         null=False,
+        editable=False,
         related_name="answers",
         on_delete=models.CASCADE,
     )
@@ -31,6 +32,7 @@ class ParticipantAnswer(models.Model):
     question = models.ForeignKey(
         "exam.Question",
         null=False,
+        editable=False,
         related_name="answers",
         on_delete=models.CASCADE,
     )

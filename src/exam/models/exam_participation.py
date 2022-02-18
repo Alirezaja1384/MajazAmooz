@@ -1,16 +1,20 @@
+from datetime import timedelta
 from django.db import models
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django_lifecycle import LifecycleModel, hook, BEFORE_CREATE
 from shared.models import ExamParticipationStatusChoices
 from exam.querysets import ExamParticipationQuerySet
 
 
-class ExamParticipation(LifecycleModel):
+class ExamParticipation(models.Model):
     """A model that represents a user's participation in an exam."""
 
     started_at = models.DateTimeField(
-        null=False, default=timezone.now, verbose_name="شروع شده در"
+        null=False,
+        editable=False,
+        default=timezone.now,
+        verbose_name="شروع شده در",
     )
     finalized_at = models.DateTimeField(
         null=True, verbose_name="پایان یافته در"
@@ -49,6 +53,7 @@ class ExamParticipation(LifecycleModel):
     # Relations
     exam = models.ForeignKey(
         "exam.Exam",
+        editable=False,
         on_delete=models.CASCADE,
         related_name="results",
         verbose_name="آزمون",
@@ -56,25 +61,56 @@ class ExamParticipation(LifecycleModel):
 
     user = models.ForeignKey(
         "authentication.User",
+        editable=False,
         on_delete=models.CASCADE,
         related_name="exam_participations",
         verbose_name="کاربر",
     )
 
     questions = models.ManyToManyField(
-        through="exam.ParticipantAnswer",
         to="exam.Question",
+        through="exam.ParticipantAnswer",
         related_name="exam_participations",
     )
 
     objects: ExamParticipationQuerySet = ExamParticipationQuerySet.as_manager()
 
-    @hook(BEFORE_CREATE)
-    def before_create(self):
-        """Set default values."""
-        # Set the deadline if deadline_duration is set
-        if self.exam.deadline_duration:
-            self.deadline = self.started_at + self.exam.deadline_duration
+    def _set_deadline(self):
+        # Set the deadline if deadline_duration is set or exam has expiration
+        if self.exam.deadline_duration or self.exam.ends_at:
+            deadlines = []
+            if self.exam.ends_at:
+                deadlines.append(self.exam.ends_at)
+            if self.exam.deadline_duration:
+                deadlines.append(timezone.now() + self.exam.deadline_duration)
+
+            # Use minimum deadline as the participation deadline
+            self.deadline = min(deadlines)
+
+    def finalize_exam(self, commit=True):
+        """Finalizes the exam by setting the is_finalized and finalized_at
+        fields.
+        """
+        self.is_finalized = True
+        self.finalized_at = timezone.now()
+
+        if (
+            self.deadline
+            and (self.deadline + (self.exam.waiting_duration or timedelta(0)))
+            < timezone.now()
+        ):
+            raise ValidationError("مهلت آزمون به پایان رسیده است.")
+
+        if commit:
+            self.save()
+
+    def save(self, *args, **kwargs):
+        """Sets the deadline and saves the model."""
+        # Set deadline on first save
+        if not self.pk:
+            self._set_deadline()
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         """Return string representation."""

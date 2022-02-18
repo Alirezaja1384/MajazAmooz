@@ -1,14 +1,24 @@
 from datetime import timedelta
+from unittest.mock import patch
 from constance import config
 from model_bakery import baker
 from django.test import TestCase
-from django.forms import ValidationError
+from django.utils import timezone
+from django.db.utils import DatabaseError
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+from authentication.models import User
+from exam.models.exam_like import ExamLike
 from exam.querysets import ParticipantAnswerQuerySet
-from exam.models import Exam, Question, ExamParticipation, ParticipantAnswer
+from exam.models import (
+    Exam,
+    Question,
+    ExamParticipation,
+    ParticipantAnswer,
+)
 
 
-User = get_user_model()
+UserModel = get_user_model()
 
 
 class ExamTest(TestCase):
@@ -29,6 +39,42 @@ class ExamTest(TestCase):
         exam: Exam = baker.make_recipe(self.bakery_recipe, title="آزمون تست")
         self.assertEqual(exam.slug, "آزمون-تست")
 
+    def test_clean_blank_score_greater_than_correct_score(self):
+        """Test that the clean method raises a ValidationError when the blank score
+        is greater than the correct score.
+        """
+        exam: Exam = baker.make_recipe(
+            self.bakery_recipe,
+            correct_score=2,
+            blank_score=5,
+            incorrect_score=-1,
+        )
+        self.assertRaises(ValidationError, exam.full_clean)
+
+    def test_clean_incorrect_score_greater_than_blank_score(self):
+        """Test that the clean method raises a ValidationError when the incorrect score
+        is greater than the blank score.
+        """
+        exam: Exam = baker.make_recipe(
+            self.bakery_recipe,
+            correct_score=2,
+            blank_score=0,
+            incorrect_score=1,
+        )
+        self.assertRaises(ValidationError, exam.full_clean)
+
+    def test_clean_ends_at_less_than_starts_at(self):
+        """Test that the clean method raises a ValidationError when the ends_at
+        is less than or equal to the starts_at.
+        """
+        # Ended before start
+        exam: Exam = baker.make_recipe(
+            self.bakery_recipe,
+            ends_at=timezone.now() - timedelta(days=1),
+            starts_at=timezone.now(),
+        )
+        self.assertRaises(ValidationError, exam.full_clean)
+
 
 class QuestionTest(TestCase):
     bakery_recipe = "exam.question"
@@ -47,9 +93,9 @@ class ExamParticipationTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         """Set up the test data."""
-        cls.user = baker.make(User, username="testuser")
-        cls.exam = baker.make_recipe("exam.exam", title="Test Exam")
-        cls.exam_participation = baker.make_recipe(
+        cls.user: User = baker.make(UserModel, username="testuser")
+        cls.exam: Exam = baker.make_recipe("exam.exam", title="Test Exam")
+        cls.exam_participation: ExamParticipation = baker.make_recipe(
             cls.baker_recipe, user=cls.user, exam=cls.exam
         )
 
@@ -67,7 +113,7 @@ class ExamParticipationTest(TestCase):
         duration.
         """
         exam: Exam = baker.make_recipe(
-            ExamTest.bakery_recipe, deadline_duration=None
+            ExamTest.bakery_recipe, deadline_duration=None, ends_at=None
         )
         exam_participation: ExamParticipation = baker.make_recipe(
             "exam.exam_participation", exam=exam
@@ -84,10 +130,129 @@ class ExamParticipationTest(TestCase):
             "exam.exam_participation", exam=exam
         )
 
-        self.assertEqual(
+        self.assertAlmostEqual(
             exam_participation.deadline,
             exam_participation.started_at + exam.deadline_duration,
+            delta=timedelta(seconds=1),  # Max difference should be 1 second
         )
+
+    def test_call_set_deadline_on_create(self):
+        """Test that the _set_deadline method is called when creating an exam
+        participation.
+        """
+        exam_participation: ExamParticipation = baker.prepare_recipe(
+            self.baker_recipe, exam=self.exam, user=self.user
+        )
+
+        with patch.object(
+            exam_participation, "_set_deadline"
+        ) as mock_set_deadline:
+            exam_participation.save()
+            mock_set_deadline.assert_called_once()
+
+    def test_not_call_set_deadline_on_update(self):
+        """Test that the _set_deadline method is not called when updating an exam
+        participation.
+        """
+        exam_participation: ExamParticipation = baker.make_recipe(
+            self.baker_recipe, exam=self.exam, user=self.user
+        )
+
+        with patch.object(
+            exam_participation, "_set_deadline"
+        ) as mock_set_deadline:
+            exam_participation.save()
+            mock_set_deadline.assert_not_called()
+
+    def test_set_deadline_deadline_duration_less_than_ends_at(self):
+        """Test that sets the deadline by exam's deadline duration if the
+        duration is less than the exam's ends_at.
+        """
+        self.exam.ends_at = timezone.now() + timedelta(days=1)
+        self.exam.deadline_duration = timedelta(days=1)
+        self.exam.save()
+
+        exam_participation: ExamParticipation = baker.make_recipe(
+            self.baker_recipe, exam=self.exam, user=self.user
+        )
+        self.assertAlmostEqual(
+            exam_participation.deadline,
+            timezone.now() + self.exam.deadline_duration,
+            delta=timedelta(seconds=1),  # Max difference should be 1 second
+        )
+
+    def test_set_deadline_deadline_duration_greater_than_ends_at(self):
+        """Test that sets the deadline by exam's ends_at if the deadline duration
+        is greater than the exam's ends_at.
+        """
+        # Exam ends 10 minutes from now
+        self.exam.ends_at = timezone.now() + timedelta(minutes=10)
+        # But the deadline duration is an hour
+        self.exam.deadline_duration = timedelta(hours=1)
+        self.exam.save()
+
+        exam_participation: ExamParticipation = baker.make_recipe(
+            self.baker_recipe, exam=self.exam, user=self.user
+        )
+
+        self.assertEqual(
+            exam_participation.deadline,
+            self.exam.ends_at,
+        )
+
+    def test_finalize_exam_set_is_finalized_and_finalized_at(self):
+        """Test that the is_finalized and finalized_at fields are set when
+        finalizing an exam participation.
+        """
+        self.exam_participation.finalize_exam(commit=False)
+
+        self.assertTrue(self.exam_participation.is_finalized)
+        self.assertAlmostEqual(
+            self.exam_participation.finalized_at,
+            timezone.now(),
+            delta=timedelta(seconds=1),  # Max difference should be 1 second
+        )
+
+    def test_finalize_exam_expired_deadline_raise_error(self):
+        """Test that finalize_exam raises an error when the exam's deadline is
+        expired.
+        """
+        # Exam participation's deadline has expired yesterday
+        self.exam_participation.deadline = timezone.now() - timedelta(days=1)
+        self.exam_participation.save()
+
+        self.assertRaises(
+            ValidationError,
+            self.exam_participation.finalize_exam,
+        )
+
+    def test_finalize_exam_add_waiting_time_to_deadline(self):
+        """Test that the waiting time is added to the deadline when finalizing
+        an exam participation.
+        """
+        # exam_participation's deadline has expired 2 minutes ago
+        self.exam_participation.deadline = timezone.now() - timedelta(
+            minutes=2
+        )
+        self.exam_participation.save()
+
+        # But the exam has a waiting time of 5 minutes
+        self.exam.waiting_duration = timedelta(minutes=5)
+        self.exam.save()
+
+        # finalize_exam should not raise ValidationError
+        try:
+            self.exam_participation.finalize_exam(commit=False)
+        except ValidationError:
+            self.fail("finalize_exam did not add waiting time to the deadline")
+
+    def test_finalize_exam_save_on_commit(self):
+        """Test that finalize_exam saves the exam participation if commit is
+        True.
+        """
+        with patch.object(self.exam_participation, "save") as mock_save:
+            self.exam_participation.finalize_exam(commit=True)
+            mock_save.assert_called_once()
 
 
 class ParticipantAnswerTest(TestCase):
@@ -108,31 +273,28 @@ class ExamLikeTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.designer_user = baker.make(User)
-        cls.participant_user = baker.make(User)
-        cls.nonparticipant_user = baker.make(User)
-        cls.exam = baker.make_recipe("exam.exam", designer=cls.designer_user)
+        cls.designer_user: User = baker.make(UserModel)
+        cls.participant_user: User = baker.make(UserModel)
+        cls.nonparticipant_user: User = baker.make(UserModel)
+        cls.exam: Exam = baker.make_recipe(
+            "exam.exam", designer=cls.designer_user
+        )
 
         baker.make_recipe(
             "exam.exam_participation", user=cls.participant_user, exam=cls.exam
         )
 
-    def make_like(self):
+    def make_like(self, user=None):
         return baker.make_recipe(
-            "exam.exam_like", user=self.participant_user, exam=self.exam
+            "exam.exam_like",
+            exam=self.exam,
+            user=user or self.participant_user,
         )
-
-    def test_nonparticipant_user(self):
-        """Test that raises ValidationError when user is not a participant."""
-        with self.assertRaises(ValidationError):
-            baker.make_recipe(
-                "exam.exam_like", user=self.nonparticipant_user, exam=self.exam
-            )
 
     def test_participant_user(self):
         """Test that saves object when user is a participant."""
         like = self.make_like()
-        self.assertIn(like, self.participant_user.exam_likes.all())
+        self.assertTrue(like.user.exam_likes.contains(like))
 
     def test_creation_score_coin(self):
         """Test that sets the score and coin correctly when user
@@ -158,10 +320,34 @@ class ExamLikeTest(TestCase):
 
     def test_decrease_likes_count(self):
         """Test that decreases likes count on delete."""
+        like = self.make_like()
+        like.delete()
+
+        like.exam.refresh_from_db()
+        self.assertEqual(like.exam.likes_count, 0)
+
+    def test_unique_together(self):
+        """Test that raises DatabaseError/ValidationError when user likes
+        an exam more than once.
+        """
         self.make_like()
-        like2 = self.make_like()
-        like2.delete()
+        with self.assertRaises((DatabaseError, ValidationError)):
+            self.make_like()
 
-        like2.exam.refresh_from_db()
+    def test_clean_designer_like(self):
+        """Test that raises ValidationError when user likes an exam
+        that designed by himself/herself.
+        """
+        # Participate designer user in exam to make sure the error is raised
+        #  because user liked an exam that designed by himself/herself.
+        baker.make_recipe(
+            "exam.exam_participation", user=self.designer_user, exam=self.exam
+        )
 
-        self.assertEqual(like2.exam.likes_count, 1)
+        like: ExamLike = self.make_like(user=self.designer_user)
+        self.assertRaises(ValidationError, like.full_clean)
+
+    def test_clean_nonparticipant_like(self):
+        """Test that raises ValidationError when user is not a participant."""
+        like: ExamLike = self.make_like(user=self.nonparticipant_user)
+        self.assertRaises(ValidationError, like.full_clean)

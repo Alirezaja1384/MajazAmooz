@@ -5,13 +5,13 @@ from django.core.validators import (
     MinValueValidator,
     MaxValueValidator,
 )
+from django.core.exceptions import ValidationError
 from django_resized import ResizedImageField
 from django_bleach.models import BleachField
-from django_lifecycle import LifecycleModel, hook, BEFORE_SAVE
 from shared.models import ConfirmStatusChoices
 
 
-class Exam(LifecycleModel):
+class Exam(models.Model):
     title = models.CharField(
         unique=True,
         max_length=255,
@@ -25,7 +25,11 @@ class Exam(LifecycleModel):
     full_description = BleachField(verbose_name="توضیح کامل")
 
     deadline_duration = models.DurationField(
-        null=True, blank=True, verbose_name="مدت زمان تحویل"
+        null=True,
+        blank=True,
+        verbose_name="مدت زمان تحویل",
+        # deadline_duration must be at least 1 minute
+        validators=[MinValueValidator(timedelta(minutes=1))],
     )
     waiting_duration = models.DurationField(
         null=True,
@@ -35,8 +39,12 @@ class Exam(LifecycleModel):
         help_text="زمان انتظار برای تحویل این آزمون پس از اتمام",
     )
 
-    starts_at = models.DateTimeField(null=True, verbose_name="زمان شروع")
-    ends_at = models.DateTimeField(null=True, verbose_name="زمان پایان")
+    starts_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="زمان شروع"
+    )
+    ends_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="زمان پایان"
+    )
 
     coin_cost = models.PositiveIntegerField(verbose_name="قیمت به سکه")
     diamond_cost = models.PositiveIntegerField(verbose_name="قیمت به الماس")
@@ -48,7 +56,6 @@ class Exam(LifecycleModel):
     )
     blank_score = models.IntegerField(
         default=0,
-        validators=[MaxValueValidator(1)],
         verbose_name="امتیاز نزده",
     )
     incorrect_score = models.IntegerField(
@@ -91,6 +98,7 @@ class Exam(LifecycleModel):
     designer = models.ForeignKey(
         "authentication.User",
         null=False,
+        editable=False,
         on_delete=models.CASCADE,
         related_name="exams",
         verbose_name="طراح آزمون",
@@ -115,9 +123,34 @@ class Exam(LifecycleModel):
         verbose_name="کاربران لایک کرده",
     )
 
-    @hook(BEFORE_SAVE)
-    def before_save(self, *args, **kwargs):
+    def clean(self):
+        """Validates exam fields.
+
+        Raises:
+            ValidationError: When correct_score is NOT greater than
+                blank_score.
+
+            ValidationError: When blank_score is greater than or equal
+                to incorrect_score.
+
+            ValidationError: When ends_at is less than or equal starts_at.
+        """
+        if not (self.correct_score > self.blank_score):
+            raise ValidationError(
+                "امتیاز جواب صحیح باید بزرگتر از امتیاز نزده باشد"
+            )
+
+        if not (self.blank_score >= self.incorrect_score):
+            raise ValidationError(
+                "امتیاز نزده باید بزرگتر یا برابر از امتیاز جواب غلط باشد"
+            )
+
+        if self.ends_at and self.ends_at <= self.starts_at:
+            raise ValidationError("زمان پایان باید بعد از زمان شروع باشد")
+
+    def save(self, *args, **kwargs):
         self.slug = slugify(self.title, allow_unicode=True)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

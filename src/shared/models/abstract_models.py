@@ -48,9 +48,9 @@ class AbstractScoreCoinModel(LifecycleModel):
         DELETE = -1
 
     # AbstractScoreCoinModel's settings
-    user_relation_field: str = None
-    object_relation_field: str = None
-    object_relation_count_field_name: Optional[str] = ""
+    user_relation_field: str
+    object_relation_field: str
+    object_relation_count_field_name: Optional[str] = None
 
     # Model fields
     score = models.IntegerField(

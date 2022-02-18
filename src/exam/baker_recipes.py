@@ -12,8 +12,15 @@ from exam.models import (
 
 generators.add("django_bleach.models.BleachField", gen_text)
 
-exam = Recipe(Exam)
+exam = Recipe(
+    Exam,
+    ends_at=None,
+    deadline_duration=None,
+    correct_score=5,
+    incorrect_score=-2,
+    blank_score=1,
+)
 question = Recipe(Question)
 exam_like = Recipe(ExamLike)
-exam_participation = Recipe(ExamParticipation)
+exam_participation = Recipe(ExamParticipation, deadline=None)
 participant_answer = Recipe(ParticipantAnswer)

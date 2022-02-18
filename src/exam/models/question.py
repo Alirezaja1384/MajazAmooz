@@ -37,6 +37,7 @@ class Question(LifecycleModel):
     exam = models.ForeignKey(
         "exam.Exam",
         null=False,
+        editable=False,
         related_name="questions",
         on_delete=models.CASCADE,
     )
