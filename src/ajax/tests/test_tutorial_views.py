@@ -1,3 +1,4 @@
+from typing import Type
 from django.db import models
 from django.contrib.auth import get_user_model
 from model_bakery import baker
@@ -20,7 +21,7 @@ class TutorialUserRelationCreateDeleteViewTest(ModelTestCase):
         class Meta:
             managed = False
 
-    model = TestTutorialUserScoreCoinModel
+    model: Type[models.Model] = TestTutorialUserScoreCoinModel
 
     @classmethod
     def setUpTestData(cls):

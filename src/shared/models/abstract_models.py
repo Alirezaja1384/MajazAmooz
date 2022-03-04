@@ -50,7 +50,7 @@ class AbstractScoreCoinModel(LifecycleModel):
     # AbstractScoreCoinModel's settings
     user_relation_field: str
     object_relation_field: str
-    object_relation_count_field_name: Optional[str] = None
+    object_relation_count_field_name: str
 
     # Model fields
     score = models.IntegerField(
@@ -98,9 +98,9 @@ class AbstractScoreCoinModel(LifecycleModel):
                 " has this field.".format(self.user_relation_field)
             )
 
-        if self.user_relation_field:
+        if hasattr(self, "user_relation_field"):
             # Raise if user_relation_field is not a string
-            if self.user_relation_field and not isinstance(
+            if hasattr(self, "user_relation_field") and not isinstance(
                 self.user_relation_field, str
             ):
                 _raise_invalid_user()
@@ -163,22 +163,23 @@ class AbstractScoreCoinModel(LifecycleModel):
                 )
             )
 
-        if (
-            self.object_relation_field
-            and self.object_relation_count_field_name
+        if hasattr(self, "object_relation_field") and hasattr(
+            self, "object_relation_count_field_name"
         ):
             # Raise if object_relation_field is not a string
-            if self.object_relation_field and not isinstance(
+            if hasattr(self, "object_relation_field") and not isinstance(
                 self.object_relation_field, str
             ):
                 _raise_invalid_object()
             # Raise if object_relation_count_field_name is not a string
-            if self.object_relation_count_field_name and not isinstance(
-                self.object_relation_count_field_name, str
-            ):
+            if hasattr(
+                self, "object_relation_count_field_name"
+            ) and not isinstance(self.object_relation_count_field_name, str):
                 _raise_invalid_object_relation_count_field()
 
-            obj: models.Model = getattr(self, self.object_relation_field, None)
+            obj: Optional[models.Model] = getattr(
+                self, self.object_relation_field, None
+            )
 
             # Raise if model doesn't have object_relation_field
             if not obj:
