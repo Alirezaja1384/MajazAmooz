@@ -9,33 +9,37 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import reverse, resolve_url
 from django.core.exceptions import MultipleObjectsReturned
 from model_bakery import baker
+from authentication.models import User
 from shared.tests.utils import prevent_request_warnings
+from learning.models import Tutorial, Category, TutorialLike, TutorialView
 from learning.views import (
     home,
     tutorial as tutorial_details_view,
     tutorials_archive,
 )
-from learning.models import Tutorial, Category, TutorialLike, TutorialView
 
-
-User = get_user_model()
+UserModel = get_user_model()
 
 
 class ConstanceConfigMock:
+    """A class that replaces original config"""
+
     LEARNING_HOME_CAROUSEL_ITEMS_COUNT = 4
     LEARNING_RECOMMENDATION_ITEMS_COUNT = 5
     LEARNING_TUTORIAL_ARCHIVE_PAGINATE_BY = 9
 
 
-@mock.patch.object(home, "config", ConstanceConfigMock)
 class HomeViewTest(TestCase):
+    """TestCases for home view"""
+
     context_carousels = [
         "latest_published_tutorials",
         "most_liked_tutorials",
     ]
 
     def setUp(self):
-        self.response = self.client.get(reverse("learning:home"))
+        with mock.patch.object(home, "config", ConstanceConfigMock):
+            self.response = self.client.get(reverse("learning:home"))
 
     @classmethod
     def setUpTestData(cls):
@@ -101,8 +105,10 @@ class HomeViewTest(TestCase):
 
 @mock.patch.object(tutorial_details_view, "config", ConstanceConfigMock)
 class TutorialDetailsViewTest(TestCase):
+    """Tests detail view"""
+
     def setUp(self):
-        self.user = baker.make(User)
+        self.user = baker.make(UserModel)
         self.client.force_login(self.user)
 
         self.random_active_confirmed_tutorial = random.choice(
@@ -133,8 +139,7 @@ class TutorialDetailsViewTest(TestCase):
         Returns:
             HttpResponse: Response of view.
         """
-        if not tutorial:
-            tutorial = self.random_active_confirmed_tutorial
+        tutorial = tutorial or self.random_active_confirmed_tutorial
 
         url = resolve_url("learning:tutorial", slug=tutorial.slug)
         return self.client.get(url, follow=True)
@@ -142,8 +147,16 @@ class TutorialDetailsViewTest(TestCase):
     def record_tutorial_view(
         self, user: Optional[User] = None, tutorial: Optional[Tutorial] = None
     ):
-        if not tutorial:
-            tutorial = self.random_active_confirmed_tutorial
+        """Calls the view's record_tutorial_view
+
+        Args:
+            user (Optional[UserModel], optional): The user that visits the
+                tutorial. self.user will be used if not provided.
+
+            tutorial (Optional[Tutorial], optional): The tutorial to visit.
+                random_active_confirmed_tutorial will be used if not provided.
+        """
+        tutorial = tutorial or self.random_active_confirmed_tutorial
 
         request = RequestFactory().get("/tutorial/" + tutorial.slug)
         request.user = user or self.user
