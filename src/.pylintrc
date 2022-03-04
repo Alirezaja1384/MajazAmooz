@@ -3,7 +3,6 @@ disable=
     missing-docstring,
     W0614,
     wildcard-import,
-    no-self-use,
     too-few-public-methods,
     protected-access
 

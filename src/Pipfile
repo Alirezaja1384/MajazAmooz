@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = ">=3.2"
+django = ">=4.0"
 bleach = ">=3.3.0"
 django-bleach = ">=0.6.1"
 django-debug-toolbar = ">=3.2.1"
@@ -22,16 +22,16 @@ django-resized = ">=0.3.11"
 django-constance = {version = ">=2.8.0", extras = ["redis"]}
 
 [dev-packages]
-pylint = "*"
-pylint-django = "*"
 flake8 = "*"
 black = "*"
 model-bakery = "*"
 mypy = "*"
 coverage = "*"
+pylint = "==2.12.2"
+pylint-django = "==2.5.2"
 
 [requires]
-python_version = "3.10"
+python_version = "3.9"
 
 [pipenv]
 allow_prereleases = true
